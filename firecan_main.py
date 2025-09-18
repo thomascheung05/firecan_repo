@@ -10,7 +10,7 @@ work_dir  = Path.cwd()
 
 
 ##################### GET QC FIRE DATA ################################################################################################
-def get_qc_data(dataname, url, zipname, gpkgname):
+def fx_get_qc_data(dataname, url, zipname, gpkgname):
     savefolder = work_dir / dataname
     zip_path = savefolder / zipname # zipname = "FEUX_PROV_GPKG.zip" OR "FEUX_PROV_GPKG.zip"
     unzipped_file_path = savefolder / gpkgname # gpkgname = "FEUX_PROV.gpkg" OR "FEUX_ANCIENS_PROV.gpkg"
@@ -45,12 +45,12 @@ def get_qc_data(dataname, url, zipname, gpkgname):
 url_qcfires_after76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_PROV_GPKG.zip'
 qcfires_after76_zipname = "FEUX_PROV_GPKG.zip"
 qcfires_after76_gpkgname = "FEUX_PROV.gpkg"
-qcfires_after76_unzipped_file_path = get_qc_data("qcfires_after76", url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
+qcfires_after76_unzipped_file_path = fx_get_qc_data("qcfires_after76", url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
 
 url_qcfires_after76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_ANCIENS_PROV_GPKG.zip'
 qcfires_after76_zipname = "FEUX_PROV_GPKG.zip"
 qcfires_after76_gpkgname = "FEUX_ANCIENS_PROV.gpkg"
-qcfires_before76_unzipped_file_path = get_qc_data("qcfires_before76", url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
+qcfires_before76_unzipped_file_path = fx_get_qc_data("qcfires_before76", url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
 
 ################################################################################################
 
@@ -69,7 +69,7 @@ qcfires_before76_unzipped_file_path = get_qc_data("qcfires_before76", url_qcfire
 
 
 ############## LOAD IN AND MERGE BEFORE AND AFTER QC FIRE DATASET ##################################################################################
-def qc_loadmerge_data(afterpath, beforepath):
+def fx_qc_loadmerge_data(afterpath, beforepath):
     after = gpd.read_file(afterpath, layer="feux_prov")
     after = after.rename(columns={"geoc_fmj": "geoc"})
     after = after.drop(columns=["perturb", "an_perturb", "part_str"])
@@ -86,10 +86,28 @@ def qc_loadmerge_data(afterpath, beforepath):
 
     return merged
 
-gdf_qc_fires = qc_loadmerge_data(qcfires_after76_unzipped_file_path, qcfires_before76_unzipped_file_path)
+gdf_qc_fires = fx_qc_loadmerge_data(qcfires_after76_unzipped_file_path, qcfires_before76_unzipped_file_path)
 
 print(gdf_qc_fires.shape)
 
 
-    
-# ########################################################################################################################
+########################################################################################################################
+
+
+
+
+############ FILTERING DATA #############################################################################################################
+
+def fx_filter_by_year(gdf):
+    min_year = input("Input the minimum year")
+    max_year = input("Input the maximum year")
+    year_filtered_data = gdf[gdf["TYPE"] > min_year and gdf["TYPE"] < max_year]
+
+def fx_filter_by_size(gdf):
+    min_size = input("Input the minimum size")
+    max_size = input("Input the maximum size")
+    size_filtered_data = gdf[gdf["TYPE"] > min_size and gdf["TYPE"] < max_size]
+
+
+
+########################################################################################################################
