@@ -1,62 +1,57 @@
-from firecan_fx import fx_get_qc_data, fx_qc_firedata_loadmerge, fx_qc_watersheddata_load, fx_filter_fires_data # type: ignore
-
-from flask import Flask, jsonify, request # type: ignore
+from firecan_fx import fx_get_qc_data, fx_qc_firedata_loadmergereporoject, fx_qc_watersheddata_load, fx_filter_fires_data # type: ignore
+from flask import Flask, jsonify, request  # type: ignore
 import json
 
+# =========================================================
+# Load and process data once at the start of the application
+# =========================================================
 
+print("Starting data pre-loading. This may take a few minutes...")
 
-
-
-
-# Loading in and merging all QC fire data
 url_qcfires_after76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_PROV_GPKG.zip'
 qcfires_after76_zipname = "FEUX_PROV_GPKG.zip"
 qcfires_after76_gpkgname = "FEUX_PROV.gpkg"
-
 url_qcfires_before76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_ANCIENS_PROV_GPKG.zip'
 qcfires_before76_zipname = "FEUX_PROV_GPKG.zip"
 qcfires_before76_gpkgname = "FEUX_ANCIENS_PROV.gpkg"
-
 qcfires_before76_unzipped_file_path = fx_get_qc_data("qcfires_before76", url_qcfires_before76, qcfires_before76_zipname, qcfires_before76_gpkgname)
 qcfires_after76_unzipped_file_path = fx_get_qc_data("qcfires_after76", url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
-gdf_qc_fires = fx_qc_firedata_loadmerge(qcfires_after76_unzipped_file_path, qcfires_before76_unzipped_file_path)
+gdf_qc_fires = fx_qc_firedata_loadmergereporoject(qcfires_after76_unzipped_file_path, qcfires_before76_unzipped_file_path)
+
 
 
 url_watersheddata = 'https://stqc380donopppdtce01.blob.core.windows.net/donnees-ouvertes/Bassins_hydrographiques_multi_echelles/CE_bassin_multi.gdb.zip'
 watersheddata_zipname = "CE_bassin_multi.gdb.zip"
 watersheddata_fgdbname = "CE_bassin_multi.gdb"
-
 watersheddata_unzipped_file_path = fx_get_qc_data("watershed_data", url_watersheddata, watersheddata_zipname, watersheddata_fgdbname)
 gdf_qc_watershed = fx_qc_watersheddata_load(watersheddata_unzipped_file_path)
 
+print("Data pre-loading complete. The app is now ready to serve requests.")
 
 
 
 
 
-# https://gemini.google.com/app/8afc07553070e9f7
+
+
 
 # =========================================================
-# Initialize Flask app and load data once
+# Initialize Flask app and define routes
 # =========================================================
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static') # Specify the static folder
 
-# =========================================================
-# API Endpoint for Filtering
-# =========================================================
 @app.route('/fx_get_fires', methods=['GET'])
 def fx_get_fires():
     # Get filter parameters from the URL query string
-    min_year = request.args.get('min_year', 'None')
-    max_year = request.args.get('max_year', 'None')
-    min_size = request.args.get('min_size', 'None')
-    max_size = request.args.get('max_size', 'None')
-    distance_coords = request.args.get('distance_coords', 'None')
-    distance_radius = request.args.get('distance_radius', 'None')
-    watershed_name = request.args.get('watershed_name', 'None')
+    min_year = request.args.get('min_year', None)
+    max_year = request.args.get('max_year', None)
+    min_size = request.args.get('min_size', None)
+    max_size = request.args.get('max_size', None)
+    distance_coords = request.args.get('distance_coords', None)
+    distance_radius = request.args.get('distance_radius', None)
+    watershed_name = request.args.get('watershed_name', None)
 
-
-    # Call your filtering function with the request parameters
+    # Filtering the data 
     filtered_data = fx_filter_fires_data(
         gdf_qc_fires,
         gdf_qc_watershed,
@@ -69,22 +64,24 @@ def fx_get_fires():
         watershed_name=watershed_name
     )
 
+
+    filtered_data = filtered_data.to_crs(epsg=4326)
+    filtered_data.to_csv("filtered_data.csv", index=False) # now properly projected but need to switch lat and long
+
     # Convert the filtered GeoDataFrame to GeoJSON
-    # Use to_json() with a custom GeoJSON writer for better control
     geojson_data = json.loads(filtered_data.to_json())
-    
+
+    with open('output_data.geojson', 'w') as f:
+        json.dump(geojson_data, f)
+
     # Return the GeoJSON data as a JSON response
     return jsonify(geojson_data)
 
-# =========================================================
-# Run the Flask app
-# =========================================================
-if __name__ == '__main__':
-    # Add a catch-all route to serve the static HTML and CSS files
-    @app.route('/')
-    def serve_html():
-        return app.send_static_file('firecan_web.html')
+@app.route('/')
+def serve_html():
+    return app.send_static_file('firecan_web.html')
 
+if __name__ == '__main__':
     app.run(debug=True)
 
 
@@ -108,7 +105,152 @@ if __name__ == '__main__':
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# from firecan_fx import fx_get_qc_data, fx_qc_firedata_loadmerge, fx_qc_watersheddata_load, fx_filter_fires_data # type: ignore
+
+# from flask import Flask, jsonify, request  # type: ignore
+# import json
+
+
+# # Loading in and merging all QC fire data
+# url_qcfires_after76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_PROV_GPKG.zip'
+# qcfires_after76_zipname = "FEUX_PROV_GPKG.zip"
+# qcfires_after76_gpkgname = "FEUX_PROV.gpkg"
+
+# url_qcfires_before76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_ANCIENS_PROV_GPKG.zip'
+# qcfires_before76_zipname = "FEUX_PROV_GPKG.zip"
+# qcfires_before76_gpkgname = "FEUX_ANCIENS_PROV.gpkg"
+
+# qcfires_before76_unzipped_file_path = fx_get_qc_data("qcfires_before76", url_qcfires_before76, qcfires_before76_zipname, qcfires_before76_gpkgname)
+# qcfires_after76_unzipped_file_path = fx_get_qc_data("qcfires_after76", url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
+# gdf_qc_fires = fx_qc_firedata_loadmerge(qcfires_after76_unzipped_file_path, qcfires_before76_unzipped_file_path)
+
+
+# url_watersheddata = 'https://stqc380donopppdtce01.blob.core.windows.net/donnees-ouvertes/Bassins_hydrographiques_multi_echelles/CE_bassin_multi.gdb.zip'
+# watersheddata_zipname = "CE_bassin_multi.gdb.zip"
+# watersheddata_fgdbname = "CE_bassin_multi.gdb"
+
+# watersheddata_unzipped_file_path = fx_get_qc_data("watershed_data", url_watersheddata, watersheddata_zipname, watersheddata_fgdbname)
+# gdf_qc_watershed = fx_qc_watersheddata_load(watersheddata_unzipped_file_path)
+
+
+
+# # https://gemini.google.com/app/8afc07553070e9f7
+
+
+
+
+# app = Flask(__name__)
+# @app.route('/fx_get_fires', methods=['GET'])
+
+
+# def fx_get_fires():
+    
+#     # Get filter parameters from the URL query string
+#     min_year = request.args.get('min_year', None)
+#     max_year = request.args.get('max_year', None)
+#     min_size = request.args.get('min_size', None)
+#     max_size = request.args.get('max_size', None)
+#     distance_coords = request.args.get('distance_coords', None)
+#     distance_radius = request.args.get('distance_radius', None)
+#     watershed_name = request.args.get('watershed_name', None)
+
+
+
+
+#     # Filtering the data 
+#     filtered_data = fx_filter_fires_data(
+#         gdf_qc_fires,
+#         gdf_qc_watershed,
+#         min_year=min_year,
+#         max_year=max_year,
+#         min_size=min_size,
+#         max_size=max_size,
+#         distance_coords=distance_coords,
+#         distance_radius=distance_radius,
+#         watershed_name=watershed_name
+#     )
+#     filtered_data.drop(columns="geometry").to_csv("filtered_data.csv", index=False)
+
+
+
+
+
+#     # Convert the filtered GeoDataFrame to GeoJSON
+#     # Use to_json() with a custom GeoJSON writer for better control
+#     geojson_data = json.loads(filtered_data.to_json())
+    
+#     # Return the GeoJSON data as a JSON response
+#     return jsonify(geojson_data)
+
+
+
+
+# if __name__ == '__main__':
+#     # Add a catch-all route to serve the static HTML and CSS files
+#     @app.route('/')
+#     def serve_html():
+#         return app.send_static_file('firecan_web.html')
+
+#     app.run(debug=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # # User inputs
+# # Loading in and merging all QC fire data
+# url_qcfires_after76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_PROV_GPKG.zip'
+# qcfires_after76_zipname = "FEUX_PROV_GPKG.zip"
+# qcfires_after76_gpkgname = "FEUX_PROV.gpkg"
+
+# url_qcfires_before76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_ANCIENS_PROV_GPKG.zip'
+# qcfires_before76_zipname = "FEUX_PROV_GPKG.zip"
+# qcfires_before76_gpkgname = "FEUX_ANCIENS_PROV.gpkg"
+
+# qcfires_before76_unzipped_file_path = fx_get_qc_data("qcfires_before76", url_qcfires_before76, qcfires_before76_zipname, qcfires_before76_gpkgname)
+# qcfires_after76_unzipped_file_path = fx_get_qc_data("qcfires_after76", url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
+# gdf_qc_fires = fx_qc_firedata_loadmerge(qcfires_after76_unzipped_file_path, qcfires_before76_unzipped_file_path)
+
+
+# url_watersheddata = 'https://stqc380donopppdtce01.blob.core.windows.net/donnees-ouvertes/Bassins_hydrographiques_multi_echelles/CE_bassin_multi.gdb.zip'
+# watersheddata_zipname = "CE_bassin_multi.gdb.zip"
+# watersheddata_fgdbname = "CE_bassin_multi.gdb"
+
+# watersheddata_unzipped_file_path = fx_get_qc_data("watershed_data", url_watersheddata, watersheddata_zipname, watersheddata_fgdbname)
+# gdf_qc_watershed = fx_qc_watersheddata_load(watersheddata_unzipped_file_path)
 # min_year = input("Input the minimum year: ")
 # max_year = input("Input the maximum year: ")
 # min_size = input("Input the minimum size: ")

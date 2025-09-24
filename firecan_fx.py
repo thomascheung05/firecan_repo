@@ -31,7 +31,7 @@ def fx_get_qc_data(dataname, url, zipname, gpkgname):
             f.write(response.content)
         print("DONE Downloading the Data for", dataname)
     else:
-        print("Zipped Data Exists For", dataname)
+        print(".....Zipped Data Exists For", dataname)
     
     if not unzipped_file_path.exists():
         print("Unzipping the Data now")
@@ -39,7 +39,7 @@ def fx_get_qc_data(dataname, url, zipname, gpkgname):
             zip_ref.extractall(savefolder)
         print("DONE! unzipping the data, data is located in", savepath)
     else:
-        print("Unzipped Data Exists For", dataname)
+        print("..........Unzipped Data Exists For", dataname)
 
     return unzipped_file_path
 ################################################################################################
@@ -51,27 +51,30 @@ def fx_get_qc_data(dataname, url, zipname, gpkgname):
 
 
 ############## LOAD IN AND MERGE BEFORE AND AFTER QC FIRE DATASET ##################################################################################
-def fx_qc_firedata_loadmerge(afterpath, beforepath):
-    print("Loading in the Data")
+def fx_qc_firedata_loadmergereporoject(afterpath, beforepath):
+
+    print("...................................Loading in the Data")
     after = gpd.read_file(afterpath, layer="feux_prov")
     after = after.rename(columns={"geoc_fmj": "geoc"})
     after = after.drop(columns=["perturb", "an_perturb", "part_str"])
 
     before = gpd.read_file(beforepath, layer="feux_anciens_prov")
     before = before.rename(columns={"geoc_fan": "geoc"})
-    print("merging the data")
+
+    print("...................................Merging and Reprojecting the data")
+
     merged = gpd.GeoDataFrame(
         pd.concat([before, after], ignore_index=True),
         geometry="geometry"  
     )
+
     merged["an_origine"] = pd.to_numeric(merged["an_origine"], errors="coerce")
     merged["superficie"] = pd.to_numeric(merged["superficie"], errors="coerce")
+        
+
+
     return merged
 ########################################################################################################################
-
-
-
-
 
 
 ############# LOAD QC WATERSHED DATA ###########################################################################################################
@@ -94,20 +97,23 @@ def fx_filter_fires_data(
     distance_radius,
     watershed_name
 ):
+
     filtered_gdf = fire_gdf.copy()
     conditions = []
 
-    if min_year != "None" and max_year != "None":
+    if min_year  != "" and max_year  != "":
         min_year = int(min_year)
         max_year = int(max_year)
         conditions.append((filtered_gdf["an_origine"] >= min_year) & (filtered_gdf["an_origine"] <= max_year))
 
-    if min_size != "None" and max_size != "None":
-        min_size=int(min_size),
-        max_size=int(max_size),
+    if min_size  != "" and max_size  != "":
+        print(f"Value of min_size: '{min_size}'") # Add this line
+        print(f"Type of min_size: {type(min_size)}") # Add this line
+        min_size= int(min_size)
+        max_size= int(max_size)
         conditions.append((filtered_gdf["superficie"] >= min_size) & (filtered_gdf["superficie"] <= max_size))
 
-    if distance_coords != "None" and distance_radius != "None":
+    if distance_coords  != "" and distance_radius  != "":
             lat, lon = map(float, distance_coords.split(","))
             distance_radius = float(distance_radius)
             user_point = gpd.GeoSeries([Point(lon, lat)], crs="EPSG:4326")
@@ -115,7 +121,7 @@ def fx_filter_fires_data(
             buffer_geom = user_point_proj.buffer(distance_radius)
             conditions.append(filtered_gdf.geometry.intersects(buffer_geom.iloc[0]))
 
-    if watershed_name != "None":
+    if watershed_name  != "":
             selected_ws = watershed_gdf[watershed_gdf['NOM_COURS_DEAU'] == watershed_name]
             if not selected_ws.empty:
                 ws_geom = selected_ws.geometry.unary_union
@@ -128,7 +134,6 @@ def fx_filter_fires_data(
         filtered_gdf = filtered_gdf[combined_mask]
         
     return filtered_gdf
-
 #############################################################################################################
 
 

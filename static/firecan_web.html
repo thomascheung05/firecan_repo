@@ -1,34 +1,23 @@
 <!DOCTYPE html>
 <!-- saved from url=(0093)https://moodle.concordia.ca/moodle/pluginfile.php/7645864/mod_resource/content/1/leaflet.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <!-- What: Sets up the document metadata. The charset ensures proper text encoding, and viewport makes the map responsive on mobile. --><!-- When to change: Add more meta tags if needed for SEO or specific devices. Change title for your project's name. -->
+<html lang="en">
+    <head>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <!-- What: Sets up the document metadata. The charset ensures proper text encoding, and viewport makes the map responsive on mobile. --><!-- When to change: Add more meta tags if needed for SEO or specific devices. Change title for your project's name. -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>FIRECAN</title>
     
+        <link rel="stylesheet" href="./static/leaflet.css">      <!-- What: Loads Leaflet's CSS from a CDN (Content Delivery Network). This styles the map, markers, etc. -->    <!-- When to change: If offline, download leaflet.css and link locally (e.g., href="leaflet.css"). Update version for new features. -->
+
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1 { text-align: center; }
+            #map { height: 600px; width: 100%; border: 2px solid gray; }
+        </style>     <!-- What: Custom CSS styles for the page. Sets font, margins, and map container size. -->    <!-- When to change: Adjust height/width for different layouts (e.g., full-screen: height: 100vh;). Add styles for popups or other elements. -->
 
 
-
-
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FIRECAN</title>
-    
-
-
-
-
-
-    <link rel="stylesheet" href="./Flashy Ottawa Map Demo_files/leaflet.css">     <!-- What: Loads Leaflet's CSS from a CDN (Content Delivery Network). This styles the map, markers, etc. -->    <!-- When to change: If offline, download leaflet.css and link locally (e.g., href="leaflet.css"). Update version for new features. -->
-
-
-
-
-    
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { text-align: center; }
-        #map { height: 600px; width: 100%; border: 2px solid gray; }
-    </style>     <!-- What: Custom CSS styles for the page. Sets font, margins, and map container size. -->    <!-- When to change: Adjust height/width for different layouts (e.g., full-screen: height: 100vh;). Add styles for popups or other elements. -->
-
-
-</head>
+    </head>
 
 
 
@@ -208,13 +197,10 @@
 
 
 
-    <script src="./static/leaflet.js">
-    </script>     <!-- What: Loads Leaflet's JavaScript library from a CDN. This enables all map functions. -->     
-                  <!-- When to change: For offline use, download leaflet.js and link locally. Update version to match CSS. -->
+    <script src="./static/leaflet.js"> </script>     <!-- What: Loads Leaflet's JavaScript library from a CDN. This enables all map functions. -->       <!-- When to change: For offline use, download leaflet.js and link locally. Update version to match CSS. -->
 
 
     
-
 
 
 
@@ -246,23 +232,26 @@
             }
 
             // 2. Get filter values from input fields. The || '/' provides a default value for the Flask script.
-            const minYear = document.getElementById('minYear').value || 'None';
-            const maxYear = document.getElementById('maxYear').value || 'None';
-            const minSize = document.getElementById('minSize').value || 'None';
-            const maxSize = document.getElementById('maxSize').value || 'None';
-            const distanceCoords = document.getElementById('distanceCoords').value || 'None';
-            const distanceRadius = document.getElementById('distanceRadius').value || 'None';
-            const watershedName = document.getElementById('watershedName').value || 'None';
+            const minYear = document.getElementById('minYear').value;
+            const maxYear = document.getElementById('maxYear').value;
+            const minSize = document.getElementById('minSize').value;
+            const maxSize = document.getElementById('maxSize').value;
+            const distanceCoords = document.getElementById('distanceCoords').value;
+            const distanceRadius = document.getElementById('distanceRadius').value;
+            const watershedName = document.getElementById('watershedName').value;
 
             // 3. Construct the URL with query parameters
             const url = `/fx_get_fires?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}`;
 
+
+            
             // 4. Fetch data from the Flask API
             fetch(url)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
+                     console.log("Data successfully received and processed:");
                     return response.json();
                 })
                 .then(data => {
@@ -292,61 +281,12 @@
 
                     }).addTo(map);
                     
-                    // Adjust the map view to fit the new data
-                    map.fitBounds(fireLayer.getBounds());
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
                     alert("An error occurred while fetching the data. Please check your inputs.");
                 });
         }
-
-        // Optionally, call this function on page load to display all fires initially
-        // window.onload = loadFilteredData;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-        // What: Adds a click event listener. Creates a popup with coordinates at the clicked location.
-        // When to change: Modify content (e.g., add logging to console.log(e.latlng)) for data collection or advanced interactions.
-        map.on('click', function(e) {
-            L.popup().setLatLng(e.latlng).setContent('Coordinates: ' + e.latlng).openOn(map);
-        });
-
-        // https://gemini.google.com/app/e4d592285933507d
-
-
-
-
-
 
 
     </script>
