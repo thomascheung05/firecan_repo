@@ -5,7 +5,7 @@ import geopandas as gpd
 from pathlib import Path
 import pandas as pd
 from shapely.geometry import Point
-import fiona
+import fiona # type: ignore
 import numpy as np
 work_dir  = Path.cwd()
 
@@ -97,17 +97,17 @@ def fx_filter_fires_data(
     filtered_gdf = fire_gdf.copy()
     conditions = []
 
-    if min_year != "/" and max_year != "/":
+    if min_year != "None" and max_year != "None":
         min_year = int(min_year)
         max_year = int(max_year)
         conditions.append((filtered_gdf["an_origine"] >= min_year) & (filtered_gdf["an_origine"] <= max_year))
 
-    if min_size != "/" and max_size != "/":
+    if min_size != "None" and max_size != "None":
         min_size=int(min_size),
         max_size=int(max_size),
         conditions.append((filtered_gdf["superficie"] >= min_size) & (filtered_gdf["superficie"] <= max_size))
 
-    if distance_coords != "/" and distance_radius != "/":
+    if distance_coords != "None" and distance_radius != "None":
             lat, lon = map(float, distance_coords.split(","))
             distance_radius = float(distance_radius)
             user_point = gpd.GeoSeries([Point(lon, lat)], crs="EPSG:4326")
@@ -115,7 +115,7 @@ def fx_filter_fires_data(
             buffer_geom = user_point_proj.buffer(distance_radius)
             conditions.append(filtered_gdf.geometry.intersects(buffer_geom.iloc[0]))
 
-    if watershed_name != "/":
+    if watershed_name != "None":
             selected_ws = watershed_gdf[watershed_gdf['NOM_COURS_DEAU'] == watershed_name]
             if not selected_ws.empty:
                 ws_geom = selected_ws.geometry.unary_union

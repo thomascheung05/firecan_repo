@@ -1,4 +1,5 @@
 from firecan_fx import fx_get_qc_data, fx_qc_firedata_loadmerge, fx_qc_watersheddata_load, fx_filter_fires_data # type: ignore
+
 from flask import Flask, jsonify, request # type: ignore
 import json
 
@@ -43,16 +44,17 @@ app = Flask(__name__)
 # =========================================================
 # API Endpoint for Filtering
 # =========================================================
-@app.route('/get_fires', methods=['GET'])
+@app.route('/fx_get_fires', methods=['GET'])
 def fx_get_fires():
     # Get filter parameters from the URL query string
-    min_year = request.args.get('min_year', '/')
-    max_year = request.args.get('max_year', '/')
-    min_size = request.args.get('min_size', '/')
-    max_size = request.args.get('max_size', '/')
-    distance_coords = request.args.get('distance_coords', '/')
-    distance_radius = request.args.get('distance_radius', '/')
-    watershed_name = request.args.get('watershed_name', '/')
+    min_year = request.args.get('min_year', 'None')
+    max_year = request.args.get('max_year', 'None')
+    min_size = request.args.get('min_size', 'None')
+    max_size = request.args.get('max_size', 'None')
+    distance_coords = request.args.get('distance_coords', 'None')
+    distance_radius = request.args.get('distance_radius', 'None')
+    watershed_name = request.args.get('watershed_name', 'None')
+
 
     # Call your filtering function with the request parameters
     filtered_data = fx_filter_fires_data(
@@ -81,7 +83,7 @@ if __name__ == '__main__':
     # Add a catch-all route to serve the static HTML and CSS files
     @app.route('/')
     def serve_html():
-        return app.send_static_file('index.html')
+        return app.send_static_file('firecan_web.html')
 
     app.run(debug=True)
 
