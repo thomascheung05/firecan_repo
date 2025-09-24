@@ -44,150 +44,163 @@
     <h1>Firecan Interactive Map</h1>
 
     <p>Enter Text Here</p>
+    
 
-<div 
-    id="map" 
-    class="leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" 
-    tabindex="0" 
-    style="position: relative;">
+    <div class="filter-controls">
+        <label for="minYear">Min Year:</label><input type="text" id="minYear" placeholder="e.g., 2010">
+        <label for="maxYear">Max Year:</label><input type="text" id="maxYear" placeholder="e.g., 2023">
+        <label for="minSize">Min Size:</label><input type="text" id="minSize" placeholder="e.g., 100">
+        <label for="maxSize">Max Size:</label><input type="text" id="maxSize" placeholder="e.g., 5000">
+        <label for="distanceCoords">Coords (lat,lon):</label><input type="text" id="distanceCoords" placeholder="e.g., 45.5, -73.5">
+        <label for="distanceRadius">Radius (m):</label><input type="text" id="distanceRadius" placeholder="e.g., 5000">
+        <label for="watershedName">Watershed:</label><input type="text" id="watershedName" placeholder="e.g., Green River">
+        <button onclick="loadFilteredData()">Filter Map</button>
+    </div>
+
+    
     <div 
-        class="leaflet-pane leaflet-map-pane" 
-        style="transform: translate3d(0px, 0px, 0px);">
+        id="map" 
+        class="leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" 
+        tabindex="0" 
+        style="position: relative;">
         <div 
-            class="leaflet-pane leaflet-tile-pane">
+            class="leaflet-pane leaflet-map-pane" 
+            style="transform: translate3d(0px, 0px, 0px);">
             <div 
-                class="leaflet-layer" 
-                style="z-index: 1; opacity: 1;">
+                class="leaflet-pane leaflet-tile-pane">
+                <div 
+                    class="leaflet-layer" 
+                    style="z-index: 1; opacity: 1;">
+                </div>
+            </div>
+            <div 
+                class="leaflet-pane leaflet-overlay-pane">
+                <svg 
+                    pointer-events="none" 
+                    class="leaflet-zoom-animated" 
+                    width="1177" 
+                    height="720" 
+                    viewBox="-98 -60 1177 720" 
+                    style="transform: translate3d(-98px, -60px, 0px);">
+                    <g>
+                        <path 
+                            class="leaflet-interactive" 
+                            stroke="blue" 
+                            stroke-opacity="1" 
+                            stroke-width="3" 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            fill="lightblue" 
+                            fill-opacity="0.4" 
+                            fill-rule="evenodd" 
+                            d="M341.92448000004515,300.318140048068a149,149 0 1,0 298,0 a149,149 0 1,0 -298,0 ">
+                        </path>
+                        <path 
+                            class="leaflet-interactive" 
+                            stroke="green" 
+                            stroke-opacity="1" 
+                            stroke-width="3" 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            fill="lightgreen" 
+                            fill-opacity="0.4" 
+                            fill-rule="evenodd" 
+                            d="M431.36184888891876,233.53190790046938a75,75 0 1,0 150,0 a75,75 0 1,0 -150,0 ">
+                        </path>
+                        <path 
+                            class="leaflet-interactive" 
+                            stroke="purple" 
+                            stroke-opacity="1" 
+                            stroke-width="3" 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            fill="purple" 
+                            fill-opacity="0.2" 
+                            fill-rule="evenodd" 
+                            d="M487 294L503 294L503 278L487 278z">
+                        </path>
+                    </g>
+                </svg>
+            </div>
+            <div 
+                class="leaflet-pane leaflet-tooltip-pane">
+            </div>
+            <div 
+                class="leaflet-pane leaflet-popup-pane">
+            </div>
+            <div 
+                class="leaflet-proxy leaflet-zoom-animated" 
+                style="transform: translate3d(303804px, 375456px, 0px) scale(2048);">
             </div>
         </div>
         <div 
-            class="leaflet-pane leaflet-overlay-pane">
-            <svg 
-                pointer-events="none" 
-                class="leaflet-zoom-animated" 
-                width="1177" 
-                height="720" 
-                viewBox="-98 -60 1177 720" 
-                style="transform: translate3d(-98px, -60px, 0px);">
-                <g>
-                    <path 
-                        class="leaflet-interactive" 
-                        stroke="blue" 
-                        stroke-opacity="1" 
-                        stroke-width="3" 
-                        stroke-linecap="round" 
-                        stroke-linejoin="round" 
-                        fill="lightblue" 
-                        fill-opacity="0.4" 
-                        fill-rule="evenodd" 
-                        d="M341.92448000004515,300.318140048068a149,149 0 1,0 298,0 a149,149 0 1,0 -298,0 ">
-                    </path>
-                    <path 
-                        class="leaflet-interactive" 
-                        stroke="green" 
-                        stroke-opacity="1" 
-                        stroke-width="3" 
-                        stroke-linecap="round" 
-                        stroke-linejoin="round" 
-                        fill="lightgreen" 
-                        fill-opacity="0.4" 
-                        fill-rule="evenodd" 
-                        d="M431.36184888891876,233.53190790046938a75,75 0 1,0 150,0 a75,75 0 1,0 -150,0 ">
-                    </path>
-                    <path 
-                        class="leaflet-interactive" 
-                        stroke="purple" 
-                        stroke-opacity="1" 
-                        stroke-width="3" 
-                        stroke-linecap="round" 
-                        stroke-linejoin="round" 
-                        fill="purple" 
-                        fill-opacity="0.2" 
-                        fill-rule="evenodd" 
-                        d="M487 294L503 294L503 278L487 278z">
-                    </path>
-                </g>
-            </svg>
-        </div>
-        <div 
-            class="leaflet-pane leaflet-tooltip-pane">
-        </div>
-        <div 
-            class="leaflet-pane leaflet-popup-pane">
-        </div>
-        <div 
-            class="leaflet-proxy leaflet-zoom-animated" 
-            style="transform: translate3d(303804px, 375456px, 0px) scale(2048);">
+            class="leaflet-control-container">
+            <div 
+                class="leaflet-top leaflet-left">
+                <div 
+                    class="leaflet-control-zoom leaflet-bar leaflet-control">
+                    <a 
+                        class="leaflet-control-zoom-in" 
+                        href="https://moodle.concordia.ca/moodle/pluginfile.php/7645864/mod_resource/content/1/leaflet.html#" 
+                        title="Zoom in" 
+                        role="button" 
+                        aria-label="Zoom in" 
+                        aria-disabled="false">
+                        <span aria-hidden="true">+</span>
+                    </a>
+                    <a 
+                        class="leaflet-control-zoom-out" 
+                        href="https://moodle.concordia.ca/moodle/pluginfile.php/7645864/mod_resource/content/1/leaflet.html#" 
+                        title="Zoom out" 
+                        role="button" 
+                        aria-label="Zoom out" 
+                        aria-disabled="false">
+                        <span aria-hidden="true">−</span>
+                    </a>
+                </div>
+            </div>
+            <div 
+                class="leaflet-top leaflet-right">
+            </div>
+            <div 
+                class="leaflet-bottom leaflet-left">
+            </div>
+            <div 
+                class="leaflet-bottom leaflet-right">
+                <div 
+                    class="leaflet-control-attribution leaflet-control">
+                    <a 
+                        href="https://leafletjs.com/" 
+                        title="A JavaScript library for interactive maps">
+                        <svg 
+                            aria-hidden="true" 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            width="12" 
+                            height="8" 
+                            viewBox="0 0 12 8" 
+                            class="leaflet-attribution-flag">
+                            <path 
+                                fill="#4C7BE1" 
+                                d="M0 0h12v4H0z">
+                            </path>
+                            <path 
+                                fill="#FFD500" 
+                                d="M0 4h12v3H0z">
+                            </path>
+                            <path 
+                                fill="#E0BC00" 
+                                d="M0 7h12v1H0z">
+                            </path>
+                        </svg>
+                        Leaflet
+                    </a> 
+                    <span 
+                        aria-hidden="true">|</span> 
+                    © OpenStreetMap contributors
+                </div>
+            </div>
         </div>
     </div>
-    <div 
-        class="leaflet-control-container">
-        <div 
-            class="leaflet-top leaflet-left">
-            <div 
-                class="leaflet-control-zoom leaflet-bar leaflet-control">
-                <a 
-                    class="leaflet-control-zoom-in" 
-                    href="https://moodle.concordia.ca/moodle/pluginfile.php/7645864/mod_resource/content/1/leaflet.html#" 
-                    title="Zoom in" 
-                    role="button" 
-                    aria-label="Zoom in" 
-                    aria-disabled="false">
-                    <span aria-hidden="true">+</span>
-                </a>
-                <a 
-                    class="leaflet-control-zoom-out" 
-                    href="https://moodle.concordia.ca/moodle/pluginfile.php/7645864/mod_resource/content/1/leaflet.html#" 
-                    title="Zoom out" 
-                    role="button" 
-                    aria-label="Zoom out" 
-                    aria-disabled="false">
-                    <span aria-hidden="true">−</span>
-                </a>
-            </div>
-        </div>
-        <div 
-            class="leaflet-top leaflet-right">
-        </div>
-        <div 
-            class="leaflet-bottom leaflet-left">
-        </div>
-        <div 
-            class="leaflet-bottom leaflet-right">
-            <div 
-                class="leaflet-control-attribution leaflet-control">
-                <a 
-                    href="https://leafletjs.com/" 
-                    title="A JavaScript library for interactive maps">
-                    <svg 
-                        aria-hidden="true" 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        width="12" 
-                        height="8" 
-                        viewBox="0 0 12 8" 
-                        class="leaflet-attribution-flag">
-                        <path 
-                            fill="#4C7BE1" 
-                            d="M0 0h12v4H0z">
-                        </path>
-                        <path 
-                            fill="#FFD500" 
-                            d="M0 4h12v3H0z">
-                        </path>
-                        <path 
-                            fill="#E0BC00" 
-                            d="M0 7h12v1H0z">
-                        </path>
-                    </svg>
-                    Leaflet
-                </a> 
-                <span 
-                    aria-hidden="true">|</span> 
-                © OpenStreetMap contributors
-            </div>
-        </div>
-    </div>
-</div>
 
 
 
