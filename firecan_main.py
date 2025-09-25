@@ -1,6 +1,8 @@
 from firecan_fx import fx_get_qc_data, fx_qc_firedata_loadmergereporoject, fx_qc_watersheddata_load, fx_filter_fires_data # type: ignore
 from flask import Flask, jsonify, request  # type: ignore
 import json
+from shapely.geometry import MultiPolygon 
+from shapely.ops import transform
 
 # =========================================================
 # Load and process data once at the start of the application
@@ -40,8 +42,8 @@ print("Data pre-loading complete. The app is now ready to serve requests.")
 # =========================================================
 app = Flask(__name__, static_folder='static') # Specify the static folder
 
-@app.route('/fx_get_fires', methods=['GET'])
-def fx_get_fires():
+@app.route('/fx_main', methods=['GET'])
+def fx_main():
     # Get filter parameters from the URL query string
     min_year = request.args.get('min_year', None)
     max_year = request.args.get('max_year', None)
@@ -64,15 +66,17 @@ def fx_get_fires():
         watershed_name=watershed_name
     )
 
-
+    # Reprojecting the data
     filtered_data = filtered_data.to_crs(epsg=4326)
-    filtered_data.to_csv("filtered_data.csv", index=False) # now properly projected but need to switch lat and long
+
+    #filtered_data.to_csv("filtered_data.csv", index=False) # now properly projected but need to switch lat and long
 
     # Convert the filtered GeoDataFrame to GeoJSON
     geojson_data = json.loads(filtered_data.to_json())
 
-    with open('output_data.geojson', 'w') as f:
-        json.dump(geojson_data, f)
+    # save copy of the geojson
+    # with open('output_data.geojson', 'w') as f:
+    #     json.dump(geojson_data, f)
 
     # Return the GeoJSON data as a JSON response
     return jsonify(geojson_data)
@@ -156,10 +160,10 @@ if __name__ == '__main__':
 
 
 # app = Flask(__name__)
-# @app.route('/fx_get_fires', methods=['GET'])
+# @app.route('/fx_main', methods=['GET'])
 
 
-# def fx_get_fires():
+# def fx_main():
     
 #     # Get filter parameters from the URL query string
 #     min_year = request.args.get('min_year', None)

@@ -7,6 +7,7 @@ import pandas as pd
 from shapely.geometry import Point
 import fiona # type: ignore
 import numpy as np
+
 work_dir  = Path.cwd()
 
 
@@ -53,7 +54,7 @@ def fx_get_qc_data(dataname, url, zipname, gpkgname):
 ############## LOAD IN AND MERGE BEFORE AND AFTER QC FIRE DATASET ##################################################################################
 def fx_qc_firedata_loadmergereporoject(afterpath, beforepath):
 
-    print("...................................Loading in the Data")
+    print(".....................................................................Loading in the Data")
     after = gpd.read_file(afterpath, layer="feux_prov")
     after = after.rename(columns={"geoc_fmj": "geoc"})
     after = after.drop(columns=["perturb", "an_perturb", "part_str"])
@@ -61,7 +62,7 @@ def fx_qc_firedata_loadmergereporoject(afterpath, beforepath):
     before = gpd.read_file(beforepath, layer="feux_anciens_prov")
     before = before.rename(columns={"geoc_fan": "geoc"})
 
-    print("...................................Merging and Reprojecting the data")
+    print(".....................................................................Merging and Reprojecting the data")
 
     merged = gpd.GeoDataFrame(
         pd.concat([before, after], ignore_index=True),
@@ -77,11 +78,19 @@ def fx_qc_firedata_loadmergereporoject(afterpath, beforepath):
 ########################################################################################################################
 
 
+
+
+
+
 ############# LOAD QC WATERSHED DATA ###########################################################################################################
 def fx_qc_watersheddata_load(fgdb_path):
     layers = fiona.listlayers(fgdb_path)
     gdf = gpd.read_file(fgdb_path, layer=layers[1])  # or the layer name
 ########################################################################################################################
+
+
+
+
 
 
 

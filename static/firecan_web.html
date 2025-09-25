@@ -64,7 +64,7 @@
             </div>
             <div 
                 class="leaflet-pane leaflet-overlay-pane">
-                <svg 
+                <!-- <svg 
                     pointer-events="none" 
                     class="leaflet-zoom-animated" 
                     width="1177" 
@@ -109,7 +109,7 @@
                             d="M487 294L503 294L503 278L487 278z">
                         </path>
                     </g>
-                </svg>
+                </svg> -->
             </div>
             <div 
                 class="leaflet-pane leaflet-tooltip-pane">
@@ -241,7 +241,7 @@
             const watershedName = document.getElementById('watershedName').value;
 
             // 3. Construct the URL with query parameters
-            const url = `/fx_get_fires?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}`;
+            const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}`;
 
 
             
@@ -260,10 +260,10 @@
 
                         style: function(feature) {
                             return {
-                                color: "orange",
-                                weight: 2,
+                                color: "black",
+                                weight: 1,
                                 opacity: 1,
-                                fillColor: "orange",
+                                fillColor: "red",
                                 fillOpacity: 0.5
                             };
                         },
