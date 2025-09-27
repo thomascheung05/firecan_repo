@@ -1,5 +1,82 @@
 
-body { font-family: Arial, sans-serif; margin: 20px; }
-h1 { text-align: center; }
-#map { height: 600px; width: 100%; border: 2px solid gray; }
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent scrolling if not needed */
+    font-family: Arial, sans-serif;
+}
 
+.main-container {
+    display: flex;
+    height: 100%; /* Make wrapper take full screen height */
+    width: 100%;
+}
+
+
+.filter-controls {
+    /* Set a fixed width for the sidebar */
+    width: 200px; 
+    
+    /* Layout for items inside the sidebar */
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    gap: 10px; /* Space between inputs/labels */
+    
+    padding: 15px;
+    background-color: #f8f8f8; /* Light background for contrast */
+    border-right: 1px solid #ccc; /* Simple separator */
+    overflow-y: auto; /* Allow scrolling if filters exceed screen height */
+}
+
+.filter-controls input[type="text"]{
+    width: 100%; 
+    padding: 8px 10px;
+    box-sizing: border-box; 
+}
+
+.loadFilteredData,
+.downloadFilteredData {
+    /* These wrappers must take full width to prevent layout issues */
+    width: 100%;
+    /* Ensure they don't break the column layout of .filter-controls */
+    display: flex; 
+    flex-direction: column; 
+    box-sizing: border-box;
+}
+
+.loadFilteredData button,
+.downloadFilteredData button {
+    width: 100%; /* The button itself should fill its 100% width wrapper */
+    padding: 10px 15px; 
+    box-sizing: border-box; 
+    
+    /* Aesthetics */
+    border: none;
+    border-radius: 4px; 
+    font-size: 1em;
+    font-weight: 600; 
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+
+.checkbox-group {
+    /* Use Flexbox to align them horizontally */
+    display: flex;
+    align-items: center; /* Vertically center the text and the box */
+    gap: 5px; /* Add a small gap between the label and the checkbox */
+    margin-top: -5px; /* Adjust spacing to look better with the gap: 10px from the main column */
+}
+
+/* Ensure the label doesn't get bolded/styled like the others if you only want the filter titles bolded */
+.checkbox-group label {
+    font-weight: normal; 
+    margin: 0;
+}
+
+#map { 
+    flex-grow: 1; /* CRITICAL: Takes up ALL remaining horizontal space */
+    height: 100%; /* CRITICAL: Takes full vertical height */
+}
