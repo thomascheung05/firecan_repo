@@ -12,7 +12,7 @@ work_dir  = Path.cwd()
 
 
 
-##################### GET QC FIRE DATA ################################################################################################
+##################### GET QC FIRE DATA ################################################################################################################################################################################################################################################################################################################################################################################################
 def fx_get_qc_data(dataname, url, zipname, gpkgname):
     savefolder = work_dir / dataname
     zip_path = savefolder / zipname # zipname = "FEUX_PROV_GPKG.zip" OR "FEUX_PROV_GPKG.zip"
@@ -43,7 +43,7 @@ def fx_get_qc_data(dataname, url, zipname, gpkgname):
         print("..........Unzipped Data Exists For", dataname)
 
     return unzipped_file_path
-################################################################################################
+################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################
 
 
 
@@ -51,8 +51,8 @@ def fx_get_qc_data(dataname, url, zipname, gpkgname):
 
 
 
-############## LOAD IN AND MERGE BEFORE AND AFTER QC FIRE DATASET ##################################################################################
-def fx_qc_firedata_loadmergereporoject(afterpath, beforepath):
+############## LOAD IN AND MERGE BEFORE AND AFTER QC FIRE DATASET ##################################################################################################################################################################################################################################################################################################################################################################################
+def fx_qc_firedata_loadmerge(afterpath, beforepath):
 
     print(".....................................................................Loading in the Data")
     after = gpd.read_file(afterpath, layer="feux_prov")
@@ -75,7 +75,7 @@ def fx_qc_firedata_loadmergereporoject(afterpath, beforepath):
 
 
     return merged
-########################################################################################################################
+########################################################################################################################################################################################################################################################################################################################
 
 
 
@@ -116,8 +116,6 @@ def fx_filter_fires_data(
         conditions.append((filtered_gdf["an_origine"] >= min_year) & (filtered_gdf["an_origine"] <= max_year))
 
     if min_size  != "" and max_size  != "":
-        print(f"Value of min_size: '{min_size}'") # Add this line
-        print(f"Type of min_size: {type(min_size)}") # Add this line
         min_size= int(min_size)
         max_size= int(max_size)
         conditions.append((filtered_gdf["superficie"] >= min_size) & (filtered_gdf["superficie"] <= max_size))
@@ -144,88 +142,4 @@ def fx_filter_fires_data(
         
     return filtered_gdf
 #############################################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ############ FILTERING DATA #############################################################################################################
-# def fx_filter_by_year(gdf):
-#     min_year = int(input("Input the minimum year: "))
-#     max_year = int(input("Input the maximum year: "))
-
-#     gdf = gdf[(gdf["an_origine"] >= min_year) & (gdf["an_origine"] <= max_year)]
-    
-#     return gdf
-
-
-# def fx_filter_by_size(gdf):
-#     min_size = int(input("Input the minimum size: "))
-#     max_size = int(input("Input the maximum size: "))
-
-#     gdf = gdf[(gdf["superficie"] >= min_size) & (gdf["superficie"] <= max_size)]
-
-#     return gdf
-
-
-
-
-
-# def fx_filter_by_distance(gdf):
-#     cord = input("Enter the coordiates of center point: ")
-#     radius = float(input("Enter radius in meters: "))
-
-#     lat, lon = map(float, cord.split(","))
-
-
-#     user_point = gpd.GeoSeries([Point(lon, lat)], crs="EPSG:4326")
-#     user_point_proj = user_point.to_crs(gdf.crs)
-#     buffer_geom = user_point_proj.buffer(radius)
-
-#     gdf = gdf[gdf.geometry.intersects(buffer_geom.iloc[0])]
-#     # possible_idx = list(gdf.sindex.intersection(buffer_geom.iloc[0].bounds))
-#     # gdf_candidate = gdf.iloc[possible_idx]
-#     # gdf = gdf_candidate[gdf_candidate.geometry.intersects(buffer_geom.iloc[0])]
-
-#     return gdf
-
-
-# def fx_filter_by_watershed(fire_gdf, watershed_gdf):
-#     user_watershed = input('Enter the name of the watershed: ')
-#     selected_ws = watershed_gdf[watershed_gdf['NOM_COURS_DEAU'] == user_watershed]
-
-#     if selected_ws.empty:
-#         print(f"No watershed found with name '{user_watershed}'.")
-
-#     ws_geom = selected_ws.geometry.unary_union 
-
-#     fires_in_ws = fire_gdf[fire_gdf.geometry.within(ws_geom)]
-
-#     return fires_in_ws
-
-
-# def fx_filter_by_yearandsize(gdf):
-#     min_year = int(input("Input the minimum year: "))
-#     max_year = int(input("Input the maximum year: "))
-#     min_size = int(input("Input the minimum size: "))
-#     max_size = int(input("Input the maximum size: "))
-
-#     gdf = gdf[(gdf["superficie"] >= min_size) & (gdf["superficie"] <= max_size) & ("an_origine" >= min_year) & (gdf["an_origine"] <= max_year)]
-    
-#     return gdf
-# ########################################################################################################################
-
-
 

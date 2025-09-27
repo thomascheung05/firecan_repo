@@ -1,8 +1,10 @@
-from firecan_fx import fx_get_qc_data, fx_qc_firedata_loadmergereporoject, fx_qc_watersheddata_load, fx_filter_fires_data # type: ignore
-from flask import Flask, jsonify, request  # type: ignore
+from firecan_fx import fx_get_qc_data, fx_qc_firedata_loadmerge, fx_qc_watersheddata_load, fx_filter_fires_data # type: ignore
+from flask import Flask, jsonify, request, send_file  # type: ignore
 import json
 from shapely.geometry import MultiPolygon 
 from shapely.ops import transform
+import io
+
 
 # =========================================================
 # Load and process data once at the start of the application
@@ -18,7 +20,7 @@ qcfires_before76_zipname = "FEUX_PROV_GPKG.zip"
 qcfires_before76_gpkgname = "FEUX_ANCIENS_PROV.gpkg"
 qcfires_before76_unzipped_file_path = fx_get_qc_data("qcfires_before76", url_qcfires_before76, qcfires_before76_zipname, qcfires_before76_gpkgname)
 qcfires_after76_unzipped_file_path = fx_get_qc_data("qcfires_after76", url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
-gdf_qc_fires = fx_qc_firedata_loadmergereporoject(qcfires_after76_unzipped_file_path, qcfires_before76_unzipped_file_path)
+gdf_qc_fires = fx_qc_firedata_loadmerge(qcfires_after76_unzipped_file_path, qcfires_before76_unzipped_file_path)
 
 
 
@@ -52,34 +54,47 @@ def fx_main():
     distance_coords = request.args.get('distance_coords', None)
     distance_radius = request.args.get('distance_radius', None)
     watershed_name = request.args.get('watershed_name', None)
+    is_download_requested = request.args.get('download', '0') == '1'
+    jsondownlaod = request.args.get('jsondownload', None)
 
     # Filtering the data 
     filtered_data = fx_filter_fires_data(
-        gdf_qc_fires,
-        gdf_qc_watershed,
-        min_year=min_year,
-        max_year=max_year,
-        min_size=min_size,
-        max_size=max_size,
-        distance_coords=distance_coords,
-        distance_radius=distance_radius,
-        watershed_name=watershed_name
-    )
+                                            gdf_qc_fires,
+                                            gdf_qc_watershed,
+                                            min_year=min_year,
+                                            max_year=max_year,
+                                            min_size=min_size,
+                                            max_size=max_size,
+                                            distance_coords=distance_coords,
+                                            distance_radius=distance_radius,
+                                            watershed_name=watershed_name
+                                        )
 
-    # Reprojecting the data
-    filtered_data = filtered_data.to_crs(epsg=4326)
+    
+    filtered_data = filtered_data.to_crs(epsg=4326)                       # Reprojecting the data
+    print(jsondownlaod)
+    
+    if is_download_requested:
+        if jsondownlaod == "true":
+            print("download json")
+        else:
+            csv_buffer = io.BytesIO()
+            filtered_data.to_csv(csv_buffer, index=False, encoding="utf-8")
+            csv_buffer.seek(0)
+            
+            # Return the file as an attachment to the user's Downloads folder
+            return send_file(
+                csv_buffer,
+                mimetype='text/csv',
+                as_attachment=True,
+                download_name='firecan_filtered_data.csv'
+            ) 
+    else:       
+        geojson_data = json.loads(filtered_data.to_json())                    # Convert the filtered GeoDataFrame to GeoJSON
 
-    #filtered_data.to_csv("filtered_data.csv", index=False) # now properly projected but need to switch lat and long
 
-    # Convert the filtered GeoDataFrame to GeoJSON
-    geojson_data = json.loads(filtered_data.to_json())
 
-    # save copy of the geojson
-    # with open('output_data.geojson', 'w') as f:
-    #     json.dump(geojson_data, f)
-
-    # Return the GeoJSON data as a JSON response
-    return jsonify(geojson_data)
+    return jsonify(geojson_data)                                          # Return the GeoJSON data as a JSON response
 
 @app.route('/')
 def serve_html():
