@@ -1,7 +1,10 @@
 import os
 import zipfile
+import json
 import requests
 import geopandas as gpd
+from flask import Flask, jsonify, request, send_file  # type: ignore
+import io
 from pathlib import Path
 import pandas as pd
 from shapely.geometry import Point
@@ -143,3 +146,36 @@ def fx_filter_fires_data(
     return filtered_gdf
 #############################################################################################################
 
+
+
+
+def fx_download_json(filtered_data):
+        geojson_data = json.loads(filtered_data.to_json())                    # Convert the filtered GeoDataFrame to GeoJSON
+        geojson_string = json.dumps(geojson_data) 
+    
+        geojson_buffer = io.BytesIO(geojson_string.encode('utf-8'))                         # Create an in-memory buffer to hold the file content
+        geojson_buffer.seek(0)
+        
+        return send_file(                                               # Send the file back to the browser as an attachment
+
+            geojson_buffer,
+            
+            mimetype='application/json',                    # CRITICAL: Change MIME type to 'application/json' or 'application/geo+json'
+            as_attachment=True,
+            download_name='firecan_filtered_data.geojson'                   # CRITICAL: Change file extension to '.geojson'
+
+        )
+
+
+def fx_download_csv(filtered_data):
+    csv_buffer = io.BytesIO()
+    filtered_data.to_csv(csv_buffer, index=False, encoding="utf-8")
+    csv_buffer.seek(0)
+    
+    return send_file(                                                   # Return the file as an attachment to the user's Downloads folder
+
+        csv_buffer,
+        mimetype='text/csv',
+        as_attachment=True,
+        download_name='firecan_filtered_data.csv'
+    ) 

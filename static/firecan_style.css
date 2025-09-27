@@ -1,9 +1,8 @@
-
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden; /* Prevent scrolling if not needed */
+    overflow: hidden; 
     font-family: Arial, sans-serif;
 }
 

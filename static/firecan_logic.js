@@ -2,18 +2,28 @@
 var fireLayer;
 
 var map = L.map('map').setView([52.520878, -69.855725], 4.5);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap contributors'
-}).addTo(map);
 
 
 
 
 
 
+var Esrimap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 18,
+    attribution: 'Tiles © Esri',
+});
 
+
+var OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	maxZoom: 19,
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+});
+
+
+OpenStreetMap_Mapnik.addTo(map);
         
+
+
 // The main function to fetch and display the filtered data
 function loadFilteredData() {
     // 1. Remove the old layer if it exists
