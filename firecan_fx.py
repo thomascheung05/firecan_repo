@@ -51,6 +51,7 @@ def fx_get_qc_data(dataname, url, zipname, gpkgname):
 
 
 def fx_load_and_reproject_data(path,layer): # qcfires_before76_unzipped_file_path and qcfires_after76_unzipped_file_path 
+    print("Loading in the Data")
     data = gpd.read_file(path, layer=layer)
 
     is_wgs84 = data.crs.to_epsg() == 4326
@@ -80,7 +81,7 @@ def fx_qc_firedata_merge(after, before):
 
     before = before.rename(columns={"geoc_fan": "geoc"})
 
-    print(".....................................................................Merging and Reprojecting the data")
+    print(".....................................................................Merging the data")
 
     merged = gpd.GeoDataFrame(
         pd.concat([before, after], ignore_index=True),

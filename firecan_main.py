@@ -42,57 +42,60 @@ print("Data pre-loading complete. The app is now ready to serve requests.")
 
 
 
-# # =========================================================
-# # Initialize Flask app and define routes
-# # =========================================================
-# app = Flask(__name__, static_folder='static') # Specify the static folder
+# =========================================================
+# Initialize Flask app and define routes
+# =========================================================
+app = Flask(__name__, static_folder='static') # Specify the static folder
 
-# @app.route('/fx_main', methods=['GET'])
-# def fx_main():
-#     # Get filter parameters from the URL query string
-#     min_year = request.args.get('min_year', None)
-#     max_year = request.args.get('max_year', None)
-#     min_size = request.args.get('min_size', None)
-#     max_size = request.args.get('max_size', None)
-#     distance_coords = request.args.get('distance_coords', None)
-#     distance_radius = request.args.get('distance_radius', None)
-#     watershed_name = request.args.get('watershed_name', None)
-#     is_download_requested = request.args.get('download', '0') == '1'
-#     jsondownlaod = request.args.get('jsondownload', None)
+@app.route('/fx_main', methods=['GET'])
+def fx_main():
+    # Get filter parameters from the URL query string
+    min_year = request.args.get('min_year', None)
+    max_year = request.args.get('max_year', None)
+    min_size = request.args.get('min_size', None)
+    max_size = request.args.get('max_size', None)
+    distance_coords = request.args.get('distance_coords', None)
+    distance_radius = request.args.get('distance_radius', None)
+    watershed_name = request.args.get('watershed_name', None)
+    is_download_requested = request.args.get('download', '0') == '1'
+    jsondownlaod = request.args.get('jsondownload', None)
 
-#     # Filtering the data 
-#     filtered_data = fx_filter_fires_data(
-#                                             gdf_qc_fires,
-#                                             gdf_qc_watershed,
-#                                             min_year=min_year,
-#                                             max_year=max_year,
-#                                             min_size=min_size,
-#                                             max_size=max_size,
-#                                             distance_coords=distance_coords,
-#                                             distance_radius=distance_radius,
-#                                             watershed_name=watershed_name
-#                                         )
+    print("Filtering Data")
+    # Filtering the data 
+    filtered_data = fx_filter_fires_data(
+                                            gdf_qc_fires,
+                                            gdf_qc_watershed,
+                                            min_year=min_year,
+                                            max_year=max_year,
+                                            min_size=min_size,
+                                            max_size=max_size,
+                                            distance_coords=distance_coords,
+                                            distance_radius=distance_radius,
+                                            watershed_name=watershed_name
+                                        )
+    print("Done Filtering Data")
 
     
-#     filtered_data = filtered_data.to_crs(epsg=4326)                       # Reprojecting the data
 
     
-#     if is_download_requested:
-#         if jsondownlaod == "true":
-#             return fx_download_json(filtered_data)
-#         else:
-#             return fx_download_csv(filtered_data)
-#     else:       
-#         geojson_data = json.loads(filtered_data.to_json())                    # Convert the filtered GeoDataFrame to GeoJSON
+    if is_download_requested:
+        if jsondownlaod == "true":
+            return fx_download_json(filtered_data)
+        else:
+            return fx_download_csv(filtered_data)
+    else:    
+        print("Converting to geojson")
+        geojson_data = json.loads(filtered_data.to_json())                    # Convert the filtered GeoDataFrame to GeoJSON
+        print("Done Converting to geojson")
 
-#         return jsonify(geojson_data)                                          # Return the GeoJSON data as a JSON response
+        return jsonify(geojson_data)                                          # Return the GeoJSON data as a JSON response
 
-# @app.route('/')
-# def serve_html():
-#     return app.send_static_file('firecan_web.html')
+@app.route('/')
+def serve_html():
+    return app.send_static_file('firecan_web.html')
 
-# if __name__ == '__main__':
-#     app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
 
 
 
