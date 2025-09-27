@@ -50,19 +50,34 @@ def fx_get_qc_data(dataname, url, zipname, gpkgname):
 
 
 
+def fx_load_and_reproject_data(path,layer): # qcfires_before76_unzipped_file_path and qcfires_after76_unzipped_file_path 
+    data = gpd.read_file(path, layer=layer)
+
+    is_wgs84 = data.crs.to_epsg() == 4326
+    if is_wgs84:
+        print("The data is already in EPSG:4326 (WGS 84).")
+        return data
+    else:
+        print("Reprojecting Data")
+        reprojected_data = data.to_crs(epsg=4326)                       # Reprojecting the data
+        reprojected_data.to_file(path, layer=layer, driver="GPKG", mode='w')
+        return reprojected_data
+
+
+
 
 
 
 
 ############## LOAD IN AND MERGE BEFORE AND AFTER QC FIRE DATASET ##################################################################################################################################################################################################################################################################################################################################################################################
-def fx_qc_firedata_loadmerge(afterpath, beforepath):
+def fx_qc_firedata_merge(after, before):
 
     print(".....................................................................Loading in the Data")
-    after = gpd.read_file(afterpath, layer="feux_prov")
+
     after = after.rename(columns={"geoc_fmj": "geoc"})
     after = after.drop(columns=["perturb", "an_perturb", "part_str"])
 
-    before = gpd.read_file(beforepath, layer="feux_anciens_prov")
+
     before = before.rename(columns={"geoc_fan": "geoc"})
 
     print(".....................................................................Merging and Reprojecting the data")

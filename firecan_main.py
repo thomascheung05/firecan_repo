@@ -1,4 +1,4 @@
-from firecan_fx import fx_get_qc_data, fx_qc_firedata_loadmerge, fx_qc_watersheddata_load, fx_filter_fires_data, fx_download_json, fx_download_csv # type: ignore
+from firecan_fx import fx_get_qc_data, fx_qc_firedata_merge, fx_qc_watersheddata_load, fx_filter_fires_data, fx_download_json, fx_download_csv, fx_load_and_reproject_data # type: ignore
 from flask import Flask, jsonify, request, send_file  # type: ignore
 import json
 from shapely.geometry import MultiPolygon 
@@ -16,9 +16,14 @@ qcfires_after76_gpkgname = "FEUX_PROV.gpkg"
 url_qcfires_before76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_ANCIENS_PROV_GPKG.zip'
 qcfires_before76_zipname = "FEUX_PROV_GPKG.zip"
 qcfires_before76_gpkgname = "FEUX_ANCIENS_PROV.gpkg"
+
 qcfires_before76_unzipped_file_path = fx_get_qc_data("qcfires_before76", url_qcfires_before76, qcfires_before76_zipname, qcfires_before76_gpkgname)
 qcfires_after76_unzipped_file_path = fx_get_qc_data("qcfires_after76", url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
-gdf_qc_fires = fx_qc_firedata_loadmerge(qcfires_after76_unzipped_file_path, qcfires_before76_unzipped_file_path)
+
+gdf_qc_fires_before = fx_load_and_reproject_data(qcfires_before76_unzipped_file_path,"feux_anciens_prov")
+gdf_qc_fires_after = fx_load_and_reproject_data(qcfires_after76_unzipped_file_path, "feux_prov")
+
+gdf_qc_fires = fx_qc_firedata_merge(gdf_qc_fires_after, gdf_qc_fires_before)
 
 
 
@@ -37,57 +42,57 @@ print("Data pre-loading complete. The app is now ready to serve requests.")
 
 
 
-# =========================================================
-# Initialize Flask app and define routes
-# =========================================================
-app = Flask(__name__, static_folder='static') # Specify the static folder
+# # =========================================================
+# # Initialize Flask app and define routes
+# # =========================================================
+# app = Flask(__name__, static_folder='static') # Specify the static folder
 
-@app.route('/fx_main', methods=['GET'])
-def fx_main():
-    # Get filter parameters from the URL query string
-    min_year = request.args.get('min_year', None)
-    max_year = request.args.get('max_year', None)
-    min_size = request.args.get('min_size', None)
-    max_size = request.args.get('max_size', None)
-    distance_coords = request.args.get('distance_coords', None)
-    distance_radius = request.args.get('distance_radius', None)
-    watershed_name = request.args.get('watershed_name', None)
-    is_download_requested = request.args.get('download', '0') == '1'
-    jsondownlaod = request.args.get('jsondownload', None)
+# @app.route('/fx_main', methods=['GET'])
+# def fx_main():
+#     # Get filter parameters from the URL query string
+#     min_year = request.args.get('min_year', None)
+#     max_year = request.args.get('max_year', None)
+#     min_size = request.args.get('min_size', None)
+#     max_size = request.args.get('max_size', None)
+#     distance_coords = request.args.get('distance_coords', None)
+#     distance_radius = request.args.get('distance_radius', None)
+#     watershed_name = request.args.get('watershed_name', None)
+#     is_download_requested = request.args.get('download', '0') == '1'
+#     jsondownlaod = request.args.get('jsondownload', None)
 
-    # Filtering the data 
-    filtered_data = fx_filter_fires_data(
-                                            gdf_qc_fires,
-                                            gdf_qc_watershed,
-                                            min_year=min_year,
-                                            max_year=max_year,
-                                            min_size=min_size,
-                                            max_size=max_size,
-                                            distance_coords=distance_coords,
-                                            distance_radius=distance_radius,
-                                            watershed_name=watershed_name
-                                        )
-
-    
-    filtered_data = filtered_data.to_crs(epsg=4326)                       # Reprojecting the data
+#     # Filtering the data 
+#     filtered_data = fx_filter_fires_data(
+#                                             gdf_qc_fires,
+#                                             gdf_qc_watershed,
+#                                             min_year=min_year,
+#                                             max_year=max_year,
+#                                             min_size=min_size,
+#                                             max_size=max_size,
+#                                             distance_coords=distance_coords,
+#                                             distance_radius=distance_radius,
+#                                             watershed_name=watershed_name
+#                                         )
 
     
-    if is_download_requested:
-        if jsondownlaod == "true":
-            return fx_download_json(filtered_data)
-        else:
-            return fx_download_csv(filtered_data)
-    else:       
-        geojson_data = json.loads(filtered_data.to_json())                    # Convert the filtered GeoDataFrame to GeoJSON
+#     filtered_data = filtered_data.to_crs(epsg=4326)                       # Reprojecting the data
 
-        return jsonify(geojson_data)                                          # Return the GeoJSON data as a JSON response
+    
+#     if is_download_requested:
+#         if jsondownlaod == "true":
+#             return fx_download_json(filtered_data)
+#         else:
+#             return fx_download_csv(filtered_data)
+#     else:       
+#         geojson_data = json.loads(filtered_data.to_json())                    # Convert the filtered GeoDataFrame to GeoJSON
 
-@app.route('/')
-def serve_html():
-    return app.send_static_file('firecan_web.html')
+#         return jsonify(geojson_data)                                          # Return the GeoJSON data as a JSON response
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# @app.route('/')
+# def serve_html():
+#     return app.send_static_file('firecan_web.html')
+
+# if __name__ == '__main__':
+#     app.run(debug=True)
 
 
 
