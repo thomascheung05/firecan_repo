@@ -85,6 +85,7 @@ def fx_main():
             return fx_download_csv(filtered_data)
     else:    
         print("Converting to geojson")
+        # Before converting ot geojson make sure to delete all unecessary columns 
         geojson_data = json.loads(filtered_data.to_json())                    # Convert the filtered GeoDataFrame to GeoJSON
         print("Done Converting to geojson")
 

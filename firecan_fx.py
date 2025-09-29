@@ -22,23 +22,16 @@ def fx_get_qc_data(dataname, url, zipname, gpkgname):
     unzipped_file_path = savefolder / gpkgname # gpkgname = "FEUX_PROV.gpkg" OR "FEUX_ANCIENS_PROV.gpkg"
     savepath = os.path.join(savefolder, zipname)
 
-    if not savefolder.exists():
+    if not unzipped_file_path.exists():
+        print('Data does not exist, Downloading now, this may take several minutes ...')
         savefolder.mkdir(parents=True, exist_ok=True)
         print("Created folder:", savefolder)
-    else:
-        print("Folder Exists for", dataname)
 
-    if not zip_path.exists():
-        print(dataname, "is not downloaded, downloading now, this may take a few minutes")
         response = requests.get(url)
         with open(savepath, 'wb') as f:
             f.write(response.content)
-        print("DONE Downloading the Data for", dataname)
-    else:
-        print(".....Zipped Data Exists For", dataname)
-    
-    if not unzipped_file_path.exists():
-        print("Unzipping the Data now")
+        print("DONE Downloading the Data for", dataname)        
+        
         with zipfile.ZipFile(savepath, 'r') as zip_ref:
             zip_ref.extractall(savefolder)
         print("DONE! unzipping the data, data is located in", savepath)
@@ -47,6 +40,21 @@ def fx_get_qc_data(dataname, url, zipname, gpkgname):
 
     return unzipped_file_path
 ################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################
+
+
+
+def fx_qc_processfiredata(path,layer):
+    print("hello")
+# first load both datasets in 
+# then merge the datasets
+# the reproject the data set
+# then convert to geojson
+# then save to a new specialized geojson path
+# return combined geojson
+# gonna have to redo filtering logic i think 
+# NVM MUST CONVERT TO GEOJSON IN FLASK
+# INSTEAD CREATE PROCESSING FUCTION THAT INCLUDES ALL PROCESSING STEPS load in merge, add watershed column, reproject, save
+# Save the merged dataset, do if check to see if merged dataset exists if yes load it (also check if in right projection) in if not merge and do the processing
 
 
 
