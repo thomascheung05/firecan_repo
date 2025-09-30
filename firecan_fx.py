@@ -203,3 +203,80 @@ def fx_download_csv(filtered_data):
         as_attachment=True,
         download_name='firecan_filtered_data.csv'
     ) 
+
+
+
+
+
+# def fx_qc_processfiredata(after, before):
+#     qc_fires_file_path = os.path.join('qc_fire_data')
+#     print(qc_fires_file_path)
+#     if not os.path.exists(qc_fires_file_path):
+#         print(".....................................................................Loading in the Data")
+#         before = gpd.read_file(before, layer="feux_anciens_prov")
+#         after = gpd.read_file(after, layer="feux_prov")
+
+#         print(".....................................................................Merging the data")
+#         after = after.rename(columns={"geoc_fmj": "geoc"})
+#         after = after.drop(columns=["perturb", "an_perturb", "part_str"])
+#         before = before.rename(columns={"geoc_fan": "geoc"})
+#         data = gpd.GeoDataFrame(
+#             pd.concat([before, after], ignore_index=True),
+#             geometry="geometry"  
+#         )
+#         data["an_origine"] = pd.to_numeric(data["an_origine"], errors="coerce")
+#         data["superficie"] = pd.to_numeric(data["superficie"], errors="coerce")
+
+#         data.to_file("qc_fire_data", driver="GPKG", mode='w')
+#     else:
+#         print("yes1")
+#         data = gpd.read_file(qc_fires_file_path)
+
+
+
+
+
+
+#     url_watersheddata = 'https://stqc380donopppdtce01.blob.core.windows.net/donnees-ouvertes/Bassins_hydrographiques_multi_echelles/CE_bassin_multi.gdb.zip'
+#     watersheddata_zipname = "CE_bassin_multi.gdb.zip"
+#     watersheddata_fgdbname = "CE_bassin_multi.gdb"
+#     watersheddata_unzipped_file_path = fx_get_qc_data("watershed_data", url_watersheddata, watersheddata_zipname, watersheddata_fgdbname)
+    
+#     layers = fiona.listlayers(watersheddata_unzipped_file_path)
+#     gdf_watershed = gpd.read_file(watersheddata_unzipped_file_path, layer=layers[1])  
+
+#     if 'watershed' not in data.columns:
+#         is_wgs84 = gdf_watershed.crs.to_epsg() == 4326
+#         if is_wgs84:
+#             print("The data is already in EPSG:4326 (WGS 84).")
+#         else:
+#             print("Reprojecting Data")
+#             gdf_watershed = gdf_watershed.to_crs(epsg=4326)                       # Reprojecting the data
+#             gdf_watershed.to_file("gdf_watershed", driver="GPKG", mode='w')
+#         data = gpd.sjoin(
+#             data,
+#             gdf_watershed[['NOM_COURS_DEAU', 'geometry']],  # only need watershed name and geometry
+#             how='left',
+#             predicate='within'  # assigns watershed if fire is within the polygon
+#         )
+#         data = data.rename(columns={'NOM_COURS_DEAU': 'watershed'})
+#         data = data.drop(columns=['index_right'])
+
+#     cols = list(data.columns)
+#     cols.insert(cols.index('shape_length'), cols.pop(cols.index('watershed')))
+#     data = data[cols]
+
+
+
+
+
+
+#     is_wgs84 = data.crs.to_epsg() == 4326
+#     if is_wgs84:
+#         print("The data is already in EPSG:4326 (WGS 84).")
+#         return data
+#     else:
+#         print("Reprojecting Data")
+#         reprojected_data = data.to_crs(epsg=4326)                       # Reprojecting the data
+#         reprojected_data.to_file("data", driver="GPKG", mode='w')
+#         return reprojected_data
