@@ -1,9 +1,7 @@
-from firecan_fx import fx_scrape_donneqc,fx_qc_processfiredata,fx_filter_fires_data,fx_download_json,fx_download_csv, fx_get_watershed_data# type: ignore
-from flask import Flask, jsonify, request, send_file  # type: ignore
+from firecan_fx import fx_scrape_donneqc,fx_qc_processfiredata,fx_filter_fires_data,fx_download_json,fx_download_csv
+from flask import Flask, jsonify, request
 import json
-from shapely.geometry import MultiPolygon 
-from shapely.ops import transform
-import io
+
 
 
 #### Loading in data, just QC at this point 
@@ -39,46 +37,7 @@ app = Flask(__name__, static_folder='static') # Specify the static folder
 
 @app.route('/fx_main', methods=['GET'])
 def fx_main():
-    # Get filter parameters from the URL query string
-    min_year = request.args.get('min_year', None)
-    max_year = request.args.get('max_year', None)
-    min_size = request.args.get('min_size', None)
-    max_size = request.args.get('max_size', None)
-    distance_coords = request.args.get('distance_coords', None)
-    distance_radius = request.args.get('distance_radius', None)
-    watershed_name = request.args.get('watershed_name', None)
-    is_download_requested = request.args.get('download', '0') == '1'
-    jsondownlaod = request.args.get('jsondownload', None)
-
-    print("Filtering Data")
-    # Filtering the data 
-    filtered_data = fx_filter_fires_data(
-                                            gdf_qc_fires,
-                                            min_year=min_year,
-                                            max_year=max_year,
-                                            min_size=min_size,
-                                            max_size=max_size,
-                                            distance_coords=distance_coords,
-                                            distance_radius=distance_radius,
-                                            watershed_name=watershed_name
-                                        )
-    print("Done Filtering Data")
-
-    
-
-    
-    if is_download_requested:
-        if jsondownlaod == "true":
-            return fx_download_json(filtered_data)
-        else:
-            return fx_download_csv(filtered_data)
-    else:    
-        print("Converting to geojson")
-        # Before converting ot geojson make sure to delete all unecessary columns 
-        geojson_data = json.loads(filtered_data.to_json())                    # Convert the filtered GeoDataFrame to GeoJSON
-        print("Done Converting to geojson")
-
-        return jsonify(geojson_data)                                          # Return the GeoJSON data as a JSON response
+    return jsonify(gdf_qc_fires)         # Return the GeoJSON data as a JSON response
 
 @app.route('/')
 def serve_html():

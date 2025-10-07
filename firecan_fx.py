@@ -1,17 +1,14 @@
-import os
 import zipfile
 import json
 import requests
 import geopandas as gpd
-from flask import Flask, jsonify, request, send_file  # type: ignore
+from flask import send_file  # type: ignore
 import io
 from pathlib import Path
 import pandas as pd
 from shapely.geometry import Point
 import fiona # type: ignore
 import numpy as np
-import math
-
 work_dir  = Path.cwd()
 
 
@@ -78,12 +75,14 @@ def fx_qc_processfiredata(beforepath, afterpath):
 
 
         print("Saving processed QC data to load in later")
-        merged_data.to_parquet(qc_processed_data_path)
+        merged_data.to_file(qc_processed_data_path, driver="GeoJSON")
+        # merged_data.to_parquet(qc_processed_data_path)
 
     else:
         print("The QC data is already processed, loading in now ...")
-        merged_data = gpd.read_parquet(qc_processed_data_path)
-
+        with open(qc_processed_data_path, "r", encoding="utf-8") as f:
+            merged_data = json.load(f)
+        # merged_data = gpd.read_parquet(qc_processed_data_path)
 
 
     return merged_data
