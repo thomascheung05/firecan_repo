@@ -17,6 +17,10 @@
                     <button onclick="loadFilteredData()">Filter Map</button>
                 </div>
 
+                <div id="loadingMessage" 
+                    style="display:none; text-align:center; margin:15px; font-weight:bold;">
+                </div>
+
                 <label for="minYear">Min Year:</label><input type="text" id="minYear" placeholder="e.g., 2010" >
                 <label for="maxYear">Max Year:</label><input type="text" id="maxYear" placeholder="e.g., 2023" >
                 <label for="minSize">Min Size:</label><input type="text" id="minSize" placeholder="e.g., 100">
@@ -25,7 +29,6 @@
                 <label for="distanceRadius">Radius (m):</label><input type="text" id="distanceRadius" placeholder="e.g., 5000">
                 <label for="watershedName">Watershed:</label><input type="text" id="watershedName" placeholder="e.g., Green River">
                 
-
                 <div class="downloadFilteredData">
                     <button onclick="downloadFilteredData()">Download Data</button>
                 </div>
@@ -35,9 +38,13 @@
                     <input type="checkbox" id="jsondownload" name="jsondownload" value="0">
                 </div>
 
+                <div id="downloadingMessage" 
+                    style="display:none; text-align:center; margin:15px; font-weight:bold;">
+                </div>
+
             </div>
 
-    
+                
         <div 
             id="map" 
             class="leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" 

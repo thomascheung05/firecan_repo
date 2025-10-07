@@ -127,9 +127,15 @@ def fx_filter_fires_data(
     filtered_gdf = fire_gdf.copy()
     conditions = []
 
-    if min_year  != "" and max_year  != "":
-        min_year = int(min_year)
-        max_year = int(max_year)
+    if min_year  != "" or max_year  != "":
+        if min_year  != "":
+            min_year = int(min_year)
+        else:
+             min_year = 0
+        if max_year  != "":
+            max_year= int(max_year)
+        else:
+             max_year = 100000
         conditions.append((filtered_gdf["an_origine"] >= min_year) & (filtered_gdf["an_origine"] <= max_year))
 
     if min_size  != "" or max_size  != "":
