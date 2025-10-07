@@ -10,6 +10,7 @@ import pandas as pd
 from shapely.geometry import Point
 import fiona # type: ignore
 import numpy as np
+import math
 
 work_dir  = Path.cwd()
 
@@ -40,12 +41,14 @@ def fx_scrape_donneqc(dataname, url, zipname, gpkgname): # Downloads the data (i
 
 
 def fx_qc_processfiredata(beforepath, afterpath): 
-    qc_processed_data_path = Path("qc_processed_data.gpkg")
 
+    qc_processed_data_folder_path = work_dir / "qc_processed_data"
+    qc_processed_data_path = qc_processed_data_folder_path / "qc_processed_data.parquet"
 
     if not qc_processed_data_path.exists():
         # Loads in before+after data, renames column to merge, merges, downlaods watersehd data, reproject data, merges fires and watershed data
         # Skip this code and load data direclty IF it exists AND It is reprojected AND it has watershed column 
+        qc_processed_data_folder_path.mkdir(parents=True, exist_ok=True)
         print("Loading in unprocessed fire data ... This may take a few minutes ...")
         before_data = gpd.read_file(beforepath, layer= "feux_anciens_prov")
         after_data = gpd.read_file(afterpath, layer= "feux_prov")
@@ -75,12 +78,11 @@ def fx_qc_processfiredata(beforepath, afterpath):
 
 
         print("Saving processed QC data to load in later")
-        merged_data.to_file("qc_processed_data.gpkg", driver="GPKG")
-
+        merged_data.to_parquet(qc_processed_data_path)
 
     else:
         print("The QC data is already processed, loading in now ...")
-        merged_data = gpd.read_file(qc_processed_data_path)
+        merged_data = gpd.read_parquet(qc_processed_data_path)
 
 
 
@@ -142,16 +144,18 @@ def fx_filter_fires_data(
         conditions.append((filtered_gdf["superficie"] >= min_size) & (filtered_gdf["superficie"] <= max_size))
 
     if distance_coords  != "" and distance_radius  != "":
+
             lat, lon = map(float, distance_coords.split(","))
             distance_radius = float(distance_radius)
             user_point = gpd.GeoSeries([Point(lon, lat)], crs="EPSG:4326")
-            user_point_proj = user_point.to_crs(filtered_gdf.crs)
-            buffer_geom = user_point_proj.buffer(distance_radius)
-            conditions.append(filtered_gdf.geometry.intersects(buffer_geom.iloc[0]))
+            utm_crs = user_point.estimate_utm_crs()  # automatically picks the UTM zone for your point
+            user_point_m = user_point.to_crs(utm_crs)
+            buffer_m = user_point_m.buffer(distance_radius)
+            buffer_deg = buffer_m.to_crs("EPSG:4326")
+            conditions.append(filtered_gdf.geometry.intersects(buffer_deg.iloc[0]))
 
-    if watershed_name  != "":
+    if watershed_name  != "": # This shit dont work
             gdf_watershed = fx_get_watershed_data()
-
             selected_ws = gdf_watershed[gdf_watershed['NOM_COURS_DEAU'] == watershed_name]
             if not selected_ws.empty:
                 ws_geom = selected_ws.geometry.unary_union

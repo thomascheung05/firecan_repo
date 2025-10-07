@@ -20,8 +20,8 @@ var OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{
 });
 
 
-OpenStreetMap_Mapnik.addTo(map);
-        
+// Esrimap.addTo(map);
+OpenStreetMap_Mapnik.addTo(map);   
 
 
 // The main function to fetch and display the filtered data
@@ -60,10 +60,10 @@ function loadFilteredData() {
 
                 style: function(feature) {
                     return {
-                        color: "black",
-                        weight: 1,
+                        color: "#FF0000",
+                        weight: 4,
                         opacity: 1,
-                        fillColor: "red",
+                        fillColor: "#FF0000",
                         fillOpacity: 0.5
                     };
                 },
