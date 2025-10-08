@@ -89,7 +89,7 @@ def fx_qc_processfiredata(beforepath, afterpath):                               
 
 
 
-def fx_get_watershed_data():                                                                                        # THis fuctnio gets the watershed data by using the scrap donne quebec function, it then reads it in, drops some columns, and reprojects it
+def fx_get_watershed_data():                                                                                        # THis function gets the watershed data by using the scrap donne quebec function, it then reads it in, drops some columns, and reprojects it
     print("Getting Watershed Data")
     url_watersheddata = 'https://stqc380donopppdtce01.blob.core.windows.net/donnees-ouvertes/Bassins_hydrographiques_multi_echelles/CE_bassin_multi.gdb.zip'
     watersheddata_zipname = "CE_bassin_multi.gdb.zip"
@@ -111,8 +111,8 @@ def fx_get_watershed_data():                                                    
 
 
 
-def fx_filter_fires_data(                                                                             # This is the function that actually filters the data, it takes in fire data (and watershed but removed it cuase brocken for now), as well as user inputs for filtering 
-    fire_gdf,
+def fx_filter_fires_data(                                                                             # This is the function that actually filters the data, it takes in fire data (and watershed but removed it cause brocken for now), as well as user inputs for filtering 
+    fire_gdf,                                                                                         # Nore sure if i already mentioned this but i used AI to help apply all the filters at once / apply only the ones the user inputed
     min_year,
     max_year,
     min_size,
@@ -195,11 +195,10 @@ def fx_download_json(filtered_data):                                            
 
 
 
-def fx_download_csv(filtered_data):     # Exact same thing as the last function but downloads as csv 
-                 # Drops geometry column        
+def fx_download_csv(filtered_data):     # Exact same thing as the last function but downloads as csv        
 
     csv_buffer = io.BytesIO()
-    filtered_data.drop(columns=['geometry'], errors='ignore').to_csv(csv_buffer, index=False, encoding="utf-8")
+    filtered_data.drop(columns=['geometry'], errors='ignore').to_csv(csv_buffer, index=False, encoding="utf-8")         # Drops geom column here too 
 
     csv_buffer.seek(0)
     

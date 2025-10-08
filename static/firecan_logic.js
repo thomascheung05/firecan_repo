@@ -1,4 +1,4 @@
-// This is my first time working in Java so its a big learning experinece for me. My dad has been working in java since it came out so he helped a lot with this script, in collaboratino with chatgpt. I'm having a hard time wrapping my head around Java as i feel the code executes very differently from python but i still have a relativley good unserstanding of what each line is doing 
+// This is my first time working in Java so its a big learning experinece for me. I'm having a hard time wrapping my head around Java as i feel the code executes very differently from python but i still have a relativley good unserstanding of what each line is doing 
 
 
 
@@ -15,7 +15,7 @@ var OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{
 });
 OpenStreetMap_Mapnik.addTo(map);   
 
-function loadFilteredData() {                                                                                          // This is the fuction that sends python the filtering conditions, and receives a filtered dataset that it then displays on the map 
+function loadFilteredData() {                                                                                          // This is the fuction that sends python the filtering conditions, and receives a filtered dataset that it then displays on the map, ai helped a lot with this and the function below this  
 
     const loadingEl = document.getElementById('loadingMessage');                                                       // This is for the message that says the data is downlaoding, AI helped me with this
     loadingEl.innerHTML = 'Loading data<br>This may take several minutes';
@@ -87,7 +87,7 @@ function loadFilteredData() {                                                   
 
 
 
-function downloadFilteredData() {
+function downloadFilteredData() {                                                                                       
 
     const downloadingEl = document.getElementById('downloadingMessage');                                               // Same message code as in the function above 
     downloadingEl.innerHTML = 'Downloading the data now<br>This may take several minutes';
