@@ -33,7 +33,7 @@ print("Data pre-loading complete. The app is now ready to serve requests.")
 # =========================================================
 # FLASK
 # =========================================================
-app = Flask(__name__, static_folder='static')                                                      # So this the FLASK which allows me to talk back and forth with my web page and my java script, honesly im very confused on how it works, this was set up for me by my friend (Jared Matthews), I mean i understand how the cord works and what each lines does (mostly) but not how it works as a whole, and a lot of the stuff on the java side really confuses me
+app = Flask(__name__, static_folder='static')                                                      # This starts FLASK which allows me to talk back and forth with my web page and my java script
 
 @app.route('/fx_main', methods=['GET'])
 def fx_main():                                                                                    # This is the main fuctino that is run when my python is called by Flask 

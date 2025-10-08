@@ -1,4 +1,4 @@
-// This is my first time working in Java so its a big learning experinece for me. I'm having a hard time wrapping my head around Java as i feel the code executes very differently from python but i still have a relativley good unserstanding of what each line is doing 
+// This is my first time working in Java so its a big learning experinece for me. I'm having a hard time wrapping my head around Java as i feel the code executes differently from python but i still have a relativley good unserstanding of what each line is doing 
 
 
 
@@ -101,7 +101,7 @@ function downloadFilteredData() {
     const distanceRadius = document.getElementById('distanceRadius').value;
     const watershedName = document.getElementById('watershedName').value;
     const jsondownload = document.getElementById('jsondownload').checked;
-                                                                                                                      // THis code largely does the same thing as the function above but instea of displaying the data I uses my python dowloand data functions to downalod the filtered data 
+                                                                                                                      // THis code largely does the same thing as the function above but instead of displaying the data I uses my python dowloand data functions to downalod the filtered data 
 
 
     const downloadURL = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&jsondownload=${jsondownload}&download=1`;

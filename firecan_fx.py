@@ -25,7 +25,7 @@ def fx_scrape_donneqc(dataname, url, zipname, gpkgname):                        
         print("Data does not exist, Downloading now, this may take several minutes ...")
         savefolder.mkdir(parents=True, exist_ok=True)
         print("Created folder:", savefolder)
-        response = requests.get(url)
+        response = requests.get(url)                                                                # AI showed me how to do this
         with open(zip_path, 'wb') as f:
             f.write(response.content)
         print("DONE Downloading the Data for", dataname) 
@@ -89,7 +89,7 @@ def fx_qc_processfiredata(beforepath, afterpath):                               
 
 
 
-def fx_get_watershed_data():                                                                                        # THis function gets the watershed data by using the scrap donne quebec function, it then reads it in, drops some columns, and reprojects it
+def fx_get_watershed_data():                                                                                        # This function gets the watershed data by using the scrap donne quebec function, it then reads it in, drops some columns, and reprojects it
     print("Getting Watershed Data")
     url_watersheddata = 'https://stqc380donopppdtce01.blob.core.windows.net/donnees-ouvertes/Bassins_hydrographiques_multi_echelles/CE_bassin_multi.gdb.zip'
     watersheddata_zipname = "CE_bassin_multi.gdb.zip"
@@ -154,14 +154,14 @@ def fx_filter_fires_data(                                                       
             utm_crs = user_point.estimate_utm_crs()                             
             user_point_m = user_point.to_crs(utm_crs)                                                             # This chanes the point to a projection that makes sense for its locatoin, we cannot have it in EPSG: 4326 becuase this projection cant measure distances in metres only in degrees 
             buffer_m = user_point_m.buffer(distance_radius)                                                         # This creates a buffer around the point with a radius that the user inputed 
-            buffer_deg = buffer_m.to_crs("EPSG:4326")                                                             # Here we reproject the buffer back to EPSG:4326 so leaflet can display it 
+            buffer_deg = buffer_m.to_crs("EPSG:4326")                                                             # Here we reproject the buffer back to EPSG:4326 so leaflet can display it, AI helped me construct this process but the logic behind it was mine, at first it wanted me to do a very roundabout way
             conditions.append(filtered_gdf.geometry.intersects(buffer_deg.iloc[0]))
 
     if watershed_name  != "":                                                                             # This shit dont work
             gdf_watershed = fx_get_watershed_data()
             selected_ws = gdf_watershed[gdf_watershed['NOM_COURS_DEAU'] == watershed_name]
             if not selected_ws.empty:
-                ws_geom = selected_ws.geometry.unary_union
+                ws_geom = selected_ws.geometry.unary_union                                                  # This from AI 
                 conditions.append(filtered_gdf.geometry.within(ws_geom))
             else:
                 print(f"No watershed found with name '{watershed_name}'. Filter will be ignored.")
@@ -175,7 +175,7 @@ def fx_filter_fires_data(                                                       
  
 
 
-def fx_download_json(filtered_data):                                                                        # This function is to dowload the filtered data as a geojson
+def fx_download_json(filtered_data):                                                                        # This function is to dowload the filtered data as a geojson, AI showed me how to do this as it is not as simple as just regularly saving the file as it must go through flask 
         geojson_data = json.loads(filtered_data.to_json())                                                            # converst the filtered data to geojson
         geojson_string = json.dumps(geojson_data) 
     
