@@ -195,9 +195,12 @@ def fx_download_json(filtered_data):                                            
 
 
 
-def fx_download_csv(filtered_data):                                                             # Exact same thing as the last function but downloads as csv 
+def fx_download_csv(filtered_data):     # Exact same thing as the last function but downloads as csv 
+                 # Drops geometry column        
+
     csv_buffer = io.BytesIO()
-    filtered_data.to_csv(csv_buffer, index=False, encoding="utf-8")
+    filtered_data.drop(columns=['geometry'], errors='ignore').to_csv(csv_buffer, index=False, encoding="utf-8")
+
     csv_buffer.seek(0)
     
     return send_file(                                                   
