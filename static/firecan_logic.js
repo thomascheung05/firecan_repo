@@ -18,8 +18,7 @@ OpenStreetMap_Mapnik.addTo(map);
 function loadFilteredData() {                                                                                          // This is the fuction that sends python the filtering conditions, and receives a filtered dataset that it then displays on the map, ai helped a lot with this and the function below this  
 
     const loadingEl = document.getElementById('loadingMessage');                                                       // This is for the message that says the data is downlaoding, AI helped me with this
-    loadingEl.innerHTML = 'Loading data<br>This may take several minutes';
-    loadingEl.style.display = 'block';                                                                                 // This lines displays the message, as by deafult it is hidden 
+    loadingEl.style.display = "block";                                                                               // This lines displays the message, as by deafult it is hidden 
                    
     if (fireLayer) {                                                                                                   // If there is arlready a layer of polygons remove it 
         map.removeLayer(fireLayer);
@@ -116,6 +115,7 @@ function downloadFilteredData() {
     downloadingEl.textContent = `File has been dowloaded`;                                                           // Same message code as in the function above 
     setTimeout(() => {
         downloadingEl.style.display = 'none';
-    }, 5000);
+    }, 10000);
 
 }
+

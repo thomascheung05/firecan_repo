@@ -1,14 +1,19 @@
 #sidebar  {
-  background-color: #000000;
+  background-color: #000000db;
 }
 
 
-#sidebar button, label {
+#sidebar label {
   font-family: Trebuchet MS, sans-serif;
-  font-size: 24px;
-  color: white; /* or any color you want */
+  font-size: 18px;
+  color: rgb(255, 255, 255); /* or any color you want */
 }
-
+#sidebar button {
+  font-family: Trebuchet MS, sans-serif;
+  font-size: 20px;
+  background-color: #cccccc;
+  color: rgb(0, 0, 0); /* or any color you want */
+}
 .form-check {
   display: flex;
   align-items: center; /* vertically centers the checkbox with text */
@@ -18,4 +23,18 @@
 
 .form-check-input {
   transform: scale(1.2); /* keep your bigger checkbox */
+}
+
+#resizer {
+  width: 5px;
+  cursor: col-resize;
+  background-color: #ccc;
+  height: 100vh;
+  float: left;
+}
+
+#loadingMessage {
+  background-color:  transparent;
+  color: rgb(255, 255, 255); 
+  padding: 8px 12px;  
 }
