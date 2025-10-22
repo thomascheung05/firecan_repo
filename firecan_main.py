@@ -70,7 +70,8 @@ def fx_main():                                                                  
             return fx_download_csv(filtered_data)
     else:    
         now = datetime.now().strftime('%H:%M:%S')                                                                                                 # IF download request is not true we are going to convert ot geojson and return it (send it) to my java script
-        print('Converting to geojson (',now,')')
+        print('Converting to geojson (',now,')',filtered_data.shape)
+        filtered_data["geometry"] = filtered_data["geometry"].simplify(tolerance=0.001, preserve_topology=True)         # add precision option to change how good the polygons look vs load time
         geojson_str = filtered_data.to_json()
         now = datetime.now().strftime('%H:%M:%S')                                                     # BOTTLENECK
         print('Done Converting to geojson (',now,')')
