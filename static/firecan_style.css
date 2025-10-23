@@ -6,14 +6,60 @@
 #sidebar label {
   font-family: Trebuchet MS, sans-serif;
   font-size: 18px;
-  color: rgb(255, 255, 255); /* or any color you want */
+  color: rgb(255, 255, 255); 
 }
+
+
 #sidebar button {
   font-family: Trebuchet MS, sans-serif;
   font-size: 20px;
   background-color: #cccccc;
-  color: rgb(0, 0, 0); /* or any color you want */
+  color: rgb(0, 0, 0); 
 }
+
+#sidebar #aboutButton {
+  background-color: #f8b600;
+  border-color: transparent;
+  width: 35px;
+}
+
+#sidebar #aboutSection {
+  color: rgb(255, 255, 255);
+}
+
+#sidebar #backButton {
+  width: 30%;
+  height: 30px;
+  font-size: 30px;
+  font-weight: bold;
+  background-color: #ffffff;
+  color: black;
+  display: flex;              /* make it a flex container */
+  align-items: center;        /* vertical center */
+  justify-content: center;    /* horizontal center */
+  padding: 0;                 /* override .btn padding if present */
+  line-height: 1;             /* avoid extra vertical offset */
+}
+
+.sidebar-separator {
+    border: none;               /* remove default HR styles */
+    height: 3px;                /* thickness of the line */
+    background-color: white;    /* color of the line */
+    opacity: 0.7;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 .form-check {
   display: flex;
   align-items: center; /* vertically centers the checkbox with text */
@@ -38,3 +84,10 @@
   color: rgb(255, 255, 255); 
   padding: 8px 12px;  
 }
+
+.star-marker {
+    color: black;
+    font-size: 24px;
+    text-shadow: 0 0 3px black;
+}
+

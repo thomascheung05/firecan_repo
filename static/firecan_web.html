@@ -6,69 +6,119 @@
     <title>FIRECAN</title>
     <link rel="stylesheet" href="./static/leaflet.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="firecan_style.css">
     <link rel="stylesheet" href="./static/firecan_style.css">
+    <link rel="stylesheet" href="firecan_style.css">
+
 </head>
 <body>
     <div class="container-fluid vh-100">
+
         <div class="row h-100">
-            <!-- Sidebar -->
+
             <div class="col-12 col-md-1 p-3 overflow-auto" id="sidebar">
-                <div class="d-grid gap-2 mb-3">
-                <button onclick="loadFilteredData()" class="btn" >Filter Map</button></div>
-                    <div id="loadingMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                        <p class="mt-2">Loading data<br>This may take several minutes...</p>
-                    </div>
-                <form>
-                    <div class="mb-3">
-                        <label for="minYear" class="form-label">Minimum Year</label>
-                        <input type="text" id="minYear" class="form-control" placeholder="e.g., 2010">
-                    </div>
-                    <div class="mb-3">
-                        <label for="maxYear" class="form-label">Maximum Year</label>
-                        <input type="text" id="maxYear" class="form-control" placeholder="e.g., 2023">
-                    </div>
-                    <div class="mb-3">
-                        <label for="minSize" class="form-label">Minimum Size</label>
-                        <input type="text" id="minSize" class="form-control" placeholder="e.g., 100">
-                    </div>
-                    <div class="mb-3">
-                        <label for="maxSize" class="form-label">Maximum Size</label>
-                        <input type="text" id="maxSize" class="form-control" placeholder="e.g., 5000">
-                    </div>
-                    <div class="mb-3">
-                        <label for="distanceCoords" class="form-label">Coordintes (lat, lon)</label>
-                        <input type="text" id="distanceCoords" class="form-control" placeholder="e.g., 45.5, -73.5">
-                    </div>
-                    <div class="mb-3">
-                        <label for="distanceRadius" class="form-label">Radius (m)</label>
-                        <input type="text" id="distanceRadius" class="form-control" placeholder="e.g., 5000">
-                    </div>
-                    <div class="mb-3">
-                        <label for="watershedName" class="form-label">Watershed</label>
-                        <input type="text" id="watershedName" class="form-control" placeholder="e.g., Green River">
-                    </div>
+
+                <div id="mainSidebarContent">
+
                     <div class="d-grid gap-2 mb-3">
-                        <button onclick="downloadFilteredData()" type="button" class="btn btn-success">Download Data</button>
+                    <button id="filterButton" onclick="loadFilteredData()">Filter Map</button>
                     </div>
-                    <div class="form-check mb-3">
-                    <input type="checkbox" id="jsondownload" name="jsondownload" value="0" class="form-check-input">
-                    <label for="jsondownload" class="form-check-label ms-2">Download as GeoJson?</label>
+                    <hr class="sidebar-separator">
+                    <form>  
+                        <div id="loadingMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading data<br>This may take several minutes...</p>
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="minYear" class="form-label">Minimum Year</label>
+                            <input type="text" id="minYear" class="form-control" placeholder="e.g., 2010">
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="maxYear" class="form-label">Maximum Year</label>
+                            <input type="text" id="maxYear" class="form-control" placeholder="e.g., 2023">
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="minSize" class="form-label">Minimum Size</label>
+                            <input type="text" id="minSize" class="form-control" placeholder="e.g., 100">
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="maxSize" class="form-label">Maximum Size</label>
+                            <input type="text" id="maxSize" class="form-control" placeholder="e.g., 5000">
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="distanceCoords" class="form-label">Coordintes (lat, lon)</label>
+                            <input type="text" id="distanceCoords" class="form-control" placeholder="e.g., 45.5, -73.5">
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="distanceRadius" class="form-label">Radius (km)</label>
+                            <input type="text" id="distanceRadius" class="form-control" placeholder="e.g., 5000">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="watershedName" class="form-label">Watershed</label>
+                            <input type="text" id="watershedName" class="form-control" placeholder="e.g., Green River">
+                        </div>
+                        
+                        <hr class="sidebar-separator">
+
+                        <div class="mb-1">
+                            <label for="downloadFormat" class="form-label">Download Format</label>
+                            <select id="downloadFormat" class="form-select">
+                                <option value="csv" selected>CSV</option>
+                                <option value="json">GeoJSON</option>
+                                <option value="gpkg">GPKG (GeoPackage)</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2 mb-3">
+                            <button id="downloadButton" onclick="downloadFilteredData()" type="button">Download Data</button>
+                        </div>
+
+
+                        <div id="downloadingMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading data<br>This may take several minutes...</p>
+                        </div>
+
+                    </form>
+
+                    <hr class="sidebar-separator">
+
+                    <div class="d-grid gap-2 mb-3">
+                    <button id="aboutButton" class="btn btn-light">?</button>
                     </div>
-                </form>
-                <div id="downloadingMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-2">Loading data<br>This may take several minutes...</p>
+
                 </div>
+
+
+                
+                <div id="aboutSection" style="display:none;">
+                    <button id="backButton" class="btn btn-secondary mb-3">←</button>
+                    <h4>About FIRECAN</h4>
+                    <p>
+                        FIRECAN is an interactive web tool that allows users to explore historical
+                        wildfire data by filtering according to year, size, distance, and watershed.
+                        Use the filters to visualize patterns and relationships between wildfire 
+                        activity and the landscape.
+                    </p>
+                </div>
+
+
             </div>
-            <div id="resizer"></div>  <!-- Add this line -->
-            <!-- Map Area -->
+
+            <div id="resizer"></div>  
+
             <div class="col p-0" id="map" style="height: 100vh; min-height: 400px;"></div>
+
         </div>
     </div>
     <script src="./static/leaflet.js"></script>
@@ -101,6 +151,21 @@
       document.removeEventListener("mouseup", stopResize, false);
     }
     </script>
+    <script>
+        const aboutButton = document.getElementById("aboutButton");
+        const backButton = document.getElementById("backButton");
+        const mainSidebarContent = document.getElementById("mainSidebarContent");
+        const aboutSection = document.getElementById("aboutSection");
 
+        aboutButton.addEventListener("click", () => {
+            mainSidebarContent.style.display = "none";
+            aboutSection.style.display = "block";
+        });
+
+        backButton.addEventListener("click", () => {
+            aboutSection.style.display = "none";
+            mainSidebarContent.style.display = "block";
+        });
+    </script>
 </body>
 </html>

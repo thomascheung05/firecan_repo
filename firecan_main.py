@@ -1,7 +1,7 @@
-from firecan_fx import fx_scrape_donneqc,fx_qc_processfiredata,fx_filter_fires_data,fx_download_json,fx_download_csv# type: ignore
+from firecan_fx import fx_scrape_donneqc,fx_qc_processfiredata,fx_filter_fires_data,fx_download_json,fx_download_csv, fx_download_gpkg# type: ignore
 from flask import Flask, request # type: ignore
 from datetime import datetime
-
+import json
 
 
 
@@ -44,10 +44,10 @@ def fx_main():                                                                  
     distance_radius = request.args.get('distance_radius', None)
     watershed_name = request.args.get('watershed_name', None)
     is_download_requested = request.args.get('download', '0') == '1'                                      # Checks if we should be displaying data or downloading it
-    jsondownlaod = request.args.get('jsondownload', None)
+    downloadformat = request.args.get('downloadFormat', None)
 
     print('Filtering Data')                                                                                 # Uses the filtering fire function to return a dataset with only the fires the user wants 
-    filtered_data = fx_filter_fires_data(
+    filtered_data, userpoint, bufferdeg = fx_filter_fires_data(
                                             gdf_qc_fires,
                                             gdf_qc_watershed_data,
                                             min_year=min_year,
@@ -59,25 +59,36 @@ def fx_main():                                                                  
                                             watershed_name=watershed_name
                                         )
     print('Done Filtering Data')
-
     
 
     
     if is_download_requested:                                                                                 # If downlaod request is tru we are going to run one of the downloading fucntions
-        if jsondownlaod == 'true':
+        if downloadformat == 'json':
             return fx_download_json(filtered_data)
-        else:
+        elif downloadformat == 'csv':
             return fx_download_csv(filtered_data)
-    else:    
+        elif downloadformat == 'gpkg':
+            return fx_download_gpkg(filtered_data)
+    else:
         now = datetime.now().strftime('%H:%M:%S')                                                                                                 # IF download request is not true we are going to convert ot geojson and return it (send it) to my java script
         print('Converting to geojson (',now,')',filtered_data.shape)
         filtered_data["geometry"] = filtered_data["geometry"].simplify(tolerance=0.001, preserve_topology=True)         # add precision option to change how good the polygons look vs load time
-        geojson_str = filtered_data.to_json()
+        geojson_fires = json.loads(filtered_data.to_json())
         now = datetime.now().strftime('%H:%M:%S')                                                     # BOTTLENECK
-        print('Done Converting to geojson (',now,')')
-        return geojson_str
-                                   
+        print('Done Converting to geojson (',now,')')    
 
+        geojson_point = json.loads(userpoint.to_json()) if userpoint is not None else None
+        geojson_buffer = json.loads(bufferdeg.to_json()) if bufferdeg is not None else None
+
+        combined_geojson = {
+            "fires": geojson_fires,
+            "user_point": geojson_point,
+            "user_buffer": geojson_buffer
+        }
+
+        return json.dumps(combined_geojson)
+
+                                
 @app.route('/')
 def serve_html():
     return app.send_static_file('firecan_web.html')

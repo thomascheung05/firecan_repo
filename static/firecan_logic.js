@@ -15,6 +15,17 @@ var OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{
 });
 OpenStreetMap_Mapnik.addTo(map);   
 
+
+
+
+
+
+
+
+
+
+
+
 function loadFilteredData() {                                                                                          // This is the fuction that sends python the filtering conditions, and receives a filtered dataset that it then displays on the map, ai helped a lot with this and the function below this  
 
     const loadingEl = document.getElementById('loadingMessage');                                                       // This is for the message that says the data is downlaoding, AI helped me with this
@@ -38,12 +49,32 @@ function loadFilteredData() {                                                   
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-                console.log("Data successfully received and processed:");
+            console.log("Data successfully received and processed:");
             return response.json();
         })
         .then(data => {                                                                                                 // Using the data we just go we dispaly it on the leaflet map 
+            // Display user point
+            if (data.user_point) {
+                L.geoJSON(data.user_point, {
+                    pointToLayer: (feature, latlng) => {
+                        const starIcon = L.divIcon({
+                            html: "★",
+                            className: "star-marker",
+                            iconSize: [60, 60],
+                            iconAnchor: [10, 10]
+                        });
+                        return L.marker(latlng, { icon: starIcon });
+                    }
+                }).addTo(map);
+            }
+            // Display buffer
+            if (data.user_buffer) {
+                L.geoJSON(data.user_buffer, {
+                    style: { color: 'black', weight: 3, fillOpacity: 0.1 }
+                }).addTo(map);
+            }   
 
-            fireLayer = L.geoJSON(data, {
+            fireLayer = L.geoJSON(data.fires, {
 
                 style: function(feature) {                                                                               // THis styles the polygons that are displayed on the map 
                     return {
@@ -68,7 +99,8 @@ function loadFilteredData() {                                                   
 
             }).addTo(map);                                                                                            // This part actually adds everything above to map 
             
-            
+    
+
             const fireCount = data.features ? data.features.length : 0;
             loadingEl.textContent = `${fireCount} fires matched your criteria.`;                                       // This displays a message after the data has been loaded in it tell the user how many fires matched their criteria. THis is useful as it signals when data is loading / done loading (good for big datasets) and also tells the user if there were no fires that matches their criterai (so they are not confused by empty map)
             setTimeout(() => {                                                                                         // THis removes the message after 5 seconds 
@@ -99,11 +131,11 @@ function downloadFilteredData() {
     const distanceCoords = document.getElementById('distanceCoords').value;
     const distanceRadius = document.getElementById('distanceRadius').value;
     const watershedName = document.getElementById('watershedName').value;
-    const jsondownload = document.getElementById('jsondownload').checked;
+    const downloadFormat = document.getElementById('downloadFormat').value;
                                                                                                                       // THis code largely does the same thing as the function above but instead of displaying the data I uses my python dowloand data functions to downalod the filtered data 
 
 
-    const downloadURL = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&jsondownload=${jsondownload}&download=1`;
+    const downloadURL = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&downloadFormat=${downloadFormat}&download=1`;
     
     const a = document.createElement('a');                                                                            // This code here is what actually downlaods the data, I understand what it does but not really how it works, reddit has been telling me this a good way to downlaod data through a web app 
     a.href = downloadURL;

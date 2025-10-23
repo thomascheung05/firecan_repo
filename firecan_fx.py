@@ -184,6 +184,7 @@ def fx_filter_fires_data(                                                       
     if distance_coords  != '' and distance_radius  != '':                                                     # The is the distance radius filtering that only selects fires within a radius of a point 
             lat, lon = map(float, distance_coords.split(','))       
             distance_radius = float(distance_radius)
+            distance_radius = distance_radius*1000
             user_point = gpd.GeoSeries([Point(lon, lat)], crs='EPSG:4326')                                    # This creates the point based ont he user inputed coords 
             utm_crs = user_point.estimate_utm_crs()                             
             user_point_m = user_point.to_crs(utm_crs)                                                             # This chanes the point to a projection that makes sense for its locatoin, we cannot have it in EPSG: 4326 becuase this projection cant measure distances in metres only in degrees 
@@ -202,17 +203,22 @@ def fx_filter_fires_data(                                                       
     if conditions:
         combined_mask = np.logical_and.reduce(conditions)                                                         # The combined filtered conditions
         filtered_gdf = filtered_gdf[combined_mask]                                                                # Filtering the dataset and returning with the right fitlers 
-        
-    return filtered_gdf
+
+    if distance_coords  != '' and distance_radius  != '':   
+        print(user_point)
+        print(buffer_deg)   
+        return filtered_gdf, user_point, buffer_deg
+    else:
+        return filtered_gdf, None, None
 
  
 
 
-def fx_download_json(filtered_data):                                                                        # This function is to dowload the filtered data as a geojson, AI showed me how to do this as it is not as simple as just regularly saving the file as it must go through flask 
+def fx_download_json(filtered_data):    
+                                                                            # This function is to dowload the filtered data as a geojson, AI showed me how to do this as it is not as simple as just regularly saving the file as it must go through flask 
         geojson_data = json.loads(filtered_data.to_json())                                                            # converst the filtered data to geojson
         geojson_string = json.dumps(geojson_data) 
-    
-        geojson_buffer = io.BytesIO(geojson_string.encode('utf-8'))                                             # Create an in-memory buffer to hold the file content
+        geojson_buffer = io.BytesIO(geojson_string.encode('utf-8'))   
         geojson_buffer.seek(0)
         
         return send_file(                                                                                       # Send the file back to the browser as an attachment
@@ -244,4 +250,17 @@ def fx_download_csv(filtered_data):     # Exact same thing as the last function 
     ) 
 
 
+def fx_download_gpkg(filtered_data):
+    gpkg_buffer = io.BytesIO()  
+
+    filtered_data.to_file(gpkg_buffer, driver="GPKG")
+
+    gpkg_buffer.seek(0) 
+
+    return send_file(
+        gpkg_buffer,
+        mimetype='application/geopackage+sqlite3',
+        as_attachment=True,
+        download_name='firecan_filtered_data.gpkg'
+    )
 
