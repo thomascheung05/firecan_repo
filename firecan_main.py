@@ -1,4 +1,4 @@
-from firecan_fx import fx_scrape_donneqc,fx_qc_processfiredata,fx_filter_fires_data,fx_download_json,fx_download_csv, fx_download_gpkg# type: ignore
+from firecan_fx import fx_scrape_donneqc,fx_qc_processfiredata,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg# type: ignore
 from flask import Flask, request # type: ignore
 from datetime import datetime
 import json
@@ -69,13 +69,11 @@ def fx_main():                                                                  
             return fx_download_csv(filtered_data)
         elif downloadformat == 'gpkg':
             return fx_download_gpkg(filtered_data)
-    else:
-        now = datetime.now().strftime('%H:%M:%S')                                                                                                 # IF download request is not true we are going to convert ot geojson and return it (send it) to my java script
-        print('Converting to geojson (',now,')',filtered_data.shape)
+    else:                                                                                       # IF download request is not true we are going to convert ot geojson and return it (send it) to my java script
+        print('Converting to geojson (',timenow(),')',filtered_data.shape)
         filtered_data["geometry"] = filtered_data["geometry"].simplify(tolerance=0.001, preserve_topology=True)         # add precision option to change how good the polygons look vs load time
-        geojson_fires = json.loads(filtered_data.to_json())
-        now = datetime.now().strftime('%H:%M:%S')                                                     # BOTTLENECK
-        print('Done Converting to geojson (',now,')')    
+        geojson_fires = json.loads(filtered_data.to_json())                                                     # BOTTLENECK
+        print('Done Converting to geojson (',timenow(),')')    
 
         geojson_point = json.loads(userpoint.to_json()) if userpoint is not None else None
         geojson_buffer = json.loads(bufferdeg.to_json()) if bufferdeg is not None else None

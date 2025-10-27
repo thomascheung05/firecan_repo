@@ -2,38 +2,49 @@
 
 
 
+// Create base layers
+var Esrimap = L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  { maxZoom: 18, attribution: 'Tiles © Esri' }
+); // Esri imagery [web:50]
+
+var OpenStreetMap_Mapnik = L.tileLayer(
+  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+); 
+
+// Initialize map with default base
+var map = L.map('map', {
+  center: [52.520878, -69.855725],
+  zoom: 5,
+  layers: [OpenStreetMap_Mapnik]
+}); 
+
+// Register basemaps in the control
+var baseLayers = {
+  'OpenStreetMap': OpenStreetMap_Mapnik,
+  'Esri World Imagery': Esrimap
+}; 
+
+// Add the control at top-right
+L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map); 
+
+
+
+
+
 var fireLayer;
-
-var map = L.map('map').setView([52.520878, -69.855725], 4.5);                                                          // Sets initial view for the amp 
-var Esrimap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {    // ESRI sattelite image base map 
-    maxZoom: 18,
-    attribution: 'Tiles © Esri',
-});
-var OpenStreetMap_Mapnik = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {                             // Whack open street view map 
-	maxZoom: 19,
-	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-});
-OpenStreetMap_Mapnik.addTo(map);   
-
-
-
-
-
-
-
-
-
-
-
-
+var userPointLayer;
+var userBufferLayer;
 function loadFilteredData() {                                                                                          // This is the fuction that sends python the filtering conditions, and receives a filtered dataset that it then displays on the map, ai helped a lot with this and the function below this  
 
     const loadingEl = document.getElementById('loadingMessage');                                                       // This is for the message that says the data is downlaoding, AI helped me with this
     loadingEl.style.display = "block";                                                                               // This lines displays the message, as by deafult it is hidden 
                    
-    if (fireLayer) {                                                                                                   // If there is arlready a layer of polygons remove it 
-        map.removeLayer(fireLayer);
-    }
+    if (fireLayer) { map.removeLayer(fireLayer); fireLayer = null; }   // remove old fires [web:3]
+    if (userPointLayer) { map.removeLayer(userPointLayer); userPointLayer = null; } // remove old point [web:4]
+    if (userBufferLayer) { map.removeLayer(userBufferLayer); userBufferLayer = null; } // remove old buffer [web:4]
+
 
     const minYear = document.getElementById('minYear').value;                                                          // This takes the inputs form the HTML and assings it to varibles in java 
     const maxYear = document.getElementById('maxYear').value;
@@ -55,7 +66,7 @@ function loadFilteredData() {                                                   
         .then(data => {                                                                                                 // Using the data we just go we dispaly it on the leaflet map 
             // Display user point
             if (data.user_point) {
-                L.geoJSON(data.user_point, {
+                userPointLayer = L.geoJSON(data.user_point, {
                     pointToLayer: (feature, latlng) => {
                         const starIcon = L.divIcon({
                             html: "★",
@@ -69,13 +80,12 @@ function loadFilteredData() {                                                   
             }
             // Display buffer
             if (data.user_buffer) {
-                L.geoJSON(data.user_buffer, {
+                userBufferLayer = L.geoJSON(data.user_buffer, {
                     style: { color: 'black', weight: 3, fillOpacity: 0.1 }
                 }).addTo(map);
             }   
 
             fireLayer = L.geoJSON(data.fires, {
-
                 style: function(feature) {                                                                               // THis styles the polygons that are displayed on the map 
                     return {
                         color: "#FF0000",
@@ -85,7 +95,6 @@ function loadFilteredData() {                                                   
                         fillOpacity: 0.5                                                                                 // Lower opacity looks better, and helps distinguish from polygon fill and border on map (useful when many polygons are next to each other)
                     };
                 },
-
                 onEachFeature: function(feature, layer) {                                                               // This creates a pop up when clicking on polygons that say the year and its size, this was half taken from Ottowa demo and half AI.
                     if (feature.properties) {                   
                         let popupContent = `
@@ -101,7 +110,7 @@ function loadFilteredData() {                                                   
             
     
 
-            const fireCount = data.features ? data.features.length : 0;
+            const fireCount = data.fires.features ? data.fires.features.length : 0;
             loadingEl.textContent = `${fireCount} fires matched your criteria.`;                                       // This displays a message after the data has been loaded in it tell the user how many fires matched their criteria. THis is useful as it signals when data is loading / done loading (good for big datasets) and also tells the user if there were no fires that matches their criterai (so they are not confused by empty map)
             setTimeout(() => {                                                                                         // THis removes the message after 5 seconds 
                 loadingEl.style.display = 'none';

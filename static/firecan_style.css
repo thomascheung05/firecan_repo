@@ -1,5 +1,8 @@
 #sidebar  {
   background-color: #000000db;
+  height: 100vh;          /* lock to viewport height */
+  overflow-y: auto;       /* scroll inside the sidebar */
+  overflow-x: hidden;     /* avoid horizontal scrollbars */
 }
 
 
@@ -18,7 +21,7 @@
 }
 
 #sidebar #aboutButton {
-  background-color: #f8b600;
+  background-color: #f4f800;
   border-color: transparent;
   width: 35px;
 }
@@ -50,33 +53,11 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-.form-check {
-  display: flex;
-  align-items: center; /* vertically centers the checkbox with text */
-  justify-content: left; /* aligns everything to the left */
-  gap: 1px; /* small space between label and checkbox */
-}
-
-.form-check-input {
-  transform: scale(1.2); /* keep your bigger checkbox */
-}
-
 #resizer {
-  width: 5px;
-  cursor: col-resize;
-  background-color: #ccc;
+  width: 4px;
   height: 100vh;
-  float: left;
+  cursor: col-resize;
+  background: #000000db;
 }
 
 #loadingMessage {

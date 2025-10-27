@@ -15,7 +15,7 @@
 
         <div class="row h-100">
 
-            <div class="col-12 col-md-1 p-3 overflow-auto" id="sidebar">
+            <div class="col-12 col-md-1 p-3" id="sidebar">
 
                 <div id="mainSidebarContent">
 
@@ -81,11 +81,11 @@
                             <button id="downloadButton" onclick="downloadFilteredData()" type="button">Download Data</button>
                         </div>
 
-
                         <div id="downloadingMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">
                             <div class="spinner-border text-primary" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
+
                             <p class="mt-2">Loading data<br>This may take several minutes...</p>
                         </div>
 
@@ -125,31 +125,31 @@
     <script src="./static/firecan_logic.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    const resizer = document.getElementById("resizer");
-    const sidebar = document.getElementById("sidebar");
-    let x = 0;
-    let sidebarWidth = 0;
+        const resizer = document.getElementById("resizer");
+        const sidebar = document.getElementById("sidebar");
+        let x = 0;
+        let sidebarWidth = 0;
 
-    resizer.addEventListener("mousedown", (e) => {
-      x = e.clientX;
-      sidebarWidth = sidebar.offsetWidth;
+        resizer.addEventListener("mousedown", (e) => {
+          x = e.clientX;
+          sidebarWidth = sidebar.offsetWidth;
 
-      document.addEventListener("mousemove", resize, false);
-      document.addEventListener("mouseup", stopResize, false);
-    });
+          document.addEventListener("mousemove", resize, false);
+          document.addEventListener("mouseup", stopResize, false);
+        });
 
-    function resize(e) {
-      const dx = e.clientX - x;
-      const newWidth = sidebarWidth + dx;
-      if (newWidth > 150 && newWidth < 600) { // set min/max widths
-        sidebar.style.width = `${newWidth}px`;
-      }
-    }
+        function resize(e) {
+          const dx = e.clientX - x;
+          const newWidth = sidebarWidth + dx;
+          if (newWidth > 150 && newWidth < 600) { // set min/max widths
+            sidebar.style.width = `${newWidth}px`;
+          }
+        }
 
-    function stopResize() {
-      document.removeEventListener("mousemove", resize, false);
-      document.removeEventListener("mouseup", stopResize, false);
-    }
+        function stopResize() {
+          document.removeEventListener("mousemove", resize, false);
+          document.removeEventListener("mouseup", stopResize, false);
+        }
     </script>
     <script>
         const aboutButton = document.getElementById("aboutButton");
@@ -165,6 +165,16 @@
         backButton.addEventListener("click", () => {
             aboutSection.style.display = "none";
             mainSidebarContent.style.display = "block";
+        });
+    </script>
+    <script>
+        map.on('click', function(e) {
+        const lat = e.latlng.lat.toFixed(6);
+        const lon = e.latlng.lng.toFixed(6); // Leaflet uses .lng; labeling as lon is fine for display
+        L.popup()
+            .setLatLng(e.latlng)
+            .setContent(`${lat}, ${lon}`)
+            .openOn(map);
         });
     </script>
 </body>
