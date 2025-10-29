@@ -16,6 +16,7 @@ import geopandas as gpd
 from shapely.geometry import shape, Polygon, MultiPolygon, mapping
 from pathlib import Path
 from datetime import datetime
+import sys
 work_dir  = Path.cwd()
 
                                                                                         # A lot of the code here is pretty simple data manipulaiton mostly filtering
@@ -63,16 +64,22 @@ def fx_scrape_ontariogeohub(url, dataname):
 
     if not data_path.exists(): 
         print(f'Data does not exist for {dataname}, Downloading now, this may take several minutes ...', timenow())         
-        savefolder.mkdir(parents=True, exist_ok=True)
-        ids_response = requests.get(
-            url,
-            params={
-                "where": "1=1",
-                "returnIdsOnly": "true",
-                "f": "json"
-            }
-        )
-        ids = ids_response.json()["objectIds"]
+
+        try:
+            ids_response = requests.get(
+                url,
+                params={
+                    "where": "1=1",
+                    "returnIdsOnly": "true",
+                    "f": "json"
+                }
+            )
+            ids = ids_response.json()["objectIds"]
+        except:
+            print("Could Not acces Ontario Geohub, their API sucks :(, Unprocessed Onatio Fire Data is available on the git hub, put the .parquet file in the data/ontario_fires folder and run again))")
+            sys.exit()
+
+        
 
         print('Fetching Data form Ontario Geohub', timenow())
         all_feats = []
@@ -118,6 +125,8 @@ def fx_scrape_ontariogeohub(url, dataname):
         print('Done Getting Data, Saving Now', timenow())
 
         # Step 3 — Create GeoDataFrame
+        savefolder.mkdir(parents=True, exist_ok=True)
+
         gdf = gpd.GeoDataFrame(all_feats, geometry="geometry", crs="EPSG:4326")
         print('Data Saved', timenow())
         gdf.to_parquet(data_path) 
