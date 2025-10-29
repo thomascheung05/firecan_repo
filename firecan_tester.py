@@ -1,0 +1,6 @@
+import geopandas as gpd
+from firecan_fx import fx_get_qc_fire_data,fx_get_on_fire_data, fx_scrape_ontariogeohub,fx_scrape_donneqc,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
+
+# fx_get_on_fire_data()
+
+fx_get_qc_fire_data()
