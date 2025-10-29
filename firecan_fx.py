@@ -60,8 +60,10 @@ def fx_get_qc_watershed_data():                                                 
     if not qc_watershed_data_path.exists():
         layers = fiona.listlayers(qcwatershed_unzipped_file_path)
         watershed_data = gpd.read_file(qcwatershed_unzipped_file_path, layer=layers[1])
-        watershed_data = watershed_data.drop(columns=['NO_COURS_DEAU', 'NOM_COURS_DEAU_MINUSCULE', 'NIVEAU_BASSIN', 'ECHELLE', 'SUPERF_KM2', 'NO_SEQ_BV_PRIMAIRE', 'NOM_BV_PRIMAIRE', 'NO_REG_HYDRO', 'NOM_REG_HYDRO_ABREGE', 'Shape_Length', 'Shape_Area']) # might want shape length and share area later
-        
+        watershed_data = watershed_data[watershed_data['NIVEAU_BASSIN'] == 1]
+        watershed_data = watershed_data.drop(columns=['NO_COURS_DEAU','NO_SEQ_COURS_DEAU','IDENTIFICATION_COMPLETE', 'NOM_COURS_DEAU_MINUSCULE', 'NIVEAU_BASSIN', 'ECHELLE', 'SUPERF_KM2', 'NO_SEQ_BV_PRIMAIRE', 'NOM_BV_PRIMAIRE', 'NO_REG_HYDRO', 'NOM_REG_HYDRO_ABREGE', 'Shape_Length', 'Shape_Area']) # might want shape length and share area later
+        watershed_data = watershed_data[watershed_data['NOM_COURS_DEAU'].notna() & (watershed_data['NOM_COURS_DEAU'].str.strip() != "")]
+
         print('Reprojecting Watershed data Time:', timenow())
         is_wgs84 = watershed_data.crs.to_epsg() == 4326
         if is_wgs84:
@@ -81,17 +83,25 @@ def fx_get_qc_watershed_data():                                                 
         
 
 
-def fx_qc_processfiredata(beforepath, afterpath):                                                  # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
+def fx_get_qc_fire_data():                                                  # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
+    url_qcfires_after76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_PROV_GPKG.zip'
+    qcfires_after76_zipname = 'FEUX_PROV_GPKG.zip'                                                          # In this case both zip names are the same but must still specify it in the fuctino so we can use the fuction for other datasets like the watershed data
+    qcfires_after76_gpkgname = 'FEUX_PROV.gpkg'
+    url_qcfires_before76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_ANCIENS_PROV_GPKG.zip'
+    qcfires_before76_zipname = 'FEUX_PROV_GPKG.zip'
+    qcfires_before76_gpkgname = 'FEUX_ANCIENS_PROV.gpkg'
+    qcfires_before76_unzipped_file_path = fx_scrape_donneqc('qcfires_before76', url_qcfires_before76, qcfires_before76_zipname, qcfires_before76_gpkgname)
+    qcfires_after76_unzipped_file_path = fx_scrape_donneqc('qcfires_after76', url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
 
     qc_processed_data_folder_path = work_dir / 'qc_processed_data'
-    qc_processed_data_path = qc_processed_data_folder_path / 'qc_processed_data.parquet'
+    qc_processed_data_path = qc_processed_data_folder_path / 'qc_processed_fire_data.parquet'
 
     if not qc_processed_data_path.exists():
 
         qc_processed_data_folder_path.mkdir(parents=True, exist_ok=True)
         print('Loading in unprocessed fire data ... This may take a few minutes ...')
-        before_data = gpd.read_file(beforepath, layer= 'feux_anciens_prov')
-        after_data = gpd.read_file(afterpath, layer= 'feux_prov')
+        before_data = gpd.read_file(qcfires_before76_unzipped_file_path, layer= 'feux_anciens_prov')
+        after_data = gpd.read_file(qcfires_after76_unzipped_file_path, layer= 'feux_prov')
 
         after_data = after_data.drop(columns=['exercice', 'origine', 'met_at_str', 'shape_length', 'shape_area'])        # might want shape length and share area later
         before_data = before_data.drop(columns=['exercice', 'origine', 'met_at_str', 'shape_length', 'shape_area'])        # might want shape length and share area later
@@ -100,10 +110,7 @@ def fx_qc_processfiredata(beforepath, afterpath):                               
         before_data = before_data.rename(columns={'geoc_fan': 'geoc'})
         after_data = after_data.rename(columns={'geoc_fmj': 'geoc'})
         after_data = after_data.drop(columns=['perturb', 'an_perturb', 'part_str'])
-        merged_data = gpd.GeoDataFrame(
-            pd.concat([before_data, after_data], ignore_index=True),
-            geometry='geometry'  
-        )
+        merged_data = gpd.GeoDataFrame(pd.concat([before_data, after_data], ignore_index=True),geometry='geometry'  )
         merged_data['an_origine'] = pd.to_numeric(merged_data['an_origine'], errors='coerce')
         merged_data['superficie'] = pd.to_numeric(merged_data['superficie'], errors='coerce')
 
@@ -124,9 +131,8 @@ def fx_qc_processfiredata(beforepath, afterpath):                               
         print('...............The QC data is already processed, loading in now ...')
         merged_data = gpd.read_parquet(qc_processed_data_path)
     
-    watershed_data = fx_get_qc_watershed_data()
 
-    return merged_data, watershed_data
+    return merged_data
 
 
 
@@ -193,8 +199,10 @@ def fx_filter_fires_data(                                                       
         if watershed_name  != '':                                                                             # This shit dont work
                 selected_ws = watershed_data[watershed_data['NOM_COURS_DEAU'] == watershed_name]
                 if not selected_ws.empty:
-                    ws_geom = selected_ws.geometry.unary_union                                                  # This from AI 
-                    conditions.append(filtered_gdf.geometry.within(ws_geom))
+                    print('Starting Watershed Filtering', timenow())
+                    watershed_polygon = selected_ws.geometry.unary_union                                                  # This from AI 
+                    conditions.append(filtered_gdf.geometry.within(watershed_polygon))
+                    print('Done Watershed Filtering', timenow())
                 else:
                     print(f'No watershed found with name "{watershed_name}". Filter will be ignored.')
 

@@ -1,4 +1,4 @@
-from firecan_fx import fx_scrape_donneqc,fx_qc_processfiredata,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg# type: ignore
+from firecan_fx import fx_scrape_donneqc,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
 from flask import Flask, request # type: ignore
 from datetime import datetime
 import json
@@ -6,27 +6,9 @@ import json
 
 
 print('Starting data pre-loading. This may take a few minutes...')                                      # This section here loads in the data, it uses the scrap donne quebec function and the process qc fire data fuction
-
-url_qcfires_after76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_PROV_GPKG.zip'
-qcfires_after76_zipname = 'FEUX_PROV_GPKG.zip'                                                          # In this case both zip names are the same but must still specify it in the fuctino so we can use the fuction for other datasets like the watershed data
-qcfires_after76_gpkgname = 'FEUX_PROV.gpkg'
-url_qcfires_before76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_ANCIENS_PROV_GPKG.zip'
-qcfires_before76_zipname = 'FEUX_PROV_GPKG.zip'
-qcfires_before76_gpkgname = 'FEUX_ANCIENS_PROV.gpkg'
-qcfires_before76_unzipped_file_path = fx_scrape_donneqc('qcfires_before76', url_qcfires_before76, qcfires_before76_zipname, qcfires_before76_gpkgname)
-qcfires_after76_unzipped_file_path = fx_scrape_donneqc('qcfires_after76', url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
-
-
-gdf_qc_fires, gdf_qc_watershed_data = fx_qc_processfiredata(qcfires_before76_unzipped_file_path,qcfires_after76_unzipped_file_path)
-
-
+gdf_qc_fires = fx_get_qc_fire_data()
+gdf_qc_watershed_data = fx_get_qc_watershed_data()
 print('Data pre-loading complete. The app is now ready to serve requests.')
-
-
-
-
-
-
 
 
 # =========================================================
