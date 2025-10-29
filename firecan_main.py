@@ -32,13 +32,21 @@ def fx_main():                                                                  
     distance_coords = request.args.get('distance_coords', None)
     distance_radius = request.args.get('distance_radius', None)
     watershed_name = request.args.get('watershed_name', None)
+    qcprovinceflag = request.args.get('qcprovinceflag', None)
+    onprovinceflag = request.args.get('onprovinceflag', None)    
     is_download_requested = request.args.get('download', '0') == '1'                                      # Checks if we should be displaying data or downloading it
     downloadformat = request.args.get('downloadFormat', None)
+    print(onprovinceflag)
+    print(type(onprovinceflag))
+    print(qcprovinceflag)
+    print(type(qcprovinceflag))
 
     print('Filtering Data')                                                                                 # Uses the filtering fire function to return a dataset with only the fires the user wants 
     filtered_data, userpoint, bufferdeg = fx_filter_fires_data(
                                             gdf_fires,
                                             gdf_qc_watershed_data,
+                                            qcprovinceflag,
+                                            onprovinceflag,
                                             min_year=min_year,
                                             max_year=max_year,
                                             min_size=min_size,

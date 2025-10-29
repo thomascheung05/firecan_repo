@@ -13,18 +13,99 @@ var OpenStreetMap_Mapnik = L.tileLayer(
   { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
 ); 
 
+var OpenCycleMap = L.tileLayer(
+  'https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+); 
+
+var Transport = L.tileLayer(
+  'https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+); 
+
+
+var Landscape = L.tileLayer(
+  'https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+); 
+
+
+var Outdoors = L.tileLayer(
+  'https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+); 
+
+
+var SpinalMap = L.tileLayer(
+  'https://tile.thunderforest.com/spinal-map/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+); 
+
+
+var TransportDark = L.tileLayer(
+  'https://tile.thunderforest.com/transport-dark/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+); 
+
+
+var Pioneer = L.tileLayer(
+  'https://tile.thunderforest.com/pioneer/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+); 
+
+
+var MobileAtlas = L.tileLayer(
+  'https://tile.thunderforest.com/mobile-atlas/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+); 
+
+
+var Neighbourhood = L.tileLayer(
+  'https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+); 
+
+
+var Atlas = L.tileLayer(
+  'hhttps://tile.thunderforest.com/atlas/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Initialize map with default base
 var map = L.map('map', {
   center: [52.520878, -69.855725],
   zoom: 5,
-  layers: [OpenStreetMap_Mapnik]
+  layers: [TransportDark]
 }); 
 
 // Register basemaps in the control
 var baseLayers = {
   'OpenStreetMap': OpenStreetMap_Mapnik,
-  'Esri World Imagery': Esrimap
-}; 
+  'OpenCycleMap': OpenCycleMap,
+  'Transport': Transport,
+  'Landscape': Landscape,
+  'Outdoors': Outdoors,
+  'SpinalMap': SpinalMap,
+  'TransportDark': TransportDark,
+  'Pioneer': Pioneer,
+  'MobileAtlas': MobileAtlas,
+  'Neighbourhood': Neighbourhood,
+  'Atlas': Atlas
+};
 
 // Add the control at top-right
 L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map); 
@@ -53,7 +134,9 @@ function loadFilteredData() {                                                   
     const distanceCoords = document.getElementById('distanceCoords').value;
     const distanceRadius = document.getElementById('distanceRadius').value;
     const watershedName = document.getElementById('watershedName').value;
-    const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}`;
+    const qcprovinceflag = document.getElementById('quebeccheckbox').value;
+    const onprovinceflag = document.getElementById('ontariocheckbox').value;    
+    const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&qcprovinceflag=${qcprovinceflag}&onprovinceflag=${onprovinceflag}`;
                                                                                                                         // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
     fetch(url)                                                                                                          // This is the part that sends the URL to python, python then filters the data and sends back a filtered dataset
         .then(response => {

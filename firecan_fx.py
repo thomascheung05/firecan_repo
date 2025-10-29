@@ -253,6 +253,7 @@ def fx_get_qc_fire_data():                                                  # Lo
         merged_data = merged_data.rename(columns={'an_origine': 'fire_year'})
         merged_data = merged_data.rename(columns={'superficie': 'fire_size'})
         merged_data["province"] = "qc"
+        
         merged_data = repojectdata(merged_data, 4326)
 
 
@@ -281,7 +282,9 @@ def fx_merge_provincial_fires(qcfires, onfires):
 
 def fx_filter_fires_data(                                                                             # This is the function that actually filters the data, it takes in fire data (and watershed but removed it cause brocken for now), as well as user inputs for filtering 
     fire_gdf,      
-    watershed_data,                                                                                   # Nore sure if i already mentioned this but i used AI to help apply all the filters at once / apply only the ones the user inputed
+    watershed_data, 
+    qcprovinceflag,
+    onprovinceflag,                                                                                                                                                                    # Nore sure if i already mentioned this but i used AI to help apply all the filters at once / apply only the ones the user inputed
     min_year,
     max_year,
     min_size,
@@ -290,7 +293,7 @@ def fx_filter_fires_data(                                                       
     distance_radius,
     watershed_name
     ):
-    filtered_gdf = fire_gdf.copy()
+    filtered_gdf = fire_gdf[fire_gdf['province'].isin([qcprovinceflag, onprovinceflag])]
     conditions = []     # This is a list of the filtering conditions so they can all be applied at once 
     
     if min_year == '' and max_year == '' and min_size == '' and max_size == '' and distance_coords == '' and distance_radius == '' and watershed_name == '':                                                                             

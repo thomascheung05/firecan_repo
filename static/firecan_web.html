@@ -31,6 +31,16 @@
                             <p class="mt-2">Loading data<br>This may take several minutes...</p>
                         </div>
 
+                        <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="quebeccheckbox" value="qc" checked>
+                        <label class="form-check-label" for="checkbox1">QC</label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="ontariocheckbox" value="on" checked>
+                        <label class="form-check-label" for="checkbox2">ON</label>
+                        </div>
+
                         <div class="mb-2">
                             <label for="minYear" class="form-label">Minimum Year</label>
                             <input type="text" id="minYear" class="form-control" placeholder="e.g., 2010">
@@ -104,12 +114,24 @@
                 <div id="aboutSection" style="display:none;">
                     <button id="backButton" class="btn btn-secondary mb-3">←</button>
                     <h4>About FIRECAN</h4>
+                    <p><strong>Firecan</strong> is a collection of historical forest fires data in Canada.</p>
+
+                    <p>Currently, Firecan supports <strong>Quebec</strong> and <strong>Ontario</strong>.</p>
+
                     <p>
-                        FIRECAN is an interactive web tool that allows users to explore historical
-                        wildfire data by filtering according to year, size, distance, and watershed.
-                        Use the filters to visualize patterns and relationships between wildfire 
-                        activity and the landscape.
+                        Input your desired filters and click <strong>"Filter Map"</strong> to see your fires on the map.<br>
+                        Change the basemap using the pop-up in the top right of the map.<br>
+                        Download filtered data by entering your desired filters, choosing a format, and then clicking <strong>"Download Data"</strong>.<br>
+                        To see all available watersheds, click on the <strong>Watershed Explorer</strong>.
                     </p>
+
+                    <p><strong>Data Sources:</strong></p>
+                    <ul>
+                        <li>Quebec Fires: <a href="https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec" target="_blank">https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec</a></li>
+                        <li>Quebec Watersheds: <a href="https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec" target="_blank">https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec</a></li>
+                        <li>Ontario Fires: <a href="https://data.ontario.ca/dataset/fire-disturbance-area-firedstb" target="_blank">https://data.ontario.ca/dataset/fire-disturbance-area-firedstb</a></li>
+                    </ul>
+
                 </div>
 
 
