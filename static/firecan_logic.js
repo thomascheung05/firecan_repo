@@ -99,8 +99,8 @@ function loadFilteredData() {                                                   
                     if (feature.properties) {                   
                         let popupContent = `
                             <b>Fire Details</b><br>
-                            Year: ${feature.properties.an_origine}<br>
-                            Size: ${feature.properties.superficie} ha
+                            Year: ${feature.properties.fire_year}<br>
+                            Size: ${feature.properties.fire_size} ha
                         `;
                         layer.bindPopup(popupContent);
                     }

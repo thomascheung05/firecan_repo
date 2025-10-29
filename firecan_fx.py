@@ -10,6 +10,12 @@ import pandas as pd
 from shapely.geometry import Point
 import fiona 
 import numpy as np
+import requests
+import json
+import geopandas as gpd
+from shapely.geometry import shape, Polygon, MultiPolygon, mapping
+from pathlib import Path
+from datetime import datetime
 work_dir  = Path.cwd()
 
                                                                                         # A lot of the code here is pretty simple data manipulaiton mostly filtering
@@ -24,13 +30,112 @@ def timenow():
 
 
 
+
+
+def repojectdata(data, targetcrs):
+    print('Reprojecting Data (',timenow(),')')
+    is_targercrs = data.crs.to_epsg() == targetcrs
+
+    if is_targercrs:
+        print(f'The data is already in {targetcrs}')
+        return data
+    else:
+        data = data.to_crs(targetcrs)    
+        print('The data has been reprojectd (',timenow(),')')    
+        return data
+
+
+
+
+
+def create_data_folder():
+    data_folder_path = work_dir / 'data'
+    if not data_folder_path.exists(): 
+        data_folder_path.mkdir(parents=True, exist_ok=True)
+
+
+
+
+
+def fx_scrape_ontariogeohub(url, dataname):
+    savefolder = work_dir / "data" / dataname
+    data_path = savefolder / f"unprocessed_{dataname}.parquet"
+
+    if not data_path.exists(): 
+        print(f'Data does not exist for {dataname}, Downloading now, this may take several minutes ...', timenow())         
+        savefolder.mkdir(parents=True, exist_ok=True)
+        ids_response = requests.get(
+            url,
+            params={
+                "where": "1=1",
+                "returnIdsOnly": "true",
+                "f": "json"
+            }
+        )
+        ids = ids_response.json()["objectIds"]
+
+        print('Fetching Data form Ontario Geohub', timenow())
+        all_feats = []
+        chunk_size = 500
+
+        for i in range(0, len(ids), chunk_size):
+            batch = ids[i:i + chunk_size]
+            res = requests.post(
+                url,
+                data={
+                    "objectIds": ",".join(map(str, batch)),
+                    "outFields": "*",
+                    "outSR": 4326,
+                    "returnGeometry": "true",
+                    "f": "json"
+                }
+            ).json()
+
+
+
+            features = res.get("features", [])
+            for feat in features:
+                geom_data = feat.get("geometry")
+                props = feat.get("attributes", {})
+
+                # Convert Esri JSON → Shapely geometry
+                geom = None
+                if geom_data:
+                    try:
+                        if "rings" in geom_data:  # Polygon
+                            geom = Polygon(geom_data["rings"][0])
+                        elif "paths" in geom_data:  # Polyline
+                            geom = shape({"type": "LineString", "coordinates": geom_data["paths"][0]})
+                        elif "x" in geom_data and "y" in geom_data:  # Point
+                            geom = shape({"type": "Point", "coordinates": [geom_data["x"], geom_data["y"]]})
+                    except Exception as e:
+                        print("⚠️ Geometry conversion failed for one feature:", e)
+                        continue
+
+                if geom:
+                    props["geometry"] = geom
+                    all_feats.append(props)
+        print('Done Getting Data, Saving Now', timenow())
+
+        # Step 3 — Create GeoDataFrame
+        gdf = gpd.GeoDataFrame(all_feats, geometry="geometry", crs="EPSG:4326")
+        print('Data Saved', timenow())
+        gdf.to_parquet(data_path) 
+    else:
+        print('The data is already downloaded')
+    return data_path
+
+
+
+
+
 def fx_scrape_donneqc(dataname, url, zipname, gpkgname):                                           # Scraps donne quebec to get quebef fire data, outputs the path to the data file
-    savefolder = work_dir / dataname
+    savefolder = work_dir / "data" / dataname
     zip_path = savefolder / zipname                                                                # Name of zip file depends on the data being dowloaded, for fire data its the same but not for watershed data
     unzipped_file_path = savefolder / gpkgname                                                     # This differs between quebec fire data, and also watershed data set
 
-    if not unzipped_file_path.exists():                                                            # Checks if the GPKG file exists, if not it will create a folder and downlaod it 
-        print('Data does not exist, Downloading now, this may take several minutes ...')
+    if not unzipped_file_path.exists():        # Checks if the GPKG file exists, if not it will create a folder and downlaod it 
+        print(f'Data does not exist for {dataname}, Downloading now, this may take several minutes ...', timenow())         
         savefolder.mkdir(parents=True, exist_ok=True)
         print('Created folder:', savefolder)
         response = requests.get(url)                                                                # AI showed me how to do this
@@ -39,11 +144,14 @@ def fx_scrape_donneqc(dataname, url, zipname, gpkgname):                        
         print('DONE Downloading the Data for', dataname) 
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:                                            # The data come in a zipfile so must unzip it
             zip_ref.extractall(savefolder)
-        print('DONE! unzipping the data, data is located in', zip_path)
+        print('DONE! unzipping the data, data is located in', zip_path, timenow())
     else:                                                                                          # If it already exists we do nothing as we already created the path that needs to be returned outside of the IF 
         print('....................This Dataset is already Downloaded', dataname)                
 
     return unzipped_file_path
+
+
+
 
 
 def fx_get_qc_watershed_data():                                                                                        # This function gets the watershed data by using the scrap donne quebec function, it then reads it in, drops some columns, and reprojects it
@@ -54,7 +162,7 @@ def fx_get_qc_watershed_data():                                                 
 
     qcwatershed_unzipped_file_path = fx_scrape_donneqc('qcwatershed_data', url_watersheddata, watersheddata_zipname, watersheddata_fgdbname)                   
         
-    qc_processed_data_folder_path = work_dir / 'qc_processed_data'
+    qc_processed_data_folder_path = work_dir / "data" / 'qc_processed_data'
     qc_watershed_data_path = qc_processed_data_folder_path / 'qc_watershed_data.parquet'
 
     if not qc_watershed_data_path.exists():
@@ -63,13 +171,14 @@ def fx_get_qc_watershed_data():                                                 
         watershed_data = watershed_data[watershed_data['NIVEAU_BASSIN'] == 1]
         watershed_data = watershed_data.drop(columns=['NO_COURS_DEAU','NO_SEQ_COURS_DEAU','IDENTIFICATION_COMPLETE', 'NOM_COURS_DEAU_MINUSCULE', 'NIVEAU_BASSIN', 'ECHELLE', 'SUPERF_KM2', 'NO_SEQ_BV_PRIMAIRE', 'NOM_BV_PRIMAIRE', 'NO_REG_HYDRO', 'NOM_REG_HYDRO_ABREGE', 'Shape_Length', 'Shape_Area']) # might want shape length and share area later
         watershed_data = watershed_data[watershed_data['NOM_COURS_DEAU'].notna() & (watershed_data['NOM_COURS_DEAU'].str.strip() != "")]
-
-        print('Reprojecting Watershed data Time:', timenow())
-        is_wgs84 = watershed_data.crs.to_epsg() == 4326
-        if is_wgs84:
-            print('The data is already in EPSG:4326 (WGS 84).')
-        else:
-            watershed_data = watershed_data.to_crs(epsg=4326)  
+        
+        watershed_data = repojectdata(watershed_data, 4326)
+        # print('Reprojecting Watershed data Time:', timenow())
+        # is_wgs84 = watershed_data.crs.to_epsg() == 4326
+        # if is_wgs84:
+        #     print('The data is already in EPSG:4326 (WGS 84).')
+        # else:
+        #     watershed_data = watershed_data.to_crs(epsg=4326)  
 
         print('Saving Watershed Data for Later Time:',timenow())
         watershed_data.to_parquet(qc_watershed_data_path)  
@@ -80,7 +189,36 @@ def fx_get_qc_watershed_data():                                                 
 
     return watershed_data
 
+
+
+
+
+def fx_get_on_fire_data():
+    ontario_fires_URL = "https://ws.lioservices.lrc.gov.on.ca/arcgis2/rest/services/LIO_OPEN_DATA/LIO_Open09/MapServer/28/query"
+    data_path = fx_scrape_ontariogeohub(ontario_fires_URL, 'ontario_fires')
+
+    on_processed_data_folder_path = work_dir / "data" / 'on_processed_data'
+    on_processed_data_path = on_processed_data_folder_path / 'on_processed_fire_data.parquet'
+
+    if not on_processed_data_path.exists():
+        on_processed_data_folder_path.mkdir(parents=True, exist_ok=True)
+        print('Loading in unprocessed fire data ... This may take a few minutes ...', timenow())
+        data = gpd.read_parquet(data_path)
+        print('Done Loading in Data', timenow())
+        data = data[["FIRE_YEAR", "FIRE_FINAL_SIZE", "geometry"]]
+        data = data.rename(columns={"FIRE_YEAR": "fire_year"})
+        data = data.rename(columns={"FIRE_FINAL_SIZE": "fire_size"})
+        data["province"] = "on"
+        data = repojectdata(data, 4326)
         
+        data.to_parquet(on_processed_data_path) 
+    else:
+        print('Onatario data set was alreayd processed, loading in now')
+        data = gpd.read_parquet(on_processed_data_path)
+    return data
+
+
+
 
 
 def fx_get_qc_fire_data():                                                  # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
@@ -93,7 +231,7 @@ def fx_get_qc_fire_data():                                                  # Lo
     qcfires_before76_unzipped_file_path = fx_scrape_donneqc('qcfires_before76', url_qcfires_before76, qcfires_before76_zipname, qcfires_before76_gpkgname)
     qcfires_after76_unzipped_file_path = fx_scrape_donneqc('qcfires_after76', url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
 
-    qc_processed_data_folder_path = work_dir / 'qc_processed_data'
+    qc_processed_data_folder_path = work_dir / "data" / 'qc_processed_data'
     qc_processed_data_path = qc_processed_data_folder_path / 'qc_processed_fire_data.parquet'
 
     if not qc_processed_data_path.exists():
@@ -103,25 +241,19 @@ def fx_get_qc_fire_data():                                                  # Lo
         before_data = gpd.read_file(qcfires_before76_unzipped_file_path, layer= 'feux_anciens_prov')
         after_data = gpd.read_file(qcfires_after76_unzipped_file_path, layer= 'feux_prov')
 
-        after_data = after_data.drop(columns=['exercice', 'origine', 'met_at_str', 'shape_length', 'shape_area'])        # might want shape length and share area later
-        before_data = before_data.drop(columns=['exercice', 'origine', 'met_at_str', 'shape_length', 'shape_area'])        # might want shape length and share area later
+        after_data = after_data.drop(columns=['geoc_fmj','exercice', 'origine', 'met_at_str', 'shape_length', 'shape_area'])        # might want shape length and share area later
+        before_data = before_data.drop(columns=['geoc_fan','exercice', 'origine', 'met_at_str', 'shape_length', 'shape_area'])        # might want shape length and share area later
 
         print('Merging the data')
-        before_data = before_data.rename(columns={'geoc_fan': 'geoc'})
-        after_data = after_data.rename(columns={'geoc_fmj': 'geoc'})
+
         after_data = after_data.drop(columns=['perturb', 'an_perturb', 'part_str'])
         merged_data = gpd.GeoDataFrame(pd.concat([before_data, after_data], ignore_index=True),geometry='geometry'  )
         merged_data['an_origine'] = pd.to_numeric(merged_data['an_origine'], errors='coerce')
         merged_data['superficie'] = pd.to_numeric(merged_data['superficie'], errors='coerce')
-
-
-        print('Reprojecting Fire data (',timenow(),')')
-        is_wgs84 = merged_data.crs.to_epsg() == 4326
-        if is_wgs84:
-            print('The data is already in EPSG:4326 (WGS 84).')
-        else:
-            merged_data = merged_data.to_crs(epsg=4326)    
-            print('The data has been reprojectd (',timenow(),')')
+        merged_data = merged_data.rename(columns={'an_origine': 'fire_year'})
+        merged_data = merged_data.rename(columns={'superficie': 'fire_size'})
+        merged_data["province"] = "qc"
+        merged_data = repojectdata(merged_data, 4326)
 
 
         print('Saving processed QC data to load in later')
@@ -130,11 +262,18 @@ def fx_get_qc_fire_data():                                                  # Lo
     else:                                                                                                               # If there fire data is already processed we just load it in here
         print('...............The QC data is already processed, loading in now ...')
         merged_data = gpd.read_parquet(qc_processed_data_path)
-    
 
     return merged_data
 
 
+
+
+
+def fx_merge_provincial_fires(qcfires, onfires):
+    combined_gdf = pd.concat([qcfires, onfires], ignore_index=True)
+
+    combined_gdf = gpd.GeoDataFrame(combined_gdf, geometry='geometry', crs=qcfires.crs)
+    return combined_gdf
 
 
 
@@ -157,7 +296,7 @@ def fx_filter_fires_data(                                                       
     if min_year == '' and max_year == '' and min_size == '' and max_size == '' and distance_coords == '' and distance_radius == '' and watershed_name == '':                                                                             
         min_year = 1903
         max_year = 1903
-        conditions.append((filtered_gdf['an_origine'] >= min_year) & (filtered_gdf['an_origine'] <= max_year)) 
+        conditions.append((filtered_gdf['fire_year'] >= min_year) & (filtered_gdf['fire_year'] <= max_year)) 
         combined_mask = np.logical_and.reduce(conditions)                                                         
         filtered_gdf = filtered_gdf[combined_mask]
         return filtered_gdf, None, None
@@ -172,7 +311,7 @@ def fx_filter_fires_data(                                                       
                 max_year= int(max_year)
             else:
                 max_year = 100000
-            conditions.append((filtered_gdf['an_origine'] >= min_year) & (filtered_gdf['an_origine'] <= max_year))      # This appends the condition to the filtering list to be applied later 
+            conditions.append((filtered_gdf['fire_year'] >= min_year) & (filtered_gdf['fire_year'] <= max_year))      # This appends the condition to the filtering list to be applied later 
 
         if min_size  != '' or max_size  != '':
             if min_size  != '':
@@ -183,7 +322,7 @@ def fx_filter_fires_data(                                                       
                 max_size= int(max_size)
             else:
                 min_size = 100000
-            conditions.append((filtered_gdf['superficie'] >= min_size) & (filtered_gdf['superficie'] <= max_size))
+            conditions.append((filtered_gdf['fire_size'] >= min_size) & (filtered_gdf['fire_size'] <= max_size))
 
         if distance_coords  != '' and distance_radius  != '':                                                     # The is the distance radius filtering that only selects fires within a radius of a point 
                 lat, lon = map(float, distance_coords.split(','))       
@@ -215,6 +354,7 @@ def fx_filter_fires_data(                                                       
         else:
             return filtered_gdf, None, None
 
+
  
 
 
@@ -238,6 +378,7 @@ def fx_download_json(filtered_data):
 
 
 
+
 def fx_download_csv(filtered_data):     # Exact same thing as the last function but downloads as csv        
 
     csv_buffer = io.BytesIO()
@@ -252,6 +393,9 @@ def fx_download_csv(filtered_data):     # Exact same thing as the last function 
         as_attachment=True,
         download_name='firecan_filtered_data.csv'
     ) 
+
+
+
 
 
 def fx_download_gpkg(filtered_data):

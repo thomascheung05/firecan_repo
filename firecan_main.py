@@ -1,14 +1,21 @@
-from firecan_fx import fx_scrape_donneqc,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
+from firecan_fx import fx_merge_provincial_fires,timenow,fx_get_on_fire_data,create_data_folder,fx_scrape_donneqc,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
 from flask import Flask, request # type: ignore
 from datetime import datetime
 import json
 
+create_data_folder()
 
-
-print('Starting data pre-loading. This may take a few minutes...')                                      # This section here loads in the data, it uses the scrap donne quebec function and the process qc fire data fuction
+print('------------------------Starting data pre-loading. This may take a few minutes...', timenow(),'------------------------')                                      # This section here loads in the data, it uses the scrap donne quebec function and the process qc fire data fuction
 gdf_qc_fires = fx_get_qc_fire_data()
 gdf_qc_watershed_data = fx_get_qc_watershed_data()
-print('Data pre-loading complete. The app is now ready to serve requests.')
+
+gdf_on_fires = fx_get_on_fire_data()
+
+
+gdf_fires = fx_merge_provincial_fires(gdf_qc_fires, gdf_on_fires)
+print('------------------------Data pre-loading complete. The app is now ready to serve requests.', timenow(),'------------------------')
+
+
 
 
 # =========================================================
@@ -30,7 +37,7 @@ def fx_main():                                                                  
 
     print('Filtering Data')                                                                                 # Uses the filtering fire function to return a dataset with only the fires the user wants 
     filtered_data, userpoint, bufferdeg = fx_filter_fires_data(
-                                            gdf_qc_fires,
+                                            gdf_fires,
                                             gdf_qc_watershed_data,
                                             min_year=min_year,
                                             max_year=max_year,
