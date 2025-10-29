@@ -26,6 +26,12 @@
   width: 35px;
 }
 
+#sidebar #watershedexplorerbutton {
+  background-color: #0004f8;
+  border-color: transparent;
+  width: 35px;
+}
+
 #sidebar #aboutSection {
   color: rgb(255, 255, 255);
 }
@@ -72,3 +78,42 @@
     text-shadow: 0 0 3px black;
 }
 
+
+
+
+
+
+
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+}
+
+/* Center the map inside the modal */
+#watershedMap {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    background-color: white;
+}
+
+.close {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}

@@ -89,12 +89,13 @@ var Atlas = L.tileLayer(
 var map = L.map('map', {
   center: [52.520878, -69.855725],
   zoom: 5,
-  layers: [TransportDark]
+  layers: [Transport]
 }); 
 
 // Register basemaps in the control
 var baseLayers = {
   'OpenStreetMap': OpenStreetMap_Mapnik,
+  'Esrimap': Esrimap,
   'OpenCycleMap': OpenCycleMap,
   'Transport': Transport,
   'Landscape': Landscape,
@@ -188,7 +189,6 @@ function loadFilteredData() {                                                   
                         layer.bindPopup(popupContent);
                     }
                 },
-
             }).addTo(map);                                                                                            // This part actually adds everything above to map 
             
     

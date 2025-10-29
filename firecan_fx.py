@@ -76,7 +76,7 @@ def fx_scrape_ontariogeohub(url, dataname):
             )
             ids = ids_response.json()["objectIds"]
         except:
-            print("Could Not acces Ontario Geohub, their API sucks :(, Unprocessed Onatio Fire Data is available on the git hub, put the .parquet file in the data/ontario_fires folder and run again))")
+            print("Could Not acces Ontario Geohub, their API sucks :(, Unprocessed Ontario Fire Data is available on the git hub, put the .parquet file in the data/ontario_fires folder and run again))")
             sys.exit()
 
         
@@ -173,8 +173,9 @@ def fx_get_qc_watershed_data():                                                 
         
     qc_processed_data_folder_path = work_dir / "data" / 'qc_processed_data'
     qc_watershed_data_path = qc_processed_data_folder_path / 'qc_watershed_data.parquet'
+    qc_watershed_data_path_json = work_dir/ 'static' / 'qc_watershed_data.geojson'
 
-    if not qc_watershed_data_path.exists():
+    if not qc_watershed_data_path.exists() or not qc_watershed_data_path_json.exists():
         layers = fiona.listlayers(qcwatershed_unzipped_file_path)
         watershed_data = gpd.read_file(qcwatershed_unzipped_file_path, layer=layers[1])
         watershed_data = watershed_data[watershed_data['NIVEAU_BASSIN'] == 1]
@@ -189,7 +190,9 @@ def fx_get_qc_watershed_data():                                                 
         # else:
         #     watershed_data = watershed_data.to_crs(epsg=4326)  
 
-        print('Saving Watershed Data for Later Time:',timenow())
+        print('Saving Watershed Data for Later This may take long if we must conver to GeojsonTime:',timenow())
+
+        watershed_data.to_file(qc_watershed_data_path_json, driver="GeoJSON")
         watershed_data.to_parquet(qc_watershed_data_path)  
         
     else:
@@ -222,7 +225,7 @@ def fx_get_on_fire_data():
         
         data.to_parquet(on_processed_data_path) 
     else:
-        print('Onatario data set was alreayd processed, loading in now')
+        print('Ontario data set was already processed, loading in now')
         data = gpd.read_parquet(on_processed_data_path)
     return data
 
@@ -365,6 +368,14 @@ def fx_filter_fires_data(                                                       
             return filtered_gdf, user_point, buffer_deg
         else:
             return filtered_gdf, None, None
+
+
+
+
+def fx_createexploremap(data, map_name):
+    m = data.explore()
+    m.save(f'static/{map_name}.html')
+
 
 
  

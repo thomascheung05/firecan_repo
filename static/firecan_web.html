@@ -107,6 +107,10 @@
                     <button id="aboutButton" class="btn btn-light">?</button>
                     </div>
 
+                    <div class="d-grid gap-2 mb-3">
+                    <button id="watershedExplorerButton" class="btn btn-light">U+1F4A7</button>
+                    </div>
+
                 </div>
 
 
@@ -118,12 +122,7 @@
 
                     <p>Currently, Firecan supports <strong>Quebec</strong> and <strong>Ontario</strong>.</p>
 
-                    <p>
-                        Input your desired filters and click <strong>"Filter Map"</strong> to see your fires on the map.<br>
-                        Change the basemap using the pop-up in the top right of the map.<br>
-                        Download filtered data by entering your desired filters, choosing a format, and then clicking <strong>"Download Data"</strong>.<br>
-                        To see all available watersheds, click on the <strong>Watershed Explorer</strong>.
-                    </p>
+                    <p>Input your desired filters and click <strong>"Filter Map"</strong> to see your fires on the map.<br>Change the basemap using the pop-up in the top right of the map.<br>Download filtered data by entering your desired filters, choosing a format, and then clicking <strong>"Download Data"</strong>.<br>To see all available watersheds, click on the <strong>Watershed Explorer</strong>.</p>
 
                     <p><strong>Data Sources:</strong></p>
                     <ul>
@@ -142,6 +141,12 @@
             <div class="col p-0" id="map" style="height: 100vh; min-height: 400px;"></div>
 
         </div>
+
+        <div id="watershedModal" class="modal">
+            <span class="close">&times;</span>
+            <div id="watershedMap"></div>
+        </div>
+
     </div>
     <script src="./static/leaflet.js"></script>
     <script src="./static/firecan_logic.js"></script>
@@ -187,6 +192,89 @@
         backButton.addEventListener("click", () => {
             aboutSection.style.display = "none";
             mainSidebarContent.style.display = "block";
+        });
+    </script>
+    <script>
+        const watershedButton = document.getElementById("watershedExplorerButton");
+        const modal = document.getElementById("watershedModal");
+        const closeBtn = document.querySelector(".close");
+
+        let watershedMap = null;
+        let watershedLayer = null;
+        let watershedData = null;
+
+        fetch("/static/qc_watershed_data.geojson")  // your static file
+            .then(res => res.json())
+            .then(data => {
+                watershedData = data;  // store it for later use
+        })
+        .catch(err => console.error("Failed to load watershed data", err));
+
+        watershedButton.addEventListener("click", () => {
+            modal.style.display = "block";
+
+
+            if (!watershedMap) {
+                // Initialize the map only once
+                watershedMap = L.map('watershedMap').setView([45.5, -73.5], 8);  // change coordinates/zoom
+
+                // Add base tile layer
+                Esrimap = L.tileLayer(
+                'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                { maxZoom: 18, attribution: 'Tiles © Esri' }
+                ).addTo(watershedMap);
+
+                // Add watershed GeoJSON if loaded
+            if (watershedData) {
+            watershedLayer = L.geoJSON(watershedData, {
+                style: function(feature) {                                                                               // THis styles the polygons that are displayed on the map 
+                    return {
+                        color: "#031cfc",
+                        weight: 4,                                                                                       // Big weight to make the polygons visible from zoomed out 
+                        opacity: 1,
+                        fillColor: "#031cfc",
+                        fillOpacity: 0.5                                                                                 // Lower opacity looks better, and helps distinguish from polygon fill and border on map (useful when many polygons are next to each other)
+                    };
+                },
+                onEachFeature: function(feature, layer) {                                                               // This creates a pop up when clicking on polygons that say the year and its size, this was half taken from Ottowa demo and half AI.
+                    if (feature.properties) {                   
+                        let popupContent = `
+                            <b>Watershed Details</b><br>
+                            Watershed: ${feature.properties.NOM_COURS_DEAU}<br>
+                        `;
+                        layer.bindPopup(popupContent);
+                    }
+                },
+            }).addTo(watershedMap);
+
+
+
+
+
+
+            watershedMap.fitBounds(watershedLayer.getBounds());
+            } else {
+            console.warn("Watershed data not ready yet.");
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+            } else {
+                // In case the map was already initialized but hidden
+                watershedMap.invalidateSize(); 
+            }
+        });
+        closeBtn.addEventListener("click", () => {
+            modal.style.display = "none";
         });
     </script>
     <script>

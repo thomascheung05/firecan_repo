@@ -1,4 +1,4 @@
-from firecan_fx import fx_merge_provincial_fires,timenow,fx_get_on_fire_data,create_data_folder,fx_scrape_donneqc,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
+from firecan_fx import fx_createexploremap,fx_merge_provincial_fires,timenow,fx_get_on_fire_data,create_data_folder,fx_scrape_donneqc,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
 from flask import Flask, request # type: ignore
 from datetime import datetime
 import json
@@ -13,6 +13,10 @@ gdf_on_fires = fx_get_on_fire_data()
 
 
 gdf_fires = fx_merge_provincial_fires(gdf_qc_fires, gdf_on_fires)
+
+
+fx_createexploremap(gdf_qc_watershed_data, "WatershedExplorer")     
+
 print('------------------------Data pre-loading complete. The app is now ready to serve requests.', timenow(),'------------------------')
 
 
@@ -56,7 +60,7 @@ def fx_main():                                                                  
                                             watershed_name=watershed_name
                                         )
     print('Done Filtering Data')
-    
+
 
     
     if is_download_requested:                                                                                 # If downlaod request is tru we are going to run one of the downloading fucntions
