@@ -107,9 +107,6 @@ var userPointLayer;
 var userBufferLayer;
 function loadFilteredData() {                                                                                          // This is the fuction that sends python the filtering conditions, and receives a filtered dataset that it then displays on the map, ai helped a lot with this and the function below this  
 
-    const loadingEl = document.getElementById('loadingMessage');                                                       // This is for the message that says the data is downlaoding, AI helped me with this
-    loadingEl.style.display = "block";                                                                               // This lines displays the message, as by deafult it is hidden 
-                   
     if (fireLayer) { map.removeLayer(fireLayer); fireLayer = null; }   // remove old fires [web:3]
     if (userPointLayer) { map.removeLayer(userPointLayer); userPointLayer = null; } // remove old point [web:4]
     if (userBufferLayer) { map.removeLayer(userBufferLayer); userBufferLayer = null; } // remove old buffer [web:4]
@@ -124,8 +121,12 @@ function loadFilteredData() {                                                   
     const watershedName = document.getElementById('watershedName').value;
     const qcprovinceflag = document.getElementById('quebeccheckbox').value;
     const onprovinceflag = document.getElementById('ontariocheckbox').value;    
-    const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&qcprovinceflag=${qcprovinceflag}&onprovinceflag=${onprovinceflag}`;
-                                                                                                                        // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
+    const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&qcprovinceflag=${qcprovinceflag}&onprovinceflag=${onprovinceflag}`;     // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
+    
+    const loadingEl = document.getElementById('loadingMessage');                                                       // This is for the message that says the data is downlaoding, AI helped me with this
+    loadingEl.style.display = "block";                                                                               // This lines displays the message, as by deafult it is hidden 
+    loadingEl.offsetHeight; 
+    
     fetch(url)                                                                                                          // This is the part that sends the URL to python, python then filters the data and sends back a filtered dataset
         .then(response => {
             if (!response.ok) {
@@ -149,7 +150,6 @@ function loadFilteredData() {                                                   
                     }
                 }).addTo(map);
             }
-            // Display buffer
             if (data.user_buffer) {
                 userBufferLayer = L.geoJSON(data.user_buffer, {
                     style: { color: 'black', weight: 3, fillOpacity: 0.1 }
