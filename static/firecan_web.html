@@ -103,12 +103,9 @@
 
                     <hr class="sidebar-separator">
 
-                    <div class="d-grid gap-2 mb-3">
-                    <button id="aboutButton" class="btn btn-light">?</button>
-                    </div>
-
-                    <div class="d-grid gap-2 mb-3">
-                    <button id="watershedExplorerButton" class="btn btn-light">U+1F4A7</button>
+                    <div class="d-flex gap-2 mb-3">
+                        <button id="aboutButton" class="btn btn-light flex-fill">?</button>
+                        <button id="watershedExplorerButton" class="btn btn-light flex-fill">💧</button>
                     </div>
 
                 </div>
@@ -151,6 +148,7 @@
     <script src="./static/leaflet.js"></script>
     <script src="./static/firecan_logic.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Sidebar Resizer -->
     <script>
         const resizer = document.getElementById("resizer");
         const sidebar = document.getElementById("sidebar");
@@ -178,6 +176,7 @@
           document.removeEventListener("mouseup", stopResize, false);
         }
     </script>
+    <!-- About Section -->
     <script>
         const aboutButton = document.getElementById("aboutButton");
         const backButton = document.getElementById("backButton");
@@ -194,6 +193,7 @@
             mainSidebarContent.style.display = "block";
         });
     </script>
+    <!-- Watershed Explorer -->
     <script>
         const watershedButton = document.getElementById("watershedExplorerButton");
         const modal = document.getElementById("watershedModal");
@@ -216,7 +216,7 @@
 
             if (!watershedMap) {
                 // Initialize the map only once
-                watershedMap = L.map('watershedMap').setView([45.5, -73.5], 8);  // change coordinates/zoom
+                watershedMap = L.map('watershedMap').setView([52.520878, -69.855725], 5);  // change coordinates/zoom
 
                 // Add base tile layer
                 Esrimap = L.tileLayer(
@@ -248,25 +248,10 @@
             }).addTo(watershedMap);
 
 
-
-
-
-
             watershedMap.fitBounds(watershedLayer.getBounds());
             } else {
             console.warn("Watershed data not ready yet.");
             }
-
-
-
-
-
-
-
-
-
-
-
 
             } else {
                 // In case the map was already initialized but hidden
@@ -277,6 +262,7 @@
             modal.style.display = "none";
         });
     </script>
+    <!-- Map Coordinates on Click -->
     <script>
         map.on('click', function(e) {
         const lat = e.latlng.lat.toFixed(6);

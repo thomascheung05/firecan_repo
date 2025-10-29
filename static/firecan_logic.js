@@ -73,18 +73,6 @@ var Atlas = L.tileLayer(
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 // Initialize map with default base
 var map = L.map('map', {
   center: [52.520878, -69.855725],
@@ -110,7 +98,6 @@ var baseLayers = {
 
 // Add the control at top-right
 L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map); 
-
 
 
 
@@ -242,4 +229,5 @@ function downloadFilteredData() {
     }, 10000);
 
 }
+
 
