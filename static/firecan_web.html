@@ -6,6 +6,7 @@
     <title>FIRECAN</title>
     <link rel="stylesheet" href="./static/leaflet.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="./static/firecan_style.css">
     <link rel="stylesheet" href="firecan_style.css">
 
@@ -106,6 +107,7 @@
                     <div class="d-flex gap-2 mb-3">
                         <button id="aboutButton" class="btn btn-light flex-fill">?</button>
                         <button id="watershedExplorerButton" class="btn btn-light flex-fill">💧</button>
+                        <button id="polygonTolButton" class="btn btn-light flex-fill">&#x25B2</button>
                     </div>
 
                 </div>
@@ -144,6 +146,20 @@
             <div id="watershedMap"></div>
         </div>
 
+<div id="polygonTolModal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="mb-2">
+            <label for="polygonTol" class="form-label">Polygon Tolerance (m)</label>
+            <input type="text" id="polygonTol" class="form-control" placeholder="100">
+        </div>
+        <div class="d-grid mt-3">
+            <button id="savePolygonTol" class="btn btn-primary">Save</button>
+        </div>
+    </div>
+</div>
+
+
     </div>
     <script src="./static/leaflet.js"></script>
     <script src="./static/firecan_logic.js"></script>
@@ -166,7 +182,7 @@
         function resize(e) {
           const dx = e.clientX - x;
           const newWidth = sidebarWidth + dx;
-          if (newWidth > 150 && newWidth < 600) { // set min/max widths
+          if (newWidth > 50 && newWidth < 600) { // set min/max widths
             sidebar.style.width = `${newWidth}px`;
           }
         }
@@ -193,6 +209,53 @@
             mainSidebarContent.style.display = "block";
         });
     </script>
+    <!-- Polygon Tolerance -->
+     <script>
+        const polygonTolButton = document.getElementById("polygonTolButton");
+        const polygonTolModal = document.getElementById("polygonTolModal");
+        const polygonCloseBtn = polygonTolModal.querySelector(".close");
+        let savedPolygonTolerance = 100;
+        const polygonInput = document.getElementById("polygonTol");
+        const savePolygonTol = document.getElementById("savePolygonTol");
+
+        // Open modal
+        polygonTolButton.addEventListener("click", () => {
+            polygonTolModal.style.display = "flex";
+            // If value already saved, populate input
+            if (savedPolygonTolerance !== null) {
+                polygonInput.value = savedPolygonTolerance;
+            }
+        });
+
+        // Close modal
+        polygonCloseBtn.addEventListener("click", () => {
+            polygonTolModal.style.display = "none";
+        });
+
+        polygonTolModal.addEventListener("click", (e) => {
+            if (e.target === polygonTolModal) {
+                polygonTolModal.style.display = "none";
+            }
+        });
+
+        // Save button
+        savePolygonTol.addEventListener("click", () => {
+            const tolValue = polygonInput.value.trim();
+            if (!tolValue || isNaN(tolValue)) {
+                alert("Please enter a valid number for polygon tolerance.");
+                return;
+            }
+            savedPolygonTolerance = parseFloat(tolValue);
+            polygonTolModal.style.display = "none";
+            console.log("Saved polygon tolerance:", savedPolygonTolerance);
+        });
+
+        polygonTolModal.addEventListener("click", (e) => {
+            if (e.target === polygonTolModal) {
+                polygonTolModal.style.display = "none";
+            }
+        });
+     </script>    
     <!-- Watershed Explorer -->
     <script>
         const watershedButton = document.getElementById("watershedExplorerButton");
@@ -230,9 +293,9 @@
                 style: function(feature) {                                                                               // THis styles the polygons that are displayed on the map 
                     return {
                         color: "#031cfc",
-                        weight: 4,                                                                                       // Big weight to make the polygons visible from zoomed out 
+                        weight: 1,                                                                                       // Big weight to make the polygons visible from zoomed out 
                         opacity: 1,
-                        fillColor: "#031cfc",
+                        fillColor: "#aedffd",
                         fillOpacity: 0.5                                                                                 // Lower opacity looks better, and helps distinguish from polygon fill and border on map (useful when many polygons are next to each other)
                     };
                 },

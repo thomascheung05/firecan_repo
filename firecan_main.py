@@ -1,7 +1,8 @@
-from firecan_fx import fx_createexploremap,fx_merge_provincial_fires,timenow,fx_get_on_fire_data,create_data_folder,fx_scrape_donneqc,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
+from firecan_fx import convert_m_4326deg,fx_createexploremap,fx_merge_provincial_fires,timenow,fx_get_on_fire_data,create_data_folder,fx_scrape_donneqc,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
 from flask import Flask, request # type: ignore
 from datetime import datetime
 import json
+import geopandas as gpd
 
 create_data_folder()
 
@@ -15,9 +16,8 @@ gdf_on_fires = fx_get_on_fire_data()
 gdf_fires = fx_merge_provincial_fires(gdf_qc_fires, gdf_on_fires)
 
 
-fx_createexploremap(gdf_qc_watershed_data, "WatershedExplorer")     
 
-print('------------------------Data pre-loading complete. The app is now ready to serve requests.', timenow(),'------------------------')
+print('---------------Data pre-loading complete. The app is now ready to serve requests.', timenow(),'------------------------')
 
 
 
@@ -40,13 +40,15 @@ def fx_main():                                                                  
     onprovinceflag = request.args.get('onprovinceflag', None)    
     is_download_requested = request.args.get('download', '0') == '1'                                      # Checks if we should be displaying data or downloading it
     downloadformat = request.args.get('downloadFormat', None)
-    print(onprovinceflag)
-    print(type(onprovinceflag))
-    print(qcprovinceflag)
-    print(type(qcprovinceflag))
+    polygon_tol = request.args.get('polygon_tol', None)
+    polygon_tol = float(polygon_tol)
+    polygon_tol_deg = convert_m_4326deg(polygon_tol, 45)
+    print(polygon_tol)
+    print(polygon_tol_deg)
+
 
     print('Filtering Data')                                                                                 # Uses the filtering fire function to return a dataset with only the fires the user wants 
-    filtered_data, userpoint, bufferdeg = fx_filter_fires_data(
+    results= fx_filter_fires_data(
                                             gdf_fires,
                                             gdf_qc_watershed_data,
                                             qcprovinceflag,
@@ -61,8 +63,12 @@ def fx_main():                                                                  
                                         )
     print('Done Filtering Data')
 
+    filtered_data = results["filtered_gdf"]
+    watershed_polygon = results["watershed_polygon"]
+    userpoint = results["user_point"]
+    bufferdeg = results["buffer_geom"]
 
-    
+        
     if is_download_requested:                                                                                 # If downlaod request is tru we are going to run one of the downloading fucntions
         if downloadformat == 'json':
             return fx_download_json(filtered_data)
@@ -72,17 +78,25 @@ def fx_main():                                                                  
             return fx_download_gpkg(filtered_data)
     else:                                                                                       # IF download request is not true we are going to convert ot geojson and return it (send it) to my java script
         print('Converting to geojson (',timenow(),')',filtered_data.shape)
-        filtered_data["geometry"] = filtered_data["geometry"].simplify(tolerance=0.001, preserve_topology=True)         # add precision option to change how good the polygons look vs load time
+        filtered_data["geometry"] = filtered_data["geometry"].simplify(tolerance=polygon_tol_deg, preserve_topology=True)         # add precision option to change how good the polygons look vs load time
         geojson_fires = json.loads(filtered_data.to_json())                                                     # BOTTLENECK
         print('Done Converting to geojson (',timenow(),')')    
 
         geojson_point = json.loads(userpoint.to_json()) if userpoint is not None else None
         geojson_buffer = json.loads(bufferdeg.to_json()) if bufferdeg is not None else None
 
+        if watershed_polygon is not None:
+            ws_gs = gpd.GeoSeries([watershed_polygon], crs=gdf_qc_watershed_data.crs)
+            ws_gs = ws_gs.to_crs("EPSG:4326")
+            geojson_watershedpolygon = json.loads(ws_gs.to_json())
+        else:
+            geojson_watershedpolygon = None
+
         combined_geojson = {
             "fires": geojson_fires,
             "user_point": geojson_point,
-            "user_buffer": geojson_buffer
+            "user_buffer": geojson_buffer,
+            "watershed_polygon" : geojson_watershedpolygon
         }
 
         return json.dumps(combined_geojson)

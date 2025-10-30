@@ -66,10 +66,7 @@ var Neighbourhood = L.tileLayer(
 ); 
 
 
-var Atlas = L.tileLayer(
-  'hhttps://tile.thunderforest.com/atlas/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
-  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
-); 
+
 
 
 
@@ -77,7 +74,7 @@ var Atlas = L.tileLayer(
 var map = L.map('map', {
   center: [52.520878, -69.855725],
   zoom: 5,
-  layers: [Transport]
+  layers: [Esrimap]
 }); 
 
 // Register basemaps in the control
@@ -92,8 +89,7 @@ var baseLayers = {
   'TransportDark': TransportDark,
   'Pioneer': Pioneer,
   'MobileAtlas': MobileAtlas,
-  'Neighbourhood': Neighbourhood,
-  'Atlas': Atlas
+  'Neighbourhood': Neighbourhood
 };
 
 // Add the control at top-right
@@ -105,11 +101,13 @@ L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map);
 var fireLayer;
 var userPointLayer;
 var userBufferLayer;
+var userWatershedPolygonLayer;
 function loadFilteredData() {                                                                                          // This is the fuction that sends python the filtering conditions, and receives a filtered dataset that it then displays on the map, ai helped a lot with this and the function below this  
 
     if (fireLayer) { map.removeLayer(fireLayer); fireLayer = null; }   // remove old fires [web:3]
     if (userPointLayer) { map.removeLayer(userPointLayer); userPointLayer = null; } // remove old point [web:4]
     if (userBufferLayer) { map.removeLayer(userBufferLayer); userBufferLayer = null; } // remove old buffer [web:4]
+    if (userWatershedPolygonLayer) { map.removeLayer(userWatershedPolygonLayer); userWatershedPolygonLayer = null; } // remove old buffer [web:4]
 
 
     const minYear = document.getElementById('minYear').value;                                                          // This takes the inputs form the HTML and assings it to varibles in java 
@@ -121,7 +119,7 @@ function loadFilteredData() {                                                   
     const watershedName = document.getElementById('watershedName').value;
     const qcprovinceflag = document.getElementById('quebeccheckbox').value;
     const onprovinceflag = document.getElementById('ontariocheckbox').value;    
-    const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&qcprovinceflag=${qcprovinceflag}&onprovinceflag=${onprovinceflag}`;     // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
+    const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&qcprovinceflag=${qcprovinceflag}&onprovinceflag=${onprovinceflag}&polygon_tol=${savedPolygonTolerance}`;     // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
     
     const loadingEl = document.getElementById('loadingMessage');                                                       // This is for the message that says the data is downlaoding, AI helped me with this
     loadingEl.style.display = "block";                                                                               // This lines displays the message, as by deafult it is hidden 
@@ -154,8 +152,12 @@ function loadFilteredData() {                                                   
                 userBufferLayer = L.geoJSON(data.user_buffer, {
                     style: { color: 'black', weight: 3, fillOpacity: 0.1 }
                 }).addTo(map);
+            }
+            if (data.watershed_polygon){
+              userWatershedPolygonLayer = L.geoJson(data.watershed_polygon, {
+                style: {color: '#aedffd', weight: 1, fillOpacity: 0.1}
+              }).addTo(map);
             }   
-
             fireLayer = L.geoJSON(data.fires, {
                 style: function(feature) {                                                                               // THis styles the polygons that are displayed on the map 
                     return {

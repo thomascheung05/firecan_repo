@@ -17,6 +17,7 @@ from shapely.geometry import shape, Polygon, MultiPolygon, mapping
 from pathlib import Path
 from datetime import datetime
 import sys
+import math
 work_dir  = Path.cwd()
 
                                                                                         # A lot of the code here is pretty simple data manipulaiton mostly filtering
@@ -49,8 +50,12 @@ def create_data_folder():
 
 
 
+def convert_m_4326deg(meters, lat):
+    deg_lat = meters / 111320.0
+    deg_lon = meters / (111320.0 * math.cos(math.radians(lat)))
 
-
+    larger = max(deg_lat, deg_lon)
+    return larger
 
 
 
@@ -243,7 +248,7 @@ def fx_scrape_ontariogeohub(url, dataname):
 
 
 def fx_get_on_fire_data():
-    print('Getting QC Fire Data')                                               # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
+    print('Getting ON Fire Data')                                               # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
 
     ontario_fires_URL = "https://ws.lioservices.lrc.gov.on.ca/arcgis2/rest/services/LIO_OPEN_DATA/LIO_Open09/MapServer/28/query"
     data_path = fx_scrape_ontariogeohub(ontario_fires_URL, 'ontario_fires')
@@ -363,7 +368,7 @@ def fx_filter_fires_data(                                                       
                 selected_ws = watershed_data[watershed_data['NOM_COURS_DEAU'] == watershed_name]
                 if not selected_ws.empty:
                     print('Starting Watershed Filtering', timenow())
-                    watershed_polygon = selected_ws.geometry.unary_union                                                  # This from AI 
+                    watershed_polygon = selected_ws.geometry.unary_union  
                     conditions.append(filtered_gdf.geometry.within(watershed_polygon))
                     print('Done Watershed Filtering', timenow())
                 else:
@@ -373,10 +378,22 @@ def fx_filter_fires_data(                                                       
             combined_mask = np.logical_and.reduce(conditions)                                                         # The combined filtered conditions
             filtered_gdf = filtered_gdf[combined_mask]                                                                # Filtering the dataset and returning with the right fitlers 
 
-        if distance_coords  != '' and distance_radius  != '':   
-            return filtered_gdf, user_point, buffer_deg
-        else:
-            return filtered_gdf, None, None
+        results = {
+                "filtered_gdf": filtered_gdf,
+                "user_point": None,
+                "buffer_geom": None,
+                "watershed_polygon": None
+            }
+
+        # Fill in whichever geometry applies
+        if distance_coords != '' and distance_radius != '':
+            results["user_point"] = user_point
+            results["buffer_geom"] = buffer_deg
+
+        if watershed_name != '' and watershed_polygon is not None:
+            results["watershed_polygon"] = watershed_polygon
+
+        return results
 
 
 

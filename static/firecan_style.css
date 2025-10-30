@@ -32,6 +32,12 @@
   width: 35px;
 }
 
+#sidebar #polygonTolButton {
+  background-color: #00ff80;
+  border-color: transparent;
+  width: 35px;
+}
+
 #sidebar #aboutSection {
   color: rgb(255, 255, 255);
 }
@@ -60,7 +66,7 @@
 
 
 #resizer {
-  width: 4px;
+  width: 6px;
   height: 100vh;
   cursor: col-resize;
   background: #000000db;
@@ -114,6 +120,40 @@
     right: 40px;
     color: white;
     font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+
+
+#polygonTolModal {
+    display: none; /* hide initially */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+}
+
+#polygonTolModal .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px; /* adjust size */
+}
+
+/* Close button */
+#polygonTolModal .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: black;
+    font-size: 30px;
     font-weight: bold;
     cursor: pointer;
 }
