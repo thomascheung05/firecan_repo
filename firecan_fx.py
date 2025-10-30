@@ -3,12 +3,12 @@ import json
 import requests
 import geopandas as gpd
 from datetime import datetime
-from flask import request, send_file  
+from flask import request, send_file   # type: ignore
 import io
 from pathlib import Path
 import pandas as pd
 from shapely.geometry import Point
-import fiona 
+import fiona  # type: ignore
 import numpy as np
 import requests
 import json
@@ -115,7 +115,6 @@ def fx_get_qc_fire_data():
         merged_data = repojectdata(merged_data, 4326)
 
         print(f'............ {timenow()} Done Pre-Processing saving for later use')
-        print('Saving processed QC data to load in later')
         merged_data.to_parquet(qc_processed_data_path)
 
     else:               
