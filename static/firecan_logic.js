@@ -92,7 +92,7 @@ var baseLayers = {
   'Neighbourhood': Neighbourhood
 };
 
-// Add the control at top-right
+
 L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map); 
 
 
@@ -104,10 +104,10 @@ var userBufferLayer;
 var userWatershedPolygonLayer;
 function loadFilteredData() {                                                                                          // This is the fuction that sends python the filtering conditions, and receives a filtered dataset that it then displays on the map, ai helped a lot with this and the function below this  
 
-    if (fireLayer) { map.removeLayer(fireLayer); fireLayer = null; }   // remove old fires [web:3]
-    if (userPointLayer) { map.removeLayer(userPointLayer); userPointLayer = null; } // remove old point [web:4]
-    if (userBufferLayer) { map.removeLayer(userBufferLayer); userBufferLayer = null; } // remove old buffer [web:4]
-    if (userWatershedPolygonLayer) { map.removeLayer(userWatershedPolygonLayer); userWatershedPolygonLayer = null; } // remove old buffer [web:4]
+    if (fireLayer) { map.removeLayer(fireLayer); fireLayer = null; }   
+    if (userPointLayer) { map.removeLayer(userPointLayer); userPointLayer = null; } 
+    if (userBufferLayer) { map.removeLayer(userBufferLayer); userBufferLayer = null; }
+    if (userWatershedPolygonLayer) { map.removeLayer(userWatershedPolygonLayer); userWatershedPolygonLayer = null; }
 
 
     const minYear = document.getElementById('minYear').value;                                                          // This takes the inputs form the HTML and assings it to varibles in java 
@@ -117,8 +117,10 @@ function loadFilteredData() {                                                   
     const distanceCoords = document.getElementById('distanceCoords').value;
     const distanceRadius = document.getElementById('distanceRadius').value;
     const watershedName = document.getElementById('watershedName').value;
-    const qcprovinceflag = document.getElementById('quebeccheckbox').value;
-    const onprovinceflag = document.getElementById('ontariocheckbox').value;    
+    const qcprovinceflag = document.getElementById('quebeccheckbox').checked;
+    const onprovinceflag = document.getElementById('ontariocheckbox').checked;    
+    const polygonTolerance = savedPolygonTolerance;
+
     const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&qcprovinceflag=${qcprovinceflag}&onprovinceflag=${onprovinceflag}&polygon_tol=${savedPolygonTolerance}`;     // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
     
     const loadingEl = document.getElementById('loadingMessage');                                                       // This is for the message that says the data is downlaoding, AI helped me with this
@@ -134,7 +136,7 @@ function loadFilteredData() {                                                   
             return response.json();
         })
         .then(data => {                                                                                                 // Using the data we just go we dispaly it on the leaflet map 
-            // Display user point
+            
             if (data.user_point) {
                 userPointLayer = L.geoJSON(data.user_point, {
                     pointToLayer: (feature, latlng) => {
@@ -161,7 +163,7 @@ function loadFilteredData() {                                                   
             fireLayer = L.geoJSON(data.fires, {
                 style: function(feature) {                                                                               // THis styles the polygons that are displayed on the map 
                     return {
-                        color: "#FF0000",
+                        color: "#e2460cd3",
                         weight: 4,                                                                                       // Big weight to make the polygons visible from zoomed out 
                         opacity: 1,
                         fillColor: "#FF0000",

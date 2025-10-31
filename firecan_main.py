@@ -41,7 +41,7 @@ def fx_main():                                                                  
     is_download_requested = request.args.get('download', '0') == '1'                                      # Checks if we should be displaying data or downloading it
     downloadformat = request.args.get('downloadFormat', None)
 
-    print(min_year)
+
 
 
 
@@ -80,6 +80,7 @@ def fx_main():                                                                  
         polygon_tol = request.args.get('polygon_tol', None)
         polygon_tol = float(polygon_tol)
         polygon_tol_deg = convert_m_4326deg(polygon_tol, 45)
+        print(polygon_tol_deg)
         filtered_data["geometry"] = filtered_data["geometry"].simplify(tolerance=polygon_tol_deg, preserve_topology=True)         # add precision option to change how good the polygons look vs load time
         geojson_fires = json.loads(filtered_data.to_json())                                                     # BOTTLENECK
         print('Done Converting to geojson (',timenow(),')')    

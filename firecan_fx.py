@@ -319,7 +319,16 @@ def fx_filter_fires_data(                                                       
     distance_radius,
     watershed_name
     ):
-    filtered_gdf = fire_gdf[fire_gdf['province'].isin([qcprovinceflag, onprovinceflag])]
+
+    if qcprovinceflag == "true" and onprovinceflag== "true":
+        filtered_gdf = fire_gdf[fire_gdf['province'].isin(["qc", "on"])]
+    elif qcprovinceflag == "true":
+        filtered_gdf = fire_gdf[fire_gdf['province'].isin(["qc"])]
+    elif onprovinceflag == "true":
+        filtered_gdf = fire_gdf[fire_gdf['province'].isin(["on"])]
+
+        
+
     conditions = []     # This is a list of the filtering conditions so they can all be applied at once 
     
     if min_year == '' and max_year == '' and min_size == '' and max_size == '' and distance_coords == '' and distance_radius == '' and watershed_name == '':                                                                             

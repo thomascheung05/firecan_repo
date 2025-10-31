@@ -324,6 +324,11 @@
         closeBtn.addEventListener("click", () => {
             modal.style.display = "none";
         });
+        modal.addEventListener("click", (e) => {
+            if (e.target === polygonTolModal) {
+                polygonTolModal.style.display = "none";
+            }
+        });
     </script>
     <!-- Map Coordinates on Click -->
     <script>
