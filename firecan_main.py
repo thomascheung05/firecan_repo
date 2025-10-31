@@ -9,6 +9,7 @@ create_data_folder()
 print('------------------------Starting data pre-loading. This may take a few minutes...', timenow(),'------------------------')                                      # This section here loads in the data, it uses the scrap donne quebec function and the process qc fire data fuction
 gdf_qc_fires = fx_get_qc_fire_data()
 gdf_qc_watershed_data = fx_get_qc_watershed_data()
+gdf_qc_watershed_data.drop(columns=['geometry'], errors='ignore').to_csv('gdf_qc_watershed_data.csv', index=False, encoding='utf-8')         # Drops geom column here too 
 
 gdf_on_fires = fx_get_on_fire_data()
 

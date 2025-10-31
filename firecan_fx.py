@@ -382,6 +382,7 @@ def fx_filter_fires_data(                                                       
 
         if watershed_name  != '':                                                                             # This shit dont work
                 selected_ws = watershed_data[watershed_data['NOM_COURS_DEAU'] == watershed_name]
+            
                 if not selected_ws.empty:
                     print('Starting Watershed Filtering', timenow())
                     watershed_polygon = selected_ws.geometry.unary_union  
