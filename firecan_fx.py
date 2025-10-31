@@ -147,8 +147,14 @@ def fx_get_qc_watershed_data():                                                 
         watershed_data = gpd.read_file(qcwatershed_unzipped_file_path, layer=layers[1])
         watershed_data = watershed_data[watershed_data['NIVEAU_BASSIN'] == 1]
         watershed_data = watershed_data.drop(columns=['NO_COURS_DEAU','NO_SEQ_COURS_DEAU','IDENTIFICATION_COMPLETE', 'NOM_COURS_DEAU_MINUSCULE', 'NIVEAU_BASSIN', 'ECHELLE', 'SUPERF_KM2', 'NO_SEQ_BV_PRIMAIRE', 'NOM_BV_PRIMAIRE', 'NO_REG_HYDRO', 'NOM_REG_HYDRO_ABREGE', 'Shape_Length', 'Shape_Area']) # might want shape length and share area later
-        watershed_data = watershed_data[watershed_data['NOM_COURS_DEAU'].notna() & (watershed_data['NOM_COURS_DEAU'].str.strip() != "")]
         
+        
+        watershed_data = watershed_data.copy()
+        mask = watershed_data['NOM_COURS_DEAU'].isna() | (watershed_data['NOM_COURS_DEAU'].str.strip() == "")
+        watershed_data.loc[mask, 'NOM_COURS_DEAU'] = [
+            f"unnamed_{i+1}" for i in range(mask.sum())
+        ]
+
 
         print(f'........ {timenow()} Reprojecting Watershed data') 
         watershed_data = repojectdata(watershed_data, 4326)
