@@ -344,13 +344,14 @@ def fx_filter_fires_data(                                                       
 
         if min_size  != '' or max_size  != '':
             if min_size  != '':
-                min_size = int(min_size)
+                min_size = float(min_size)
             else:
                 min_size = 0
             if min_size  != '':
-                max_size= int(max_size)
+                max_size= float(max_size)
             else:
                 min_size = 100000
+            print('here')
             conditions.append((filtered_gdf['fire_size'] >= min_size) & (filtered_gdf['fire_size'] <= max_size))
 
         if distance_coords  != '' and distance_radius  != '':                                                     # The is the distance radius filtering that only selects fires within a radius of a point 

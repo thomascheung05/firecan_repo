@@ -40,11 +40,9 @@ def fx_main():                                                                  
     onprovinceflag = request.args.get('onprovinceflag', None)    
     is_download_requested = request.args.get('download', '0') == '1'                                      # Checks if we should be displaying data or downloading it
     downloadformat = request.args.get('downloadFormat', None)
-    polygon_tol = request.args.get('polygon_tol', None)
-    polygon_tol = float(polygon_tol)
-    polygon_tol_deg = convert_m_4326deg(polygon_tol, 45)
-    print(polygon_tol)
-    print(polygon_tol_deg)
+
+    print(min_year)
+
 
 
     print('Filtering Data')                                                                                 # Uses the filtering fire function to return a dataset with only the fires the user wants 
@@ -78,6 +76,10 @@ def fx_main():                                                                  
             return fx_download_gpkg(filtered_data)
     else:                                                                                       # IF download request is not true we are going to convert ot geojson and return it (send it) to my java script
         print('Converting to geojson (',timenow(),')',filtered_data.shape)
+        print(filtered_data.head())
+        polygon_tol = request.args.get('polygon_tol', None)
+        polygon_tol = float(polygon_tol)
+        polygon_tol_deg = convert_m_4326deg(polygon_tol, 45)
         filtered_data["geometry"] = filtered_data["geometry"].simplify(tolerance=polygon_tol_deg, preserve_topology=True)         # add precision option to change how good the polygons look vs load time
         geojson_fires = json.loads(filtered_data.to_json())                                                     # BOTTLENECK
         print('Done Converting to geojson (',timenow(),')')    
