@@ -1,0 +1,7 @@
+requests
+geopandas
+flask
+pandas
+shapely
+fiona
+numpy
