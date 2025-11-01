@@ -42,10 +42,10 @@ def fx_main():                                                                  
     is_download_requested = request.args.get('download', '0') == '1'                                      # Checks if we should be displaying data or downloading it
     downloadformat = request.args.get('downloadFormat', None)
 
-    print(onprovinceflag, qcprovinceflag)
+    
 
 
-    print('Filtering Data')                                                                                 # Uses the filtering fire function to return a dataset with only the fires the user wants 
+    print(timenow(),'Filtering Data')                                                                                 # Uses the filtering fire function to return a dataset with only the fires the user wants 
     results= fx_filter_fires_data(
                                             gdf_fires,
                                             gdf_qc_watershed_data,
@@ -59,7 +59,7 @@ def fx_main():                                                                  
                                             distance_radius=distance_radius,
                                             watershed_name=watershed_name
                                         )
-    print('Done Filtering Data')
+    print(timenow(),'Done Filtering Data')
 
     filtered_data = results["filtered_gdf"]
     watershed_polygon = results["watershed_polygon"]
@@ -76,15 +76,15 @@ def fx_main():                                                                  
         elif downloadformat == 'gpkg':
             return fx_download_gpkg(filtered_data)
     else:                                                                                       # IF download request is not true we are going to convert ot geojson and return it (send it) to my java script
-        print('Converting to geojson (',timenow(),')',filtered_data.shape)
-        print(filtered_data.head())
+        print(timenow(),'Converting to geojson',filtered_data.shape)
+
         polygon_tol = request.args.get('polygon_tol', None)
         polygon_tol = float(polygon_tol)
         polygon_tol_deg = convert_m_4326deg(polygon_tol, 45)
-        print(polygon_tol_deg)
+
         filtered_data["geometry"] = filtered_data["geometry"].simplify(tolerance=polygon_tol_deg, preserve_topology=True)         # add precision option to change how good the polygons look vs load time
         geojson_fires = json.loads(filtered_data.to_json())                                                     # BOTTLENECK
-        print('Done Converting to geojson (',timenow(),')')    
+        print(timenow(),'Done Converting to geojson')    
 
         geojson_point = json.loads(userpoint.to_json()) if userpoint is not None else None
         geojson_buffer = json.loads(bufferdeg.to_json()) if bufferdeg is not None else None

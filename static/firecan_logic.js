@@ -136,7 +136,7 @@ function loadFilteredData() {                                                   
             }
             if (data.user_buffer) {
                 userBufferLayer = L.geoJSON(data.user_buffer, {
-                    style: { color: 'black', weight: 3, fillOpacity: 0.1 }
+                    style: { color: '#ffffffff', weight: 3, fillOpacity: 0.1 }
                 }).addTo(map);
             }
             if (data.watershed_polygon){

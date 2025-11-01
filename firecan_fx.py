@@ -334,7 +334,7 @@ def fx_filter_fires_data(                                                       
         filtered_gdf = fire_gdf[fire_gdf['province'].isin(["on"])]
 
         
-    print(type(min_size))
+    
     conditions = []     # This is a list of the filtering conditions so they can all be applied at once 
     
     if min_year == '' and max_year == '' and min_size == '' and max_size == '' and distance_coords == '' and distance_radius == '' and watershed_name == '':                                                                             
@@ -343,7 +343,14 @@ def fx_filter_fires_data(                                                       
         conditions.append((filtered_gdf['fire_year'] >= min_year) & (filtered_gdf['fire_year'] <= max_year)) 
         combined_mask = np.logical_and.reduce(conditions)                                                         
         filtered_gdf = filtered_gdf[combined_mask]
-        return filtered_gdf, None, None
+
+        results = {
+        "filtered_gdf": filtered_gdf,
+        "user_point": None,
+        "buffer_geom": None,
+        "watershed_polygon": None
+        }
+        return results
     
     else:
         if min_year  != '' or max_year  != '':                                                                  # This IFs for all of these check if the filtering box on the site has a value inputed in it for this one and the next one we use OR becuase wse want the use to be able to input only a max or a min and not HAVE to input both 
@@ -380,9 +387,10 @@ def fx_filter_fires_data(                                                       
                 buffer_deg = buffer_m.to_crs('EPSG:4326')                                                             # Here we reproject the buffer back to EPSG:4326 so leaflet can display it, AI helped me construct this process but the logic behind it was mine, at first it wanted me to do a very roundabout way
                 conditions.append(filtered_gdf.geometry.intersects(buffer_deg.iloc[0]))
 
-        if watershed_name  != '':                                                                             # This shit dont work
+        if watershed_name  != '':  
+                                                                                           # This shit dont work
                 selected_ws = watershed_data[watershed_data['NOM_COURS_DEAU'] == watershed_name]
-            
+                print(selected_ws)
                 if not selected_ws.empty:
                     print('Starting Watershed Filtering', timenow())
                     watershed_polygon = selected_ws.geometry.unary_union  
