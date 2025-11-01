@@ -1,65 +1,43 @@
-// This is my first time working in Java so its a big learning experinece for me. I'm having a hard time wrapping my head around Java as i feel the code executes differently from python but i still have a relativley good unserstanding of what each line is doing 
-
-
-
-// Create base layers
-var Esrimap = L.tileLayer(
+ var Esrimap = L.tileLayer(
   'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
   { maxZoom: 18, attribution: 'Tiles © Esri' }
-); // Esri imagery [web:50]
-
+); 
 var OpenStreetMap_Mapnik = L.tileLayer(
   'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
   { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
 ); 
-
 var OpenCycleMap = L.tileLayer(
   'https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
   { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
 ); 
-
 var Transport = L.tileLayer(
   'https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
   { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
 ); 
-
-
 var Landscape = L.tileLayer(
   'https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
   { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
 ); 
-
-
 var Outdoors = L.tileLayer(
   'https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
   { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
 ); 
-
-
 var SpinalMap = L.tileLayer(
   'https://tile.thunderforest.com/spinal-map/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
   { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
 ); 
-
-
 var TransportDark = L.tileLayer(
   'https://tile.thunderforest.com/transport-dark/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
   { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
 ); 
-
-
 var Pioneer = L.tileLayer(
   'https://tile.thunderforest.com/pioneer/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
   { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
 ); 
-
-
 var MobileAtlas = L.tileLayer(
   'https://tile.thunderforest.com/mobile-atlas/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
   { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
 ); 
-
-
 var Neighbourhood = L.tileLayer(
   'https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
   { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
@@ -68,16 +46,13 @@ var Neighbourhood = L.tileLayer(
 
 
 
-
-
-// Initialize map with default base
 var map = L.map('map', {
   center: [52.520878, -69.855725],
   zoom: 5,
   layers: [Esrimap]
 }); 
 
-// Register basemaps in the control
+ 
 var baseLayers = {
   'OpenStreetMap': OpenStreetMap_Mapnik,
   'Esrimap': Esrimap,
@@ -93,10 +68,19 @@ var baseLayers = {
 };
 
 
-L.control.layers(baseLayers, null, { position: 'topright' }).addTo(map); 
+L.control.layers(baseLayers, null, {
+  position: 'topright',
+  collapsed: true,    
+  sortLayers: true    
+}).addTo(map);
 
 
-
+L.control.scale({
+  position: 'bottomright',    
+  imperial: false,           
+  metric: true,             
+  maxWidth: 200              
+}).addTo(map);
 
 var fireLayer;
 var userPointLayer;
@@ -214,8 +198,8 @@ function downloadFilteredData() {
     const distanceCoords = document.getElementById('distanceCoords').value;
     const distanceRadius = document.getElementById('distanceRadius').value;
     const watershedName = document.getElementById('watershedName').value;
-    const qcprovinceflag = document.getElementById('quebeccheckbox').value;
-    const onprovinceflag = document.getElementById('ontariocheckbox').value; 
+    const qcprovinceflag = document.getElementById('quebeccheckbox').checked;
+    const onprovinceflag = document.getElementById('ontariocheckbox').checked; 
     const downloadFormat = document.getElementById('downloadFormat').value;
                                                                                                                       // THis code largely does the same thing as the function above but instead of displaying the data I uses my python dowloand data functions to downalod the filtered data 
 

@@ -334,7 +334,7 @@ def fx_filter_fires_data(                                                       
         filtered_gdf = fire_gdf[fire_gdf['province'].isin(["on"])]
 
         
-
+    print(type(min_size))
     conditions = []     # This is a list of the filtering conditions so they can all be applied at once 
     
     if min_year == '' and max_year == '' and min_size == '' and max_size == '' and distance_coords == '' and distance_radius == '' and watershed_name == '':                                                                             
@@ -361,11 +361,11 @@ def fx_filter_fires_data(                                                       
             if min_size  != '':
                 min_size = float(min_size)
             else:
-                min_size = 0
-            if min_size  != '':
+                min_size = 0.0
+            if max_size  != '':
                 max_size= float(max_size)
             else:
-                min_size = 100000
+                max_size = 100000.0
             print('here')
             conditions.append((filtered_gdf['fire_size'] >= min_size) & (filtered_gdf['fire_size'] <= max_size))
 

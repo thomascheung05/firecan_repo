@@ -1,10 +1,9 @@
 #sidebar  {
   background-color: #000000db;
-  height: 100vh;          /* lock to viewport height */
-  overflow-y: auto;       /* scroll inside the sidebar */
-  overflow-x: hidden;     /* avoid horizontal scrollbars */
+  height: 100vh;          
+  overflow-y: auto;       
+  overflow-x: hidden;     
 }
-
 
 #sidebar label {
   font-family: Trebuchet MS, sans-serif;
@@ -12,16 +11,15 @@
   color: rgb(255, 255, 255); 
 }
 
-
 #sidebar button {
   font-family: Trebuchet MS, sans-serif;
   font-size: 20px;
-  background-color: #cccccc;
-  color: rgb(0, 0, 0); 
+  background-color: #157f38;
+  color: rgb(255, 255, 255); 
 }
 
 #sidebar #aboutButton {
-  background-color: #f4f800;
+  background-color: #7a7a7a;
   border-color: transparent;
   width: 35px;
 }
@@ -33,7 +31,7 @@
 }
 
 #sidebar #polygonTolButton {
-  background-color: #00ff80;
+  background-color: #ffbf00;
   border-color: transparent;
   width: 35px;
 }
@@ -51,21 +49,19 @@
   font-weight: bold;
   background-color: #ffffff;
   color: black;
-  display: flex;              /* make it a flex container */
-  align-items: center;        /* vertical center */
-  justify-content: center;    /* horizontal center */
-  padding: 0;                 /* override .btn padding if present */
-  line-height: 1;             /* avoid extra vertical offset */
+  display: flex;              
+  align-items: center;        
+  justify-content: center;    
+  padding: 0;                 
+  line-height: 1;             
 }
 
 .sidebar-separator {
-    border: none;               /* remove default HR styles */
-    height: 3px;                /* thickness of the line */
-    background-color: white;    /* color of the line */
+    border: none;                
+    height: 3px;                 
+    background-color: white;     
     opacity: 0.7;
 }
-
-
 
 #resizer {
   width: 6px;
@@ -86,13 +82,6 @@
     text-shadow: 0 0 3px black;
 }
 
-
-
-
-
-
-
-
 .modal {
     display: none;
     position: fixed;
@@ -104,7 +93,6 @@
     background-color: rgba(0,0,0,0.7);
 }
 
-/* Center the map inside the modal */
 #watershedMap {
     position: absolute;
     top: 10%;
@@ -126,11 +114,8 @@
     cursor: pointer;
 }
 
-
-
-
 #polygonTolModal {
-    display: none; /* hide initially */
+    display: none;  
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -146,10 +131,9 @@
     background-color: white;
     padding: 20px;
     border-radius: 8px;
-    width: 300px; /* adjust size */
+    width: 300px; 
 }
-
-/* Close button */
+ 
 #polygonTolModal .close {
     position: absolute;
     top: 10px;
@@ -158,4 +142,26 @@
     font-size: 30px;
     font-weight: bold;
     cursor: pointer;
+}
+
+.leaflet-control-layers {
+  background-color: rgba(30, 30, 30, 0.85); 
+  color: #fff;
+  border-radius: 10px;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  padding: 5px 8px;
+}
+
+.leaflet-control-layers-list {
+  color: #fff;
+}
+
+.leaflet-control-layers-selector {
+  accent-color: #1e90ff;  
+}
+
+.leaflet-control-layers label {
+  cursor: pointer;
+  padding: 2px 0;
 }

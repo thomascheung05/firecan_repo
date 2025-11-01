@@ -42,8 +42,7 @@ def fx_main():                                                                  
     is_download_requested = request.args.get('download', '0') == '1'                                      # Checks if we should be displaying data or downloading it
     downloadformat = request.args.get('downloadFormat', None)
 
-
-
+    print(onprovinceflag, qcprovinceflag)
 
 
     print('Filtering Data')                                                                                 # Uses the filtering fire function to return a dataset with only the fires the user wants 
@@ -70,6 +69,7 @@ def fx_main():                                                                  
         
     if is_download_requested:                                                                                 # If downlaod request is tru we are going to run one of the downloading fucntions
         if downloadformat == 'json':
+
             return fx_download_json(filtered_data)
         elif downloadformat == 'csv':
             return fx_download_csv(filtered_data)

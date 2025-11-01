@@ -44,22 +44,22 @@
 
                         <div class="mb-2">
                             <label for="minYear" class="form-label">Minimum Year</label>
-                            <input type="text" id="minYear" class="form-control" placeholder="1890-2024">
+                            <input type="text" id="minYear" class="form-control" placeholder="eg. 1890">
                         </div>
 
                         <div class="mb-2">
                             <label for="maxYear" class="form-label">Maximum Year</label>
-                            <input type="text" id="maxYear" class="form-control" placeholder="1890-2024">
+                            <input type="text" id="maxYear" class="form-control" placeholder="eg. 2024">
                         </div>
 
                         <div class="mb-2">
                             <label for="minSize" class="form-label">Minimum Size</label>
-                            <input type="text" id="minSize" class="form-control" placeholder="0-5000">
+                            <input type="text" id="minSize" class="form-control" placeholder="eg. 0">
                         </div>
 
                         <div class="mb-2">
                             <label for="maxSize" class="form-label">Maximum Size</label>
-                            <input type="text" id="maxSize" class="form-control" placeholder="0-5000">
+                            <input type="text" id="maxSize" class="form-control" placeholder="eg. 5000.2">
                         </div>
 
                         <div class="mb-2">
@@ -129,7 +129,7 @@
                         <strong>Download Data</strong><br>
                         Download filtered data by entering your desired filters, choosing a format, and then clicking "Download Data" button<br>
                         You can filter by Year, Size, Radius around a location and Watershed<br>
-                        When using the Year/Size filter it is good practice input an upper and lower bound or else large amounts of the dataset will load
+                        When using the Year/Size filter it is good practice input an upper and lower bound or else large amounts of the dataset will load<br>
                         <strong>Watershed Explorer</strong><br>
                         To see all available watersheds, click on the 💧 button<br>
                         <strong>Polygon Tolerance</strong><br>
@@ -195,7 +195,7 @@
         function resize(e) {
           const dx = e.clientX - x;
           const newWidth = sidebarWidth + dx;
-          if (newWidth > 50 && newWidth < 600) { // set min/max widths
+          if (newWidth > 50 && newWidth < 600) { 
             sidebar.style.width = `${newWidth}px`;
           }
         }
@@ -231,16 +231,16 @@
         const polygonInput = document.getElementById("polygonTol");
         const savePolygonTol = document.getElementById("savePolygonTol");
 
-        // Open modal
+        
         polygonTolButton.addEventListener("click", () => {
             polygonTolModal.style.display = "flex";
-            // If value already saved, populate input
+            
             if (savedPolygonTolerance !== null) {
                 polygonInput.value = savedPolygonTolerance;
             }
         });
 
-        // Close modal
+        
         polygonCloseBtn.addEventListener("click", () => {
             polygonTolModal.style.display = "none";
         });
@@ -251,7 +251,7 @@
             }
         });
 
-        // Save button
+        
         savePolygonTol.addEventListener("click", () => {
             const tolValue = polygonInput.value.trim();
             if (!tolValue || isNaN(tolValue)) {
@@ -279,10 +279,10 @@
         let watershedLayer = null;
         let watershedData = null;
 
-        fetch("/static/qc_watershed_data.geojson")  // your static file
+        fetch("/static/qc_watershed_data.geojson")  
             .then(res => res.json())
             .then(data => {
-                watershedData = data;  // store it for later use
+                watershedData = data;  
         })
         .catch(err => console.error("Failed to load watershed data", err));
 
@@ -291,16 +291,16 @@
 
 
             if (!watershedMap) {
-                // Initialize the map only once
-                watershedMap = L.map('watershedMap').setView([52.520878, -69.855725], 5);  // change coordinates/zoom
+                
+                watershedMap = L.map('watershedMap').setView([52.520878, -69.855725], 5);  
 
-                // Add base tile layer
+                
                 Esrimap = L.tileLayer(
                 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
                 { maxZoom: 18, attribution: 'Tiles © Esri' }
                 ).addTo(watershedMap);
 
-                // Add watershed GeoJSON if loaded
+                
             if (watershedData) {
             watershedLayer = L.geoJSON(watershedData, {
                 style: function(feature) {                                                                               // THis styles the polygons that are displayed on the map 
@@ -330,7 +330,7 @@
             }
 
             } else {
-                // In case the map was already initialized but hidden
+                
                 watershedMap.invalidateSize(); 
             }
         });
@@ -347,7 +347,7 @@
     <script>
         map.on('click', function(e) {
         const lat = e.latlng.lat.toFixed(6);
-        const lon = e.latlng.lng.toFixed(6); // Leaflet uses .lng; labeling as lon is fine for display
+        const lon = e.latlng.lng.toFixed(6); 
         L.popup()
             .setLatLng(e.latlng)
             .setContent(`${lat}, ${lon}`)
