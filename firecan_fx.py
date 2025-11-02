@@ -161,8 +161,12 @@ def fx_get_qc_watershed_data():                                                 
  
 
         print(f'.......... {timenow()} Saving Watershed Data (Parquet and GeoJson) For Later') 
-        watershed_data.to_file(qc_watershed_data_path_json, driver="GeoJSON")
+        
         watershed_data.to_parquet(qc_watershed_data_path)  
+
+        watershed_data_togeojson=watershed_data
+        watershed_data_togeojson["geometry"] = watershed_data_togeojson["geometry"].simplify(tolerance=0.001)
+        watershed_data_togeojson.to_file(qc_watershed_data_path_json, driver="GeoJSON")
         
     else:
         print(f'...... {timenow()} The Watershed data is alredy processed, Loading in now')
@@ -410,7 +414,7 @@ def fx_filter_fires_data(                                                       
                 "watershed_polygon": None
             }
 
-        # Fill in whichever geometry applies
+        
         if distance_coords != '' and distance_radius != '':
             results["user_point"] = user_point
             results["buffer_geom"] = buffer_deg
@@ -426,6 +430,7 @@ def fx_filter_fires_data(                                                       
 def fx_createexploremap(data, map_name):
     m = data.explore()
     m.save(f'static/{map_name}.html')
+    print("saved")
 
 
 

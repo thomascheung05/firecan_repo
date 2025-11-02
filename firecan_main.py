@@ -1,6 +1,5 @@
-from firecan_fx import convert_m_4326deg,fx_createexploremap,fx_merge_provincial_fires,timenow,fx_get_on_fire_data,create_data_folder,fx_scrape_donneqc,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
+from firecan_fx import convert_m_4326deg,fx_merge_provincial_fires,timenow,fx_get_on_fire_data,create_data_folder,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
 from flask import Flask, request # type: ignore
-from datetime import datetime
 import json
 import geopandas as gpd
 

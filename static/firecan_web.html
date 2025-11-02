@@ -230,7 +230,7 @@
         const polygonTolButton = document.getElementById("polygonTolButton");
         const polygonTolModal = document.getElementById("polygonTolModal");
         const polygonCloseBtn = polygonTolModal.querySelector(".close");
-        let savedPolygonTolerance = 100;
+        let savedPolygonTolerance = 1000;
         const polygonInput = document.getElementById("polygonTol");
         const savePolygonTol = document.getElementById("savePolygonTol");
 
@@ -322,9 +322,7 @@
             } else {
             console.warn("Watershed data not ready yet.");
             }
-
             } else {
-                
                 watershedMap.invalidateSize(); 
             }
         }
@@ -346,8 +344,6 @@
             else{
                 showMap();
             }
-
-
         });
         closeBtn.addEventListener("click", () => {
             modal.style.display = "none";
