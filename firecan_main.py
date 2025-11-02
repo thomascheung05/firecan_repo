@@ -1,6 +1,7 @@
 from firecan_fx import convert_m_4326deg,fx_merge_provincial_fires,timenow,fx_get_on_fire_data,create_data_folder,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
 from flask import Flask, request # type: ignore
 import json
+import sys
 import geopandas as gpd
 
 create_data_folder()
@@ -101,6 +102,17 @@ def fx_main():                                                                  
             "user_buffer": geojson_buffer,
             "watershed_polygon" : geojson_watershedpolygon
         }
+
+
+
+        MAX_SIZE_MB = 8
+        MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
+        geojson_bytes = len(json.dumps(combined_geojson).encode('utf-8'))
+        print(geojson_bytes)
+        if geojson_bytes > MAX_SIZE_BYTES:
+            print(f'{geojson_bytes} is too big')
+            return {"error": f"Data too large to load ({geojson_bytes / 1024 / 1024:.2f} MB). Please narrow your filter."}, 413
+
 
         return json.dumps(combined_geojson)
 
