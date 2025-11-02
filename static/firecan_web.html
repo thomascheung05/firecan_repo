@@ -157,6 +157,9 @@
         <div id="watershedModal" class="modal">
             <span class="close">&times;</span>
             <div id="watershedMap"></div>
+            <div id="spinner" class="spinner-border text-primary position-absolute top-50 start-50 translate-middle" role="status" hidden>
+                <span class="visually-hidden">Loading...</span>
+              </div>
         </div>
 
 <div id="polygonTolModal">
@@ -279,17 +282,8 @@
         let watershedLayer = null;
         let watershedData = null;
 
-        fetch("/static/qc_watershed_data.geojson")  
-            .then(res => res.json())
-            .then(data => {
-                watershedData = data;  
-        })
-        .catch(err => console.error("Failed to load watershed data", err));
 
-        watershedButton.addEventListener("click", () => {
-            modal.style.display = "block";
-
-
+        function showMap(){
             if (!watershedMap) {
                 
                 watershedMap = L.map('watershedMap').setView([52.520878, -69.855725], 5);  
@@ -333,6 +327,27 @@
                 
                 watershedMap.invalidateSize(); 
             }
+        }
+        watershedButton.addEventListener("click", () => {
+            modal.style.display = "block";
+            if (!watershedData) {
+                spinner.hidden = false;
+                fetch("/static/qc_watershed_data.geojson")  
+                    .then(res => res.json())
+                    .then(data => {
+                        watershedData = data;  
+                        showMap();
+                })
+                .catch(err => console.error("Failed to load watershed data", err))
+                .finally(() => {
+                    spinner.hidden = true;
+                });
+            }
+            else{
+                showMap();
+            }
+
+
         });
         closeBtn.addEventListener("click", () => {
             modal.style.display = "none";
