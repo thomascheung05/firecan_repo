@@ -5,7 +5,7 @@ import sys
 import geopandas as gpd
 
 create_data_folder()
-
+MAX_SIZE_MB = 5
 print('------------------------Starting data pre-loading. This may take a few minutes...', timenow(),'------------------------')                                      # This section here loads in the data, it uses the scrap donne quebec function and the process qc fire data fuction
 gdf_qc_fires = fx_get_qc_fire_data()
 gdf_qc_watershed_data = fx_get_qc_watershed_data()
@@ -105,7 +105,7 @@ def fx_main():                                                                  
 
 
 
-        MAX_SIZE_MB = 6
+
         MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
         geojson_bytes = len(json.dumps(combined_geojson).encode('utf-8'))
         print(f'File size:{geojson_bytes/1000000}')
