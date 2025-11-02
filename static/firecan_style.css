@@ -170,15 +170,18 @@
 }
 
 #clearFiltersText {
-    display: inline-block;
-    margin-top: 5px;
+    display: block;           
+    margin: 0;                
+    padding: 0;              
     font-family: Trebuchet MS, sans-serif;
     font-size: 16px;
-    color: #9f9e9e;
+    color: #ffffff;
     text-decoration: underline;
     cursor: pointer;
+    text-align: right;  
+    line-height: 1;     
 }
 
 #clearFiltersText:hover {
-    color: #dcdcdc; /* optional lighter color on hover */
+    color: #dcdcdc; 
 }
