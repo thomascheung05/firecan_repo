@@ -165,7 +165,7 @@ def fx_get_qc_watershed_data():                                                 
         watershed_data.to_parquet(qc_watershed_data_path)  
 
         watershed_data_togeojson=watershed_data
-        watershed_data_togeojson["geometry"] = watershed_data_togeojson["geometry"].simplify(tolerance=0.001)
+        watershed_data_togeojson["geometry"] = watershed_data_togeojson["geometry"].simplify(tolerance=0.01)
         watershed_data_togeojson.to_file(qc_watershed_data_path_json, driver="GeoJSON")
         
     else:
