@@ -11,12 +11,15 @@
   color: rgb(255, 255, 255); 
 }
 
+
 #sidebar button {
   font-family: Trebuchet MS, sans-serif;
   font-size: 20px;
   background-color: #157f38;
   color: rgb(255, 255, 255); 
 }
+
+
 
 #sidebar #aboutButton {
   background-color: #7a7a7a;
@@ -164,4 +167,18 @@
 .leaflet-control-layers label {
   cursor: pointer;
   padding: 2px 0;
+}
+
+#clearFiltersText {
+    display: inline-block;
+    margin-top: 5px;
+    font-family: Trebuchet MS, sans-serif;
+    font-size: 16px;
+    color: #9f9e9e;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#clearFiltersText:hover {
+    color: #dcdcdc; /* optional lighter color on hover */
 }

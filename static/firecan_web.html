@@ -20,9 +20,11 @@
 
                 <div id="mainSidebarContent">
 
-                    <div class="d-grid gap-2 mb-3">
+                <div class="d-grid gap-2 mb-3">
                     <button id="filterButton" onclick="loadFilteredData()">Filter Map</button>
-                    </div>
+                    <span id="clearFiltersText" onclick="clearFilters()">Clear Filters</span>
+                </div>
+
                     <hr class="sidebar-separator">
                     <form>  
                         <div id="loadingMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
@@ -124,7 +126,7 @@
                     <p>
                         <strong style="font-size: 24px;">Filter Data</strong><br>
                         Input your desired filters and click "Filter Map" to see your fires on the map.<br>
-                        BE CAREFUL!: Theses datasets hold hundreds of thousands of rows, FOCUS your filters or LOWER polygon tolerance to minimize file size (8 mb) and server costs please!<br>
+                        BE CAREFUL!: Theses datasets hold hundreds of thousands of rows, FOCUS your filters or LOWER polygon tolerance to minimize file size (6 mb) and server costs please!<br>
                         You can filter by <u>Year</u>, <u>Size</u>, <u>Radius</u> around a location and <u>Watershed</u><br>
                         When using the <u>Year/Size</u> filter it is good practice input an upper and lower bound or else large amounts of the dataset will load<br>
                         <strong style="font-size: 24px;">Base Map</strong><br>
@@ -133,6 +135,7 @@
                         Download filtered data by entering your desired filters, choosing a format, and then clicking "Download Data" button<br>
                         <strong style="font-size: 24px;">Watershed Explorer</strong><br>
                         To see all available watersheds, click on the 💧 button<br>
+                        Copy and Paste the watershed name into the watershed filter box<br>
                         <strong style="font-size: 24px;">Polygon Tolerance</strong><br>
                         To increases the accuracy of the polgyons, input a smaller number (m of polygon deviation allowed) in ▲ popup
                     </p>
@@ -365,6 +368,28 @@
             .setContent(`${lat}, ${lon}`)
             .openOn(map);
         });
+    </script>
+    <!-- Clear Filters -->
+    <script>
+        function clearFilters() {
+            // Uncheck checkboxes
+            document.getElementById("quebeccheckbox").checked = true;
+            document.getElementById("ontariocheckbox").checked = true;
+
+            // Clear text inputs
+            const textInputs = ["minYear","maxYear","minSize","maxSize","distanceCoords","distanceRadius","watershedName"];
+            textInputs.forEach(id => document.getElementById(id).value = "");
+
+            // Reset download format
+            document.getElementById("downloadFormat").value = "csv";
+
+            // Reset polygon tolerance if needed
+            if (typeof savedPolygonTolerance !== 'undefined') {
+                polygonInput.value = savedPolygonTolerance;
+            }
+
+            console.log("Filters cleared.");
+        }
     </script>
 </body>
 </html>
