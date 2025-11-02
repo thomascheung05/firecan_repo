@@ -88,99 +88,104 @@ var userBufferLayer;
 var userWatershedPolygonLayer;
 function loadFilteredData() {                                                                                          // This is the fuction that sends python the filtering conditions, and receives a filtered dataset that it then displays on the map, ai helped a lot with this and the function below this  
 
-    if (fireLayer) { map.removeLayer(fireLayer); fireLayer = null; }   
-    if (userPointLayer) { map.removeLayer(userPointLayer); userPointLayer = null; } 
-    if (userBufferLayer) { map.removeLayer(userBufferLayer); userBufferLayer = null; }
-    if (userWatershedPolygonLayer) { map.removeLayer(userWatershedPolygonLayer); userWatershedPolygonLayer = null; }
+  if (fireLayer) { map.removeLayer(fireLayer); fireLayer = null; }   
+  if (userPointLayer) { map.removeLayer(userPointLayer); userPointLayer = null; } 
+  if (userBufferLayer) { map.removeLayer(userBufferLayer); userBufferLayer = null; }
+  if (userWatershedPolygonLayer) { map.removeLayer(userWatershedPolygonLayer); userWatershedPolygonLayer = null; }
 
 
-    const minYear = document.getElementById('minYear').value;                                                          // This takes the inputs form the HTML and assings it to varibles in java 
-    const maxYear = document.getElementById('maxYear').value;
-    const minSize = document.getElementById('minSize').value;
-    const maxSize = document.getElementById('maxSize').value;
-    const distanceCoords = document.getElementById('distanceCoords').value;
-    const distanceRadius = document.getElementById('distanceRadius').value;
-    const watershedName = document.getElementById('watershedName').value;
-    const qcprovinceflag = document.getElementById('quebeccheckbox').checked;
-    const onprovinceflag = document.getElementById('ontariocheckbox').checked;    
-    const polygonTolerance = savedPolygonTolerance;
+  const minYear = document.getElementById('minYear').value;                                                          // This takes the inputs form the HTML and assings it to varibles in java 
+  const maxYear = document.getElementById('maxYear').value;
+  const minSize = document.getElementById('minSize').value;
+  const maxSize = document.getElementById('maxSize').value;
+  const distanceCoords = document.getElementById('distanceCoords').value;
+  const distanceRadius = document.getElementById('distanceRadius').value;
+  const watershedName = document.getElementById('watershedName').value;
+  const qcprovinceflag = document.getElementById('quebeccheckbox').checked;
+  const onprovinceflag = document.getElementById('ontariocheckbox').checked;    
 
-    const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&qcprovinceflag=${qcprovinceflag}&onprovinceflag=${onprovinceflag}&polygon_tol=${savedPolygonTolerance}`;     // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
-    
-    const loadingEl = document.getElementById('loadingMessage');                                                       // This is for the message that says the data is downlaoding, AI helped me with this
-    loadingEl.style.display = "block";                                                                               // This lines displays the message, as by deafult it is hidden 
-    loadingEl.offsetHeight; 
-    
+  const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&qcprovinceflag=${qcprovinceflag}&onprovinceflag=${onprovinceflag}&polygon_tol=${savedPolygonTolerance}`;     // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
+    // first filter - Everything is good
+    // Second filter - shows the previosu fire count, no loading message, the new fire count message once data has loaded
+    // same thing for all subsequent loads
+  
+  let loadingTimeout = null;
+  const loadingEl = document.getElementById('loadingMessage');                                                      // This is for the message that says the data is downlaoding, AI helped me with this
+  loadingEl.style.display = "block";                                                                               // This lines displays the message, as by deafult it is hidden 
+  loadingEl.offsetHeight; 
+
+  clearTimeout(loadingTimeout);
+  setTimeout (() => {
     fetch(url)                                                                                                          // This is the part that sends the URL to python, python then filters the data and sends back a filtered dataset
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            console.log("Data successfully received and processed:");
-            return response.json();
-        })
-        .then(data => {                                                                                                 // Using the data we just go we dispaly it on the leaflet map 
-            
-            if (data.user_point) {
-                userPointLayer = L.geoJSON(data.user_point, {
-                    pointToLayer: (feature, latlng) => {
-                        const starIcon = L.divIcon({
-                            html: "★",
-                            className: "star-marker",
-                            iconSize: [60, 60],
-                            iconAnchor: [10, 10]
-                        });
-                        return L.marker(latlng, { icon: starIcon });
-                    }
-                }).addTo(map);
-            }
-            if (data.user_buffer) {
-                userBufferLayer = L.geoJSON(data.user_buffer, {
-                    style: { color: '#ffffffff', weight: 3, fillOpacity: 0.1 }
-                }).addTo(map);
-            }
-            if (data.watershed_polygon){
-              userWatershedPolygonLayer = L.geoJson(data.watershed_polygon, {
-                style: {color: '#aedffd', weight: 1, fillOpacity: 0.1}
-              }).addTo(map);
-            }   
-            fireLayer = L.geoJSON(data.fires, {
-                style: function(feature) {                                                                               // THis styles the polygons that are displayed on the map 
-                    return {
-                        color: "#e2460cd3",
-                        weight: 4,                                                                                       // Big weight to make the polygons visible from zoomed out 
-                        opacity: 1,
-                        fillColor: "#FF0000",
-                        fillOpacity: 0.5                                                                                 // Lower opacity looks better, and helps distinguish from polygon fill and border on map (useful when many polygons are next to each other)
-                    };
-                },
-                onEachFeature: function(feature, layer) {                                                               // This creates a pop up when clicking on polygons that say the year and its size, this was half taken from Ottowa demo and half AI.
-                    if (feature.properties) {                   
-                        let popupContent = `
-                            <b>Fire Details</b><br>
-                            Year: ${feature.properties.fire_year}<br>
-                            Size: ${feature.properties.fire_size} ha
-                        `;
-                        layer.bindPopup(popupContent);
-                    }
-                },
-            }).addTo(map);                                                                                            // This part actually adds everything above to map 
-            
-    
+      .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        console.log("Data successfully received and processed:");
+        return response.json();
+      })
 
-            const fireCount = data.fires.features ? data.fires.features.length : 0;
-            loadingEl.textContent = `${fireCount} fires matched your criteria.`;                                       // This displays a message after the data has been loaded in it tell the user how many fires matched their criteria. THis is useful as it signals when data is loading / done loading (good for big datasets) and also tells the user if there were no fires that matches their criterai (so they are not confused by empty map)
-            setTimeout(() => {                                                                                         // THis removes the message after 5 seconds 
-                loadingEl.style.display = 'none';
-            }, 5000);
+      .then(data => {                                                                                                 // Using the data we just go we dispaly it on the leaflet map 
+        if (data.user_point) {
+            userPointLayer = L.geoJSON(data.user_point, {
+                pointToLayer: (feature, latlng) => {
+                    const starIcon = L.divIcon({
+                        html: "★",
+                        className: "star-marker",
+                        iconSize: [60, 60],
+                        iconAnchor: [10, 10]
+                    });
+                    return L.marker(latlng, { icon: starIcon });
+                }
+            }).addTo(map);
+        }
+        if (data.user_buffer) {
+            userBufferLayer = L.geoJSON(data.user_buffer, {
+                style: { color: '#ffffffff', weight: 3, fillOpacity: 0.1 }
+            }).addTo(map);
+        }
+        if (data.watershed_polygon){
+          userWatershedPolygonLayer = L.geoJson(data.watershed_polygon, {
+            style: {color: '#aedffd', weight: 1, fillOpacity: 0.1}
+          }).addTo(map);
+        }   
+        fireLayer = L.geoJSON(data.fires, {
+            style: function(feature) {                                                                               // THis styles the polygons that are displayed on the map 
+                return {
+                    color: "#e2460cd3",
+                    weight: 4,                                                                                       // Big weight to make the polygons visible from zoomed out 
+                    opacity: 1,
+                    fillColor: "#FF0000",
+                    fillOpacity: 0.5                                                                                 // Lower opacity looks better, and helps distinguish from polygon fill and border on map (useful when many polygons are next to each other)
+                };
+            },
+            onEachFeature: function(feature, layer) {                                                               // This creates a pop up when clicking on polygons that say the year and its size, this was half taken from Ottowa demo and half AI.
+                if (feature.properties) {                   
+                    let popupContent = `
+                        <b>Fire Details</b><br>
+                        Year: ${feature.properties.fire_year}<br>
+                        Size: ${feature.properties.fire_size} ha
+                    `;
+                    layer.bindPopup(popupContent);
+                }
+            },
+        }).addTo(map);                                                                                            // This part actually adds everything above to map 
+        
+        const fireCount = data.fires.features ? data.fires.features.length : 0;
+        loadingEl.textContent = `${fireCount} fires matched your criteria.`;                                       // This displays a message after the data has been loaded in it tell the user how many fires matched their criteria. THis is useful as it signals when data is loading / done loading (good for big datasets) and also tells the user if there were no fires that matches their criterai (so they are not confused by empty map)
+        setTimeout(() => {                                                                                         // THis removes the message after 5 seconds 
+            loadingEl.style.display = 'none';
+        }, 5000);
+      })
+
+      .catch(error => {                                                                                              // Displays message if there is an error getting the data 
+          console.error('Error fetching data:', error);
+          alert("An error occurred while fetching the data. Please check your inputs.");
+      });
+}, 100);
 
 
-        })
 
-        .catch(error => {                                                                                              // Displays message if there is an error getting the data 
-            console.error('Error fetching data:', error);
-            alert("An error occurred while fetching the data. Please check your inputs.");
-        })
 }
 
 

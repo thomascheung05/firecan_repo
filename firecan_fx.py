@@ -223,15 +223,15 @@ def fx_scrape_ontariogeohub(url, dataname):
                 geom_data = feat.get("geometry")
                 props = feat.get("attributes", {})
 
-                # Convert Esri JSON → Shapely geometry
+                
                 geom = None
                 if geom_data:
                     try:
-                        if "rings" in geom_data:  # Polygon
+                        if "rings" in geom_data:   
                             geom = Polygon(geom_data["rings"][0])
-                        elif "paths" in geom_data:  # Polyline
+                        elif "paths" in geom_data:  
                             geom = shape({"type": "LineString", "coordinates": geom_data["paths"][0]})
-                        elif "x" in geom_data and "y" in geom_data:  # Point
+                        elif "x" in geom_data and "y" in geom_data:  
                             geom = shape({"type": "Point", "coordinates": [geom_data["x"], geom_data["y"]]})
                     except Exception as e:
                         print("⚠️ Geometry conversion failed for one feature:", e)
