@@ -122,7 +122,7 @@ def serve_html():
     return app.send_static_file('firecan_web.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
 
 
 
