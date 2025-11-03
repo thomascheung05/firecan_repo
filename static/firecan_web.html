@@ -20,30 +20,32 @@
 
                 <div id="mainSidebarContent">
 
-                <div class="d-grid gap-2 mb-3">
-                    <button id="filterButton" onclick="loadFilteredData()">Filter Map</button>
-                </div>
-                <div class="d-grid gap-1 mb-3">
-                    <span id="clearFiltersText" onclick="clearFilters()">Clear Filters</span>
-                </div>
+                    <div class="d-grid gap-2 mb-3">
+                        <button id="filterButton" type="button" onclick="loadFilteredData()">Filter Map</button>
+                    </div>
+                    <div class="d-grid gap-1 mb-3">
+                        <span id="clearFiltersText" onclick="clearFilters()">Clear Filters</span>
+                    </div>
 
-                    
-                    <form>  
-                        <div id="loadingMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                            <p class="mt-2">Loading data<br>This may take several minutes...</p>
+                    <div id="loadingMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
+                        <p class="mt-2">Loading data<br>This may take several minutes...</p>
+                    </div>         
+
                     <hr class="sidebar-separator">
+
+                    <form>  
+
                         <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="quebeccheckbox" value="qc" checked>
-                        <label class="form-check-label" for="checkbox1">QC</label>
+                            <input class="form-check-input" type="checkbox" id="quebeccheckbox" value="qc" checked>
+                            <label class="form-check-label" for="checkbox1">QC</label>
                         </div>
 
                         <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" id="ontariocheckbox" value="on" checked>
-                        <label class="form-check-label" for="checkbox2">ON</label>
+                            <input class="form-check-input" type="checkbox" id="ontariocheckbox" value="on">
+                            <label class="form-check-label" for="checkbox2">ON</label>
                         </div>
 
                         <div class="mb-2">
@@ -128,7 +130,7 @@
                     <p>
                         <strong style="font-size: 24px;">Filter Data</strong><br>
                         Input your desired filters and click "Filter Map" to see your fires on the map.<br>
-                        BE CAREFUL!: Theses datasets hold hundreds of thousands of rows, FOCUS your filters or LOWER polygon tolerance to minimize file size (6 mb) and server costs please!<br>
+                        BE CAREFUL!: Theses datasets hold hundreds of thousands of rows, FOCUS your filters or LOWER polygon tolerance to minimize file size (5 mb) and server costs<br>
                         You can filter by <u>Year</u>, <u>Size</u>, <u>Radius</u> around a location and <u>Watershed</u><br>
                         When using the <u>Year/Size</u> filter it is good practice input an upper and lower bound or else large amounts of the dataset will load<br>
                         <strong style="font-size: 24px;">Base Map</strong><br>
