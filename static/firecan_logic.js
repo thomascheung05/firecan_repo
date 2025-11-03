@@ -117,75 +117,73 @@ function loadFilteredData() {                                                   
   clearTimeout(loadingTimeout);
   setTimeout (() => {
     fetch(url)                                                                                                          // This is the part that sends the URL to python, python then filters the data and sends back a filtered dataset
-      .then(response => {
-        if (!response.ok) {
-          return response.json().then(err => {
-              throw new Error(err.error || 'Network response was not ok');
-          });
-        }
-        console.log("Data successfully received and processed:");
-        return response.json();
-      })
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(err => {
+            throw new Error(err.error || 'Network response was not ok');
+        });
+      }
+      console.log("Data successfully received and processed:");
+      return response.json();
+    })
 
-      .then(data => {                                                                                                 // Using the data we just go we dispaly it on the leaflet map 
-        if (data.user_point) {
-            userPointLayer = L.geoJSON(data.user_point, {
-                pointToLayer: (feature, latlng) => {
-                    const starIcon = L.divIcon({
-                        html: "★",
-                        className: "star-marker",
-                        iconSize: [60, 60],
-                        iconAnchor: [10, 10]
-                    });
-                    return L.marker(latlng, { icon: starIcon });
-                }
-            }).addTo(map);
-        }
-        if (data.user_buffer) {
-            userBufferLayer = L.geoJSON(data.user_buffer, {
-                style: { color: '#ffffffff', weight: 3, fillOpacity: 0.1 }
-            }).addTo(map);
-        }
-        if (data.watershed_polygon){
-          userWatershedPolygonLayer = L.geoJson(data.watershed_polygon, {
-            style: {color: '#aedffd', weight: 1, fillOpacity: 0.1}
+    .then(data => {                                                                                                 // Using the data we just go we dispaly it on the leaflet map 
+      if (data.user_point) {
+          userPointLayer = L.geoJSON(data.user_point, {
+              pointToLayer: (feature, latlng) => {
+                  const starIcon = L.divIcon({
+                      html: "★",
+                      className: "star-marker",
+                      iconSize: [60, 60],
+                      iconAnchor: [10, 10]
+                  });
+                  return L.marker(latlng, { icon: starIcon });
+              }
           }).addTo(map);
-        }   
-        fireLayer = L.geoJSON(data.fires, {
-            style: function(feature) {                                                                               // THis styles the polygons that are displayed on the map 
-                return {
-                    color: "#e2460cd3",
-                    weight: 4,                                                                                       // Big weight to make the polygons visible from zoomed out 
-                    opacity: 1,
-                    fillColor: "#FF0000",
-                    fillOpacity: 0.5                                                                                 // Lower opacity looks better, and helps distinguish from polygon fill and border on map (useful when many polygons are next to each other)
-                };
-            },
-            onEachFeature: function(feature, layer) {                                                               // This creates a pop up when clicking on polygons that say the year and its size, this was half taken from Ottowa demo and half AI.
-                if (feature.properties) {                   
-                    let popupContent = `
-                        <b>Fire Details</b><br>
-                        Year: ${feature.properties.fire_year}<br>
-                        Size: ${feature.properties.fire_size} ha
-                    `;
-                    layer.bindPopup(popupContent);
-                }
-            },
-        }).addTo(map);                                                                                            // This part actually adds everything above to map 
-        
-        const fireCount = data.fires.features ? data.fires.features.length : 0;
-        loadingEl.textContent = `${fireCount} fires matched your criteria.`;                                       // This displays a message after the data has been loaded in it tell the user how many fires matched their criteria. THis is useful as it signals when data is loading / done loading (good for big datasets) and also tells the user if there were no fires that matches their criterai (so they are not confused by empty map)
-        setTimeout(() => {                                                                                         // THis removes the message after 5 seconds 
-            loadingEl.style.display = 'none';
-        }, 5000);
-      })
+      }
+      if (data.user_buffer) {
+          userBufferLayer = L.geoJSON(data.user_buffer, {
+              style: { color: '#ffffffff', weight: 3, fillOpacity: 0.1 }
+          }).addTo(map);
+      }
+      if (data.watershed_polygon){
+        userWatershedPolygonLayer = L.geoJson(data.watershed_polygon, {
+          style: {color: '#aedffd', weight: 1, fillOpacity: 0.1}
+        }).addTo(map);
+      }   
+      fireLayer = L.geoJSON(data.fires, {
+          style: function(feature) {                                                                               // THis styles the polygons that are displayed on the map 
+              return {
+                  color: "#e2460cd3",
+                  weight: 4,                                                                                       // Big weight to make the polygons visible from zoomed out 
+                  opacity: 1,
+                  fillColor: "#FF0000",
+                  fillOpacity: 0.5                                                                                 // Lower opacity looks better, and helps distinguish from polygon fill and border on map (useful when many polygons are next to each other)
+              };
+          },
+          onEachFeature: function(feature, layer) {                                                               // This creates a pop up when clicking on polygons that say the year and its size, this was half taken from Ottowa demo and half AI.
+              if (feature.properties) {                   
+                  let popupContent = `
+                      <b>Fire Details</b><br>
+                      Year: ${feature.properties.fire_year}<br>
+                      Size: ${feature.properties.fire_size} ha
+                  `;
+                  layer.bindPopup(popupContent);
+              }
+          },
+      }).addTo(map);                                                                                            // This part actually adds everything above to map 
+      
+      const fireCount = data.fires.features ? data.fires.features.length : 0;
+      loadingEl.textContent = `${fireCount} fires matched your criteria.`;                                       // This displays a message after the data has been loaded in it tell the user how many fires matched their criteria. THis is useful as it signals when data is loading / done loading (good for big datasets) and also tells the user if there were no fires that matches their criterai (so they are not confused by empty map)
+      setTimeout(() => {                                                                                         // THis removes the message after 5 seconds 
+          loadingEl.style.display = 'none';
+      }, 5000);
+    })
 
-      .catch(error => {                                                                                              // Displays message if there is an error getting the data 
-          alert(error.message);
-      });
-}, 100);
-
-
+    .catch(error => {                                                                                              // Displays message if there is an error getting the data 
+        alert(error.message);
+    });
+  }, 100);
 
 }
 
