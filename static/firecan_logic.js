@@ -122,18 +122,10 @@ function loadFilteredData() {                                                   
 
   setTimeout(() => {
     fetch(url)                                                                                                          // This is the part that sends the URL to python, python then filters the data and sends back a filtered dataset
-<<<<<<< HEAD
     .then(async response => {
       if (!response.ok) {
         const err = await response.json();
         throw new Error(err.error || 'Network response was not ok');
-=======
-    .then(response => {
-      if (!response.ok) {
-        return response.json().then(err => {
-            throw new Error(err.error || 'Network response was not ok');
-        });
->>>>>>> b2d4962701f5c15da82cfd85cf64e772a358e40c
       }
       console.log("Data successfully received and processed:");
       return response.json();
