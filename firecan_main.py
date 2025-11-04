@@ -5,7 +5,7 @@ import sys
 import geopandas as gpd
 
 create_data_folder()
-MAX_SIZE_MB = 5
+MAX_SIZE_MB = 8
 print('------------------------Starting data pre-loading. This may take a few minutes...', timenow(),'------------------------')                                      # This section here loads in the data, it uses the scrap donne quebec function and the process qc fire data fuction
 gdf_qc_fires = fx_get_qc_fire_data()
 gdf_qc_watershed_data = fx_get_qc_watershed_data()
