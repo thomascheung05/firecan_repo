@@ -87,7 +87,7 @@ def fx_main():                                                                  
 
         geojson_point = json.loads(userpoint.to_json()) if userpoint is not None else None
         geojson_buffer = json.loads(bufferdeg.to_json()) if bufferdeg is not None else None
-
+        
         if watershed_polygon is not None:
             ws_gs = gpd.GeoSeries([watershed_polygon], crs=gdf_qc_watershed_data.crs)
             ws_gs = ws_gs.to_crs("EPSG:4326")
@@ -105,9 +105,8 @@ def fx_main():                                                                  
 
         MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
         geojson_bytes = len(json.dumps(combined_geojson).encode('utf-8'))
-        print(f'File size:{geojson_bytes/1000000}')
         if geojson_bytes > MAX_SIZE_BYTES:
-            print(f'{geojson_bytes} is too big')
+            print(f'{geojson_bytes/1000000} is too big')
             return {"error": f"Data too large to load ({geojson_bytes / 1024 / 1024:.2f} MB). Please re-fresh and narrow your filter."}, 413
 
 
