@@ -439,11 +439,21 @@ def fx_createexploremap(data, map_name):
 
 def fx_download_json(filtered_data):    
                                                                             # This function is to dowload the filtered data as a geojson, AI showed me how to do this as it is not as simple as just regularly saving the file as it must go through flask 
-        geojson_data = json.loads(filtered_data.to_json())                                                            # converst the filtered data to geojson
+        geojson_data = json.loads(filtered_data.to_json())     
+        
+        MAX_SIZE_MB = 5
+        MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
+        geojson_bytes = len(json.dumps(geojson_data).encode('utf-8'))
+        print(f'File size:{geojson_bytes/1000000}')
+        if geojson_bytes > MAX_SIZE_BYTES:
+            print(f'{geojson_bytes} is too big')
+            return {"error": f"Data too large to load ({geojson_bytes / 1024 / 1024:.2f} MB). Please re-fresh and narrow your filter."}, 413
+
+
         geojson_string = json.dumps(geojson_data) 
         geojson_buffer = io.BytesIO(geojson_string.encode('utf-8'))   
         geojson_buffer.seek(0)
-        
+
         return send_file(                                                                                       # Send the file back to the browser as an attachment
 
             geojson_buffer,
@@ -477,6 +487,19 @@ def fx_download_gpkg(filtered_data):
     filtered_data.to_file(gpkg_buffer, driver="GPKG")
 
     gpkg_buffer.seek(0) 
+
+
+    MAX_SIZE_MB = 5
+    MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
+    gpkg_size = gpkg_buffer.getbuffer().nbytes
+    print(f"GPKG size: {gpkg_size / 1024 / 1024:.2f} MB")
+
+    if gpkg_size > MAX_SIZE_BYTES:
+        print(f"{gpkg_size} bytes is too big")
+        return {
+            "error": f"Data too large to load ({gpkg_size / 1024 / 1024:.2f} MB). Please re-fresh and narrow your filter."
+        }, 413
+    
 
     return send_file(
         gpkg_buffer,

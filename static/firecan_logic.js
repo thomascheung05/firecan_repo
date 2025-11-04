@@ -108,10 +108,6 @@ function loadFilteredData() {                                                   
     
   
   
-  
-    // first filter - Everything is good
-    // Second filter - shows the previosu fire count, no loading message, the new fire count message once data has loaded
-    // same thing for all subsequent loads
   const loadingEl = document.getElementById('loadingMessage');
   if (loadingEl) {
     loadingEl.style.display = 'block';
@@ -178,10 +174,14 @@ function loadFilteredData() {                                                   
       }).addTo(map);                                                                                            // This part actually adds everything above to map 
       
       const fireCount = data.fires.features ? data.fires.features.length : 0;
-      loadingEl.textContent = `${fireCount} fires matched your criteria.`;                                       // This displays a message after the data has been loaded in it tell the user how many fires matched their criteria. THis is useful as it signals when data is loading / done loading (good for big datasets) and also tells the user if there were no fires that matches their criterai (so they are not confused by empty map)
+      loadingEl.style.display = 'none';
+      const foundEl = document.getElementById('foundMessage');
+      foundEl.textContent = `${fireCount} fires matched your criteria.`; 
+      foundEl.style.display = 'block';                                      // This displays a message after the data has been loaded in it tell the user how many fires matched their criteria. THis is useful as it signals when data is loading / done loading (good for big datasets) and also tells the user if there were no fires that matches their criterai (so they are not confused by empty map)
       setTimeout(() => {                                                                                         // THis removes the message after 5 seconds 
-          loadingEl.style.display = 'none';
+          foundEl.style.display = 'none';
       }, 5000);
+
     })
 
     .catch(error => {                                                                                              // Displays message if there is an error getting the data 
@@ -195,37 +195,44 @@ function loadFilteredData() {                                                   
 
 function downloadFilteredData() {                                                                                       
 
-    const downloadingEl = document.getElementById('downloadingMessage');                                               // Same message code as in the function above 
-    downloadingEl.innerHTML = 'Downloading the data now<br>This may take several minutes';
+  const downloadingEl = document.getElementById('loadingMessage');
+  if (downloadingEl) {
     downloadingEl.style.display = 'block';
-
-    const minYear = document.getElementById('minYear').value;                                                          // This takes the inputs form the HTML and assings it to varibles in java 
-    const maxYear = document.getElementById('maxYear').value;
-    const minSize = document.getElementById('minSize').value;
-    const maxSize = document.getElementById('maxSize').value;
-    const distanceCoords = document.getElementById('distanceCoords').value;
-    const distanceRadius = document.getElementById('distanceRadius').value;
-    const watershedName = document.getElementById('watershedName').value;
-    const qcprovinceflag = document.getElementById('quebeccheckbox').checked;
-    const onprovinceflag = document.getElementById('ontariocheckbox').checked; 
-    const downloadFormat = document.getElementById('downloadFormat').value;
-                                                                                                                      // THis code largely does the same thing as the function above but instead of displaying the data I uses my python dowloand data functions to downalod the filtered data 
+    // loadingEl.offsetHeight; 
+  }  
 
 
-  
-    const downloadURL = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&qcprovinceflag=${qcprovinceflag}&onprovinceflag=${onprovinceflag}&polygon_tol=${savedPolygonTolerance}&downloadFormat=${downloadFormat}&download=1`;     // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
+  const minYear = document.getElementById('minYear').value;                                                          // This takes the inputs form the HTML and assings it to varibles in java 
+  const maxYear = document.getElementById('maxYear').value;
+  const minSize = document.getElementById('minSize').value;
+  const maxSize = document.getElementById('maxSize').value;
+  const distanceCoords = document.getElementById('distanceCoords').value;
+  const distanceRadius = document.getElementById('distanceRadius').value;
+  const watershedName = document.getElementById('watershedName').value;
+  const qcprovinceflag = document.getElementById('quebeccheckbox').checked;
+  const onprovinceflag = document.getElementById('ontariocheckbox').checked; 
+  const downloadFormat = document.getElementById('downloadFormat').value;
+                                                                                                                    // THis code largely does the same thing as the function above but instead of displaying the data I uses my python dowloand data functions to downalod the filtered data 
 
-    const a = document.createElement('a');                                                                            // This code here is what actually downlaods the data, I understand what it does but not really how it works, reddit has been telling me this a good way to downlaod data through a web app 
-    a.href = downloadURL;
-    a.download = 'firecan_filtered_data.csv'; 
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
 
-    downloadingEl.textContent = `File has been dowloaded`;                                                           // Same message code as in the function above 
-    setTimeout(() => {
-        downloadingEl.style.display = 'none';
-    }, 10000);
+
+  const downloadURL = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&qcprovinceflag=${qcprovinceflag}&onprovinceflag=${onprovinceflag}&polygon_tol=${savedPolygonTolerance}&downloadFormat=${downloadFormat}&download=1`;     // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
+
+  const a = document.createElement('a');                                                                            // This code here is what actually downlaods the data, I understand what it does but not really how it works, reddit has been telling me this a good way to downlaod data through a web app 
+  a.href = downloadURL;
+  a.download = 'firecan_filtered_data.csv'; 
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+
+  downloadingEl.style.display = 'none';
+  const downfoundEl = document.getElementById('downloadingfoundMessage');
+  downfoundEl.textContent = `Downloading ... pls wait`; // its brocken so im just making it this for now 
+  downfoundEl.style.display = 'block';                                      // This displays a message after the data has been loaded in it tell the user how many fires matched their criteria. THis is useful as it signals when data is loading / done loading (good for big datasets) and also tells the user if there were no fires that matches their criterai (so they are not confused by empty map)
+  setTimeout(() => {                                                                                         // THis removes the message after 5 seconds 
+      downfoundEl.style.display = 'none';
+  }, 20000);
 
 }
 
