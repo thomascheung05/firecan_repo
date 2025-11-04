@@ -25,6 +25,20 @@ work_dir  = Path.cwd()
                                                                                         # Almost all of the structure of this code is mine, like the download only if it doesnt exist and the process if it the processesed data doenst already exist
                                                                                         # AI showed me how to apply multiple filters at once which is a pretty integral part of the script
 
+def fx_scrape_cwfis():
+    url = 'https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/fire_poly/current_version/NFDB_poly.zip'
+
+    # Download and unzip in memory
+    r = requests.get(url)
+    z = zipfile.ZipFile(io.BytesIO(r.content))
+    z.extractall("NFDB_poly_data")  # creates folder with shapefile contents
+
+    # Load shapefile into GeoPandas
+    gdf = gpd.read_file("NFDB_poly_data/NFDB_poly.shp")
+
+    # Show first rows
+    print(gdf.head())
+
 
 
 def timenow():
@@ -61,8 +75,8 @@ def convert_m_4326deg(meters, lat):
 
 
 
-def fx_scrape_donneqc(dataname, url, zipname, gpkgname):                                           # Scraps donne quebec to get quebef fire data, outputs the path to the data file
-    print(f'.. {timenow()} Downloading From Donne Quebec')    
+def fx_get_url_request(dataname, url, zipname, gpkgname):                                           # Scraps donne quebec to get quebef fire data, outputs the path to the data file
+    print(f'.. {timenow()} Requestinog URL')    
     savefolder = work_dir / "data" / dataname
     zip_path = savefolder / zipname                                                                # Name of zip file depends on the data being dowloaded, for fire data its the same but not for watershed data
     unzipped_file_path = savefolder / gpkgname                                                     # This differs between quebec fire data, and also watershed data set
@@ -82,6 +96,61 @@ def fx_scrape_donneqc(dataname, url, zipname, gpkgname):                        
     return unzipped_file_path
 
 
+
+def fx_get_can_fire_data():
+    print('Getting Can Fire Data')                                               # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
+
+    canfire_unzipped_file_path = fx_get_url_request('canfire', 'https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/fire_poly/current_version/NFDB_poly.zip', 'NFDB_poly.zip', "NFDB_poly_20210707.shp")
+   
+    can_processed_data_folder_path = work_dir / "data" / 'can_processed_data'
+    can_processed_data_path = can_processed_data_folder_path / 'can_processed_fire_data.parquet'
+
+    if not can_processed_data_path.exists():
+        print(f'........ {timenow()} Pre-Processing data now')
+        if not can_processed_data_folder_path.exists():
+            can_processed_data_folder_path.mkdir(parents=True, exist_ok=True)
+        print(f'.......... {timenow()} Loading in Canada Data')
+
+        
+        gdf = gpd.read_file(canfire_unzipped_file_path)
+
+        gdf = gdf[['YEAR', 'SIZE_HA', 'SRC_AGENCY', 'geometry']]
+        gdf = gdf.rename(columns={'YEAR': 'fire_year'})
+        gdf = gdf.rename(columns={'SIZE_HA': 'fire_size'})
+        gdf = gdf.rename(columns={'SRC_AGENCY': 'province'})  
+        pc_codes = [
+            'PC-PA','PC-WB','PC-JA','PC-NA','PC-RM','PC-EI','PC-BA','PC-KO','PC-LM',
+            'PC-GL','PC-PU','PC-VU','PC-YO','PC-SY','PC-GR','PC-WP','PC-RE','PC-TN',
+            'PC-WL','PC-NI'
+        ]
+        gdf['pc'] = gdf['province'].where(gdf['province'].isin(pc_codes), '')
+
+        pc_to_province = {
+            'PC-PA':'BC', 'PC-WB':'AB', 'PC-JA':'AB', 'PC-NA':'NT', 'PC-RM':'MB',
+            'PC-EI':'AB', 'PC-BA':'AB', 'PC-KO':'QC', 'PC-LM':'QC', 'PC-GL':'QC',
+            'PC-PU':'QC', 'PC-VU':'QC', 'PC-YO':'YT', 'PC-SY':'SK', 'PC-GR':'AB',
+            'PC-WP':'MB', 'PC-RE':'QC', 'PC-TN':'QC', 'PC-WL':'ON', 'PC-NI':'ON'
+        }
+
+
+        gdf['province'] = gdf['province'].replace(pc_to_province)
+        gdf = gdf[gdf['province'] != 'QC']
+
+
+        print(f'.......... {timenow()} Re-Projecting Data')
+        gdf = repojectdata(gdf, 4326) 
+
+        print(f'............ {timenow()} Done Pre-Processing saving for later use')
+        gdf.to_parquet(can_processed_data_path)
+    else:               
+        print(f'........ {timenow()} The CAN data is already processed Loading in now')                                                                                                # If there fire data is already processed we just load it in here
+        gdf = gpd.read_parquet(can_processed_data_path)
+
+    return gdf
+
+
+
+
 def fx_get_qc_fire_data():   
     print('Getting QC Fire Data')                                               # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
     url_qcfires_after76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_PROV_GPKG.zip'
@@ -90,8 +159,8 @@ def fx_get_qc_fire_data():
     url_qcfires_before76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_ANCIENS_PROV_GPKG.zip'
     qcfires_before76_zipname = 'FEUX_PROV_GPKG.zip'
     qcfires_before76_gpkgname = 'FEUX_ANCIENS_PROV.gpkg'
-    qcfires_before76_unzipped_file_path = fx_scrape_donneqc('qcfires_before76', url_qcfires_before76, qcfires_before76_zipname, qcfires_before76_gpkgname)
-    qcfires_after76_unzipped_file_path = fx_scrape_donneqc('qcfires_after76', url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
+    qcfires_before76_unzipped_file_path = fx_get_url_request('qcfires_before76', url_qcfires_before76, qcfires_before76_zipname, qcfires_before76_gpkgname)
+    qcfires_after76_unzipped_file_path = fx_get_url_request('qcfires_after76', url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
 
     qc_processed_data_folder_path = work_dir / "data" / 'qc_processed_data'
     qc_processed_data_path = qc_processed_data_folder_path / 'qc_processed_fire_data.parquet'
@@ -135,7 +204,7 @@ def fx_get_qc_watershed_data():                                                 
     watersheddata_zipname = 'CE_bassin_multi.gdb.zip'
     watersheddata_fgdbname = 'CE_bassin_multi.gdb'
 
-    qcwatershed_unzipped_file_path = fx_scrape_donneqc('qcwatershed_data', url_watersheddata, watersheddata_zipname, watersheddata_fgdbname)                   
+    qcwatershed_unzipped_file_path = fx_get_url_request('qcwatershed_data', url_watersheddata, watersheddata_zipname, watersheddata_fgdbname)                   
         
     qc_processed_data_folder_path = work_dir / "data" / 'qc_processed_data'
     qc_watershed_data_path = qc_processed_data_folder_path / 'qc_watershed_data.parquet'
@@ -290,27 +359,11 @@ def fx_get_on_fire_data():
 
 
 
-
-
-
-
-
-
-
-
 def fx_merge_provincial_fires(qcfires, onfires):
     combined_gdf = pd.concat([qcfires, onfires], ignore_index=True)
 
     combined_gdf = gpd.GeoDataFrame(combined_gdf, geometry='geometry', crs=qcfires.crs)
     return combined_gdf
-
-
-
-
-
-
-
-
 
 
 
@@ -330,14 +383,14 @@ def fx_filter_fires_data(                                                       
     watershed_name
     ):
 
-    if qcprovinceflag == "true" and onprovinceflag== "true":
-        filtered_gdf = fire_gdf[fire_gdf['province'].isin(["qc", "on"])]
-    elif qcprovinceflag == "true":
-        filtered_gdf = fire_gdf[fire_gdf['province'].isin(["qc"])]
-    elif onprovinceflag == "true":
-        filtered_gdf = fire_gdf[fire_gdf['province'].isin(["on"])]
+    # if qcprovinceflag == "true" and onprovinceflag== "true":
+    #     filtered_gdf = fire_gdf[fire_gdf['province'].isin(["qc", "on"])]
+    # elif qcprovinceflag == "true":
+    #     filtered_gdf = fire_gdf[fire_gdf['province'].isin(["qc"])]
+    # elif onprovinceflag == "true":
+    #     filtered_gdf = fire_gdf[fire_gdf['province'].isin(["on"])]
 
-        
+    filtered_gdf = fire_gdf   
     
     conditions = []     # This is a list of the filtering conditions so they can all be applied at once 
     

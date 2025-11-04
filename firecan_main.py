@@ -1,4 +1,4 @@
-from firecan_fx import convert_m_4326deg,fx_merge_provincial_fires,timenow,fx_get_on_fire_data,create_data_folder,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
+from firecan_fx import fx_get_can_fire_data,convert_m_4326deg,fx_merge_provincial_fires,timenow,fx_get_on_fire_data,create_data_folder,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
 from flask import Flask, request # type: ignore
 import json
 import sys
@@ -7,14 +7,23 @@ import geopandas as gpd
 create_data_folder()
 MAX_SIZE_MB = 8
 print('------------------------Starting data pre-loading. This may take a few minutes...', timenow(),'------------------------')                                      # This section here loads in the data, it uses the scrap donne quebec function and the process qc fire data fuction
+# gdf_qc_fires = fx_get_qc_fire_data()
+# gdf_qc_watershed_data = fx_get_qc_watershed_data()
+
+# gdf_on_fires = fx_get_on_fire_data()
+
+
+# gdf_fires = fx_merge_provincial_fires(gdf_qc_fires, gdf_on_fires)
+
+gdf_can_fires = fx_get_can_fire_data()
+
 gdf_qc_fires = fx_get_qc_fire_data()
 gdf_qc_watershed_data = fx_get_qc_watershed_data()
 
-gdf_on_fires = fx_get_on_fire_data()
 
 
-gdf_fires = fx_merge_provincial_fires(gdf_qc_fires, gdf_on_fires)
 
+gdf_fires = fx_merge_provincial_fires(gdf_qc_fires, gdf_can_fires)
 
 
 print('---------------Data pre-loading complete. The app is now ready to serve requests.', timenow(),'------------------------')
