@@ -16,40 +16,40 @@
 
         <div class="row h-100">
 
-            <div class="col-12 col-md-1 p-3" id="sidebar">
 
-                <div id="mainSidebarContent">
 
-                    <div class="d-grid gap-2 mb-3">
-                        <button id="filterButton" type="button" onclick="loadFilteredData()">Filter Map</button>
-                    </div>
+                <div id="mainSidebarContent" class="col-12 col-md-1 p-3" style="display: flex; flex-direction: column;">
+                    <button id="mapButton" class="btn mb-2">Map</button>
+                    <button id="aboutButton" class="btn mb-2">?</button>
+                </div>
 
-                    <div class="d-grid gap-1 mb-3">
-                        <span id="clearFiltersText" onclick="clearFilters()">Clear Filters</span>
-                    </div>
 
-                    <div id="loadingMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
+                <div id="mapSection" class="col-12 col-md-1 p-3" style="display:none;">
+
+                    <button id="mapBackButton" class="btn btn-secondary mb-3">←</button>
+                    
+                    <div id = "gofiler">
+                        <div class="d-flex gap-2">
+                            <button id="saveButton" type="button" class="flex-fill"></button>
+                            <button id="filterButton" type="button" class="flex-fill" onclick="loadFilteredData()">Filter Map</button>
                         </div>
-                        <p class="mt-2">Loading data<br>This may take several minutes...</p>
-                    </div>  
 
-                    <div id="foundMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
-                        <p class="mt-2"></p>
-                    </div>         
+                        <div class="d-grid gap-1 mb-3">
+                            <span id="clearFiltersText" onclick="clearFilters()">Clear Filters</span>
+                        </div>
 
+                        <div id="loadingMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading data<br>This may take several minutes...</p>
+                        </div>  
+
+                        <div id="foundMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
+                            <p class="mt-2"></p>
+                        </div>         
+                    </div>
                     <hr class="sidebar-separator">
-
-
-
-
-
-
-
-
-
-
 
                     <form>  
                         <div id = "provincecheckboxes">
@@ -105,104 +105,56 @@
                                 <input class="form-check-input" type="checkbox" id="NBcheckbox" value="NB">
                                 <label class="form-check-label" for="checkbox2">NB</label>
                             </div>
-                        </div>
 
-                        <div class="mb-2">
-                            <label for="minYear" class="form-label">Minimum Year</label>
-                            <input type="text" id="minYear" class="form-control" placeholder="eg. 1890">
-                        </div>
 
-                        <div class="mb-2">
-                            <label for="maxYear" class="form-label">Maximum Year</label>
-                            <input type="text" id="maxYear" class="form-control" placeholder="eg. 2024">
-                        </div>
-
-                        <div class="mb-2">
-                            <label for="minSize" class="form-label">Minimum Size</label>
-                            <input type="text" id="minSize" class="form-control" placeholder="eg. 0">
-                        </div>
-
-                        <div class="mb-2">
-                            <label for="maxSize" class="form-label">Maximum Size</label>
-                            <input type="text" id="maxSize" class="form-control" placeholder="eg. 5000.2">
-                        </div>
-
-                        <div class="mb-2">
-                            <label for="distanceCoords" class="form-label">Coordintes (lat, lon)</label>
-                            <input type="text" id="distanceCoords" class="form-control" placeholder="e.g., 51.862924, -88.033121">
-                        </div>
-
-                        <div class="mb-2">
-                            <label for="distanceRadius" class="form-label">Radius (km)</label>
-                            <input type="text" id="distanceRadius" class="form-control" placeholder="e.g., 10">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="watershedName" class="form-label">Watershed</label>
-                            <input type="text" id="watershedName" class="form-control" placeholder="eg. YAMASKA">
-                        </div>
-                        
-                        <hr class="sidebar-separator">
-
-                        <div class="mb-1">
-                            <label for="downloadFormat" class="form-label">Download Format</label>
-                            <select id="downloadFormat" class="form-select">
-                                <option value="csv" selected>CSV</option>
-                                <option value="json">GeoJSON</option>
-                                <option value="gpkg">GPKG (GeoPackage)</option>
-                            </select>
-                        </div>
-
-                        <div class="d-grid gap-2 mb-3">
-                            <button id="downloadButton" onclick="downloadFilteredData()" type="button">Download Data</button>
-                        </div>
-
-                        <div id="downloadingMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="ALLcheckbox" value="ALL">
+                                <label class="form-check-label" for="checkbox2">ALL</label>
                             </div>
 
-                            <p class="mt-2">Loading data<br>This may take several minutes...</p>
+
                         </div>
-                        <div id="downloadingfoundMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
-                            <p class="mt-2"></p>
-                        </div>    
+                        <hr class="sidebar-separator">
+                        <div id="yearfilterinputs">
+                            <label for="minYear" class="year-label">Year</label>
+                            <div class="year-inputs" style="display: flex; gap: 1rem;">
+                                <input type="text" id="minYear" class="form-control" placeholder="Min Year">
+                                <input type="text" id="maxYear" class="form-control" placeholder="Max Year">
+                            </div>
+                        </div>
+                        <hr class="sidebar-separator">
+                        <div id="sizefilterinputs">
+                            <label for="minSize" class="size-label">Size (HA)</label>
+                            <div class="size-inputs" style="display: flex; gap: 1rem;">
+                                <input type="text" id="minSize" class="form-control" placeholder="Min Size">
+                                <input type="text" id="maxSize" class="form-control" placeholder="Max Size">
+                            </div>
+                        </div>
+                        <hr class="sidebar-separator">
+                        <div id="locationfilterinputs">
+                            <label for="distanceCoords" class="location-label">Location</label>
+                            <div class="location-inputs" style="display: flex; gap: 1rem;">
+                                <input type="text" id="distanceCoords" class="form-control" placeholder="Coords">
+                                <input type="text" id="distanceRadius" class="form-control" placeholder="Radius (km)">
+                            </div>
+                        </div>
+                    <hr class="sidebar-separator">
+                        <div id="watershedfilterinput" class="mb-3">
+                            <label for="watershedName" class="filter-label">Watershed</label>
+                            <input type="text" id="watershedName" class="form-control" placeholder="eg. YAMASKA">
+                        </div>
                     </form>
 
-
-
-
-
-
-
-
-
-
-
-
-
                     <hr class="sidebar-separator">
-
-
-
-                    
-                    <div class="d-flex gap-2 mb-3">
-                        <button id="aboutButton" class="btn btn-light flex-fill">?</button>
-                        <button id="watershedExplorerButton" class="btn btn-light flex-fill">💧</button>
-                        <button id="polygonTolButton" class="btn btn-light flex-fill">▲</button>
+                    <div class="d-flex justify-content-between gap-1">
+                        <button id="watershedExplorerButton" class="btn mb-2">💧</button>
+                        <button id="polygonTolButton" class="btn mb-2">▲</button>
                     </div>
-
-
-
-
-
-
                 </div>
 
 
-                
-                <div id="aboutSection" style="display:none;">
-                    <button id="backButton" class="btn btn-secondary mb-3">←</button>
+                <div id="aboutSection" class="col-12 col-md-1 p-3" style="display:none;">
+                    <button id="aboutBackButton" class="btn btn-secondary mb-3">←</button>
                     <h4>About FIRECAN</h4>
                     <p><strong>Firecan</strong> is a collection of historical forest fires data in Canada<br>
                     Currently, Firecan supports <strong>Quebec</strong> and <strong>Ontario</strong></p>
@@ -235,12 +187,41 @@
                 </div>
 
 
-            </div>
 
-            <div id="resizer"></div>  
 
             <div class="col p-0" id="map" style="height: 100vh; min-height: 400px;"></div>
 
+        </div>
+
+        <div id="downloadModal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" id="closeDownloadModal">&times;</span>
+                <h5>Download Data</h5>
+
+                <div class="mb-2">
+                    <label for="downloadFormat" class="form-label">Download Format</label>
+                    <select id="downloadFormat" class="form-select">
+                        <option value="csv" selected>CSV</option>
+                        <option value="json">GeoJSON</option>
+                        <option value="gpkg">GPKG (GeoPackage)</option>
+                    </select>
+                </div>
+
+                <div class="d-grid mt-3">
+                    <button id="downloadButton" class="btn btn-primary" type="button">Download Data</button>
+                </div>
+
+                <div id="downloadingMessage" class="alert alert-info text-center fw-bold py-2 mt-3" style="display:none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading data<br>This may take several minutes...</p>
+                </div>
+
+                <div id="downloadingfoundMessage" class="alert alert-info text-center fw-bold py-2 mt-2" style="display:none;">          
+                    <p class="mt-2"></p>
+                </div>
+            </div>
         </div>
 
         <div id="watershedModal" class="modal">
@@ -269,50 +250,61 @@
     <script src="./static/leaflet.js"></script>
     <script src="./static/firecan_logic.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Sidebar Resizer -->
+
+    <!-- Download modal -->
     <script>
-        const resizer = document.getElementById("resizer");
-        const sidebar = document.getElementById("sidebar");
-        let x = 0;
-        let sidebarWidth = 0;
+    const saveButton = document.getElementById("saveButton");
+    const downloadModal = document.getElementById("downloadModal");
+    const closeDownloadModal = document.getElementById("closeDownloadModal");
 
-        resizer.addEventListener("mousedown", (e) => {
-          x = e.clientX;
-          sidebarWidth = sidebar.offsetWidth;
+    saveButton.addEventListener("click", () => {
+        downloadModal.style.display = "flex";
+    });
 
-          document.addEventListener("mousemove", resize, false);
-          document.addEventListener("mouseup", stopResize, false);
-        });
+    closeDownloadModal.addEventListener("click", () => {
+        downloadModal.style.display = "none";
+    });
 
-        function resize(e) {
-          const dx = e.clientX - x;
-          const newWidth = sidebarWidth + dx;
-          if (newWidth > 50 && newWidth < 600) { 
-            sidebar.style.width = `${newWidth}px`;
-          }
+    // Close modal if clicking outside content
+    downloadModal.addEventListener("click", (e) => {
+        if (e.target === downloadModal) {
+            downloadModal.style.display = "none";
         }
+    });
 
-        function stopResize() {
-          document.removeEventListener("mousemove", resize, false);
-          document.removeEventListener("mouseup", stopResize, false);
-        }
+    // Keep your existing download function intact
+    document.getElementById("downloadButton").addEventListener("click", downloadFilteredData);
     </script>
-    <!-- About Section -->
+    <!-- Main Side Bar Button Clicks -->
     <script>
-        const aboutButton = document.getElementById("aboutButton");
-        const backButton = document.getElementById("backButton");
+        const mapBackButton = document.getElementById("mapBackButton");
+        const aboutBackButton = document.getElementById("aboutBackButton");
         const mainSidebarContent = document.getElementById("mainSidebarContent");
+
+        const aboutButton = document.getElementById("aboutButton");
         const aboutSection = document.getElementById("aboutSection");
 
-        aboutButton.addEventListener("click", () => {
-            mainSidebarContent.style.display = "none";
-            aboutSection.style.display = "block";
-        });
+        const mapButton = document.getElementById("mapButton");
+        const mapSection = document.getElementById("mapSection"); // Make sure this is a separate div!
 
-        backButton.addEventListener("click", () => {
+        // Function to open a section
+        function openSection(section) {
+            mainSidebarContent.style.display = "none";
+            section.style.display = "block";
+        }
+
+        // Function to go back to main sidebar
+        function goBack() {
             aboutSection.style.display = "none";
+            mapSection.style.display = "none";
             mainSidebarContent.style.display = "block";
-        });
+        }
+
+        mapBackButton.addEventListener("click", goBack);
+        aboutBackButton.addEventListener("click", goBack);
+        aboutButton.addEventListener("click", () => openSection(aboutSection));
+        mapButton.addEventListener("click", () => openSection(mapSection));
+        backButton.addEventListener("click", goBack);
     </script>
     <!-- Polygon Tolerance -->
      <script>
@@ -438,8 +430,8 @@
             modal.style.display = "none";
         });
         modal.addEventListener("click", (e) => {
-            if (e.target === polygonTolModal) {
-                polygonTolModal.style.display = "none";
+            if (e.target === modal) {
+                modal.style.display = "none";
             }
         });
     </script>
@@ -458,8 +450,25 @@
     <script>
         function clearFilters() {
             // Uncheck checkboxes
-            document.getElementById("QCcheckbox").checked = true;
-            document.getElementById("ONcheckbox").checked = true;
+            document.getElementById("QCcheckbox").checked = false;
+            document.getElementById("ONcheckbox").checked = false;
+            document.getElementById("BCcheckbox").checked = false;
+            document.getElementById("ABcheckbox").checked = false;
+            document.getElementById("SKcheckbox").checked = false;
+            document.getElementById("MBcheckbox").checked = false;
+            document.getElementById("YTcheckbox").checked = false;
+            document.getElementById("NTcheckbox").checked = false;
+            document.getElementById("NScheckbox").checked = false;
+            document.getElementById("NLcheckbox").checked = false;
+            document.getElementById("NBcheckbox").checked = false;
+
+
+
+
+
+
+
+
 
             // Clear text inputs
             const textInputs = ["minYear","maxYear","minSize","maxSize","distanceCoords","distanceRadius","watershedName"];
@@ -478,3 +487,66 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+    <!-- Sidebar Resizer -->
+    <!-- <script>
+const resizer = document.getElementById("resizer");
+const sidebar = document.getElementById("sidebar");
+
+// Minimum and maximum width of the sidebar
+const MIN_WIDTH = 50;
+const MAX_WIDTH = 600;
+
+let startX = 0;
+let startWidth = 0;
+let isResizing = false;
+
+// Start resizing
+resizer.addEventListener("mousedown", (e) => {
+    isResizing = true;
+    startX = e.clientX;
+    startWidth = sidebar.offsetWidth;
+
+    // Add listeners to document for dragging
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+
+    // Prevent text selection while dragging
+    document.body.style.userSelect = 'none';
+});
+
+// Function to handle mouse move
+function onMouseMove(e) {
+    if (!isResizing) return;
+
+    const dx = e.clientX - startX;
+    let newWidth = startWidth + dx;
+
+    // Clamp the width between min and max
+    newWidth = Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, newWidth));
+
+    sidebar.style.width = `${newWidth}px`;
+}
+
+// Stop resizing
+function onMouseUp() {
+    isResizing = false;
+
+    // Remove event listeners
+    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("mouseup", onMouseUp);
+
+    // Restore text selection
+    document.body.style.userSelect = '';
+}
+
+    </script> -->

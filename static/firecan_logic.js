@@ -47,8 +47,10 @@ var Neighbourhood = L.tileLayer(
 
 
 var map = L.map('map', {
-  center: [52.520878, -69.855725],
-  zoom: 5,
+  center: [63.743631, -85.166016
+
+],
+  zoom: 4.3,
   layers: [Esrimap]
 }); 
 
@@ -101,8 +103,6 @@ function loadFilteredData() {                                                   
   const distanceCoords = document.getElementById('distanceCoords').value;
   const distanceRadius = document.getElementById('distanceRadius').value;
   const watershedName = document.getElementById('watershedName').value;
-
-
 
   const provinceCheckboxes = document.querySelectorAll('input[type="checkbox"].form-check-input');
   const selectedProvinces = Array.from(provinceCheckboxes)

@@ -1,76 +1,128 @@
-#sidebar  {
-  background-color: #000000db;
-  height: 100vh;          
+#mainSidebarContent {
+  background-color: #000000e9;
+  height: 100vh;   
+  width: 80px; /* default width */       
   overflow-y: auto;       
   overflow-x: hidden;     
 }
 
-#sidebar label {
+
+#mainSidebarContent label {
   font-family: Trebuchet MS, sans-serif;
   font-size: 18px;
   color: rgb(255, 255, 255); 
 }
 
 
-#sidebar button {
+
+#mainSidebarContent #mapButton {
+  background-image: url('/static/img/map-marker-64.png');
+  background-size: contain;   /* scales image to fit */
+  background-repeat: no-repeat;
+  background-position: center; /* centers image */
+  background-color: transparent; /* optional, removes button color */
+  border: none;
+  width: 35px;
+  height: 35px;
+  padding: 0; /* prevents button text spacing */
+  cursor: pointer;
+}
+
+#mainSidebarContent #aboutButton {
+  background-image: url('/static/img/abouticon.png');
+  background-size: contain;   /* scales image to fit */
+  background-repeat: no-repeat;
+  background-position: center; /* centers image */
+  background-color: transparent; /* optional, removes button color */
+  border: none;
+  width: 35px;
+  height: 35px;
+  padding: 0; /* prevents button text spacing */
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+#mapSection {
+  background-color: #000000e9;
+  height: 100vh;   
+  width: 275px; /* default width */       
+  overflow-y: auto;       
+  overflow-x: hidden;     
+}
+
+
+
+
+
+#filterButton{
   font-family: Trebuchet MS, sans-serif;
-  font-size: 20px;
+  font-size: 25px;
   background-color: #157f38;
+  color: rgb(255, 255, 255); 
+}
+#saveButton {
+  background-image: url('/static/img/save.png');
+  background-size: contain;   /* scales image to fit */
+  background-repeat: no-repeat;
+  background-position: center; /* centers image */
+  background-color: transparent; /* optional, removes button color */
+  border: none;
+  width: 35px;
+  height: 35px;
+  padding: 0; /* prevents button text spacing */
+  cursor: pointer;   
+}
+
+
+
+#mapSection label {
+  font-family: Trebuchet MS, sans-serif;
+  font-size: 18px;
   color: rgb(255, 255, 255); 
 }
 
 
-
-#sidebar #aboutButton {
-  background-color: #7a7a7a;
-  border-color: transparent;
-  width: 35px;
+#watershedfilterinput label,
+#yearfilterinputs label,
+#sizefilterinputs label,
+#locationfilterinputs label {
+  font-family: 'Trebuchet MS', sans-serif;
+  font-size: 25px;
+  color: rgb(255, 255, 255);
 }
 
-#sidebar #watershedExplorerButton {
+#mapSection #mapBackButton {
+  background-image: url('/static/img/backicon.png');
+  background-size: contain;   /* scales image to fit */
+  background-repeat: no-repeat;
+  background-position: center; /* centers image */
+  background-color: transparent; /* optional, removes button color */
+  border: none;
+  width: 30px;
+  height: 30px;
+  padding: 0; /* prevents button text spacing */
+  cursor: pointer;           
+}
+
+
+#mapSection #watershedExplorerButton {
   background-color: #0004f8;
   border-color: transparent;
-  width: 35px;
+  width: 50%;
 }
 
-#sidebar #polygonTolButton {
+#mapSection #polygonTolButton {
   background-color: #ffbf00;
   border-color: transparent;
-  width: 35px;
-}
-
-#sidebar #aboutSection {
-  color: rgb(255, 255, 255);
-  font-size: 18px; 
-
-}
-
-#sidebar #backButton {
-  width: 30%;
-  height: 30px;
-  font-size: 30px;
-  font-weight: bold;
-  background-color: #ffffff;
-  color: black;
-  display: flex;              
-  align-items: center;        
-  justify-content: center;    
-  padding: 0;                 
-  line-height: 1;             
-}
-
-.sidebar-separator {
-    border: none;                
-    height: 3px;                 
-    background-color: white;     
-    opacity: 0.7;
-}
-
-#resizer {
-  width: 6px;
-  height: 100vh;
-  cursor: col-resize;
-  background: #000000db;
+  width: 50%;
 }
 
 #loadingMessage {
@@ -79,11 +131,58 @@
   padding: 8px 12px;  
 }
 
+
 .star-marker {
     color: rgb(255, 255, 255);
     font-size: 24px;
     text-shadow: 0 0 3px rgb(255, 255, 255);
 }
+#clearFiltersText:hover {
+    color: #dcdcdc; 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#aboutSection  {
+  color: rgb(255, 255, 255);
+  background-color: #000000e9;
+  font-size: 18px; 
+  width: 800px; 
+}
+
+
+
+
+#aboutSection #aboutBackButton {
+  background-image: url('/static/img/backicon.png');
+  background-size: contain;   /* scales image to fit */
+  background-repeat: no-repeat;
+  background-position: center; /* centers image */
+  background-color: transparent; /* optional, removes button color */
+  border: none;
+  width: 30px;
+  height: 30px;
+  padding: 0; /* prevents button text spacing */
+  cursor: pointer;    
+}
+
+
+
+
+
+
+
 
 .modal {
     display: none;
@@ -107,16 +206,8 @@
     background-color: white;
 }
 
-.close {
-    position: absolute;
-    top: 20px;
-    right: 40px;
-    color: white;
-    font-size: 40px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
+ 
+ 
 #polygonTolModal {
     display: none;  
     position: fixed;
@@ -130,13 +221,15 @@
     align-items: center;
 }
 
+
 #polygonTolModal .modal-content {
     background-color: white;
     padding: 20px;
     border-radius: 8px;
     width: 300px; 
 }
- 
+
+
 #polygonTolModal .close {
     position: absolute;
     top: 10px;
@@ -146,6 +239,71 @@
     font-weight: bold;
     cursor: pointer;
 }
+
+
+.sidebar-separator {
+    border: none;                
+    height: 3px;                 
+    background-color: white;     
+    opacity: 0.7;
+}
+
+
+
+
+#downloadModal {
+    display: none;  
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    justify-content: center;
+    align-items: center;
+    display: flex; /* must be flex to center modal-content */
+}
+
+#downloadModal .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    position: relative; /* for close button positioning */
+}
+
+#downloadModal .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: black;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+
+.close {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+
+
+ 
+
+
+
+
+
 
 .leaflet-control-layers {
   background-color: rgba(30, 30, 30, 0.85); 
@@ -182,6 +340,21 @@
     line-height: 1;     
 }
 
-#clearFiltersText:hover {
-    color: #dcdcdc; 
-}
+
+
+
+
+
+/* 
+#resizer {
+  width: 1px;
+  height: 100vh;
+  cursor: col-resize;
+  background: #000000e9;
+} */
+
+
+
+
+
+

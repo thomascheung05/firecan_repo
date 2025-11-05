@@ -274,9 +274,11 @@ def fx_filter_fires_data(                                                       
     distance_radius,
     watershed_name
     ):
-
-
-    filtered_gdf = fire_gdf[fire_gdf['province'].isin(provincelist)]
+    
+    if "ALL" in provincelist:
+        filtered_gdf = fire_gdf
+    else:  
+        filtered_gdf = fire_gdf[fire_gdf['province'].isin(provincelist)]
     
     conditions = []     # This is a list of the filtering conditions so they can all be applied at once 
     
