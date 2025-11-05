@@ -23,6 +23,7 @@
                     <div class="d-grid gap-2 mb-3">
                         <button id="filterButton" type="button" onclick="loadFilteredData()">Filter Map</button>
                     </div>
+
                     <div class="d-grid gap-1 mb-3">
                         <span id="clearFiltersText" onclick="clearFilters()">Clear Filters</span>
                     </div>
@@ -32,23 +33,78 @@
                             <span class="visually-hidden">Loading...</span>
                         </div>
                         <p class="mt-2">Loading data<br>This may take several minutes...</p>
-                    </div>         
+                    </div>  
+
                     <div id="foundMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
                         <p class="mt-2"></p>
                     </div>         
 
                     <hr class="sidebar-separator">
 
+
+
+
+
+
+
+
+
+
+
                     <form>  
+                        <div id = "provincecheckboxes">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="QCcheckbox" value="QC" checked>
+                                <label class="form-check-label" for="checkbox1">QC</label>
+                            </div>
 
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="quebeccheckbox" value="qc" checked>
-                            <label class="form-check-label" for="checkbox1">QC</label>
-                        </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="ONcheckbox" value="ON">
+                                <label class="form-check-label" for="checkbox2">ON</label>
+                            </div>
 
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="ontariocheckbox" value="on">
-                            <label class="form-check-label" for="checkbox2">ON</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="BCcheckbox" value="BC">
+                                <label class="form-check-label" for="checkbox2">BC</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="ABcheckbox" value="AB">
+                                <label class="form-check-label" for="checkbox2">AB</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="SKcheckbox" value="SK">
+                                <label class="form-check-label" for="checkbox2">SK</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="MBcheckbox" value="MB">
+                                <label class="form-check-label" for="checkbox2">MB</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="YTcheckbox" value="YT">
+                                <label class="form-check-label" for="checkbox2">YT</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="NTcheckbox" value="NT">
+                                <label class="form-check-label" for="checkbox2">NT</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="NScheckbox" value="NS">
+                                <label class="form-check-label" for="checkbox2">NS</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="NLcheckbox" value="NL">
+                                <label class="form-check-label" for="checkbox2">NL</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="NBcheckbox" value="NB">
+                                <label class="form-check-label" for="checkbox2">NB</label>
+                            </div>
                         </div>
 
                         <div class="mb-2">
@@ -113,13 +169,33 @@
                         </div>    
                     </form>
 
+
+
+
+
+
+
+
+
+
+
+
+
                     <hr class="sidebar-separator">
 
+
+
+                    
                     <div class="d-flex gap-2 mb-3">
                         <button id="aboutButton" class="btn btn-light flex-fill">?</button>
                         <button id="watershedExplorerButton" class="btn btn-light flex-fill">💧</button>
                         <button id="polygonTolButton" class="btn btn-light flex-fill">▲</button>
                     </div>
+
+
+
+
+
 
                 </div>
 
@@ -382,8 +458,8 @@
     <script>
         function clearFilters() {
             // Uncheck checkboxes
-            document.getElementById("quebeccheckbox").checked = true;
-            document.getElementById("ontariocheckbox").checked = true;
+            document.getElementById("QCcheckbox").checked = true;
+            document.getElementById("ONcheckbox").checked = true;
 
             // Clear text inputs
             const textInputs = ["minYear","maxYear","minSize","maxSize","distanceCoords","distanceRadius","watershedName"];

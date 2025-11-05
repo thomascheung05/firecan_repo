@@ -25,24 +25,14 @@ work_dir  = Path.cwd()
                                                                                         # Almost all of the structure of this code is mine, like the download only if it doesnt exist and the process if it the processesed data doenst already exist
                                                                                         # AI showed me how to apply multiple filters at once which is a pretty integral part of the script
 
-def fx_scrape_cwfis():
-    url = 'https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/fire_poly/current_version/NFDB_poly.zip'
-
-    # Download and unzip in memory
-    r = requests.get(url)
-    z = zipfile.ZipFile(io.BytesIO(r.content))
-    z.extractall("NFDB_poly_data")  # creates folder with shapefile contents
-
-    # Load shapefile into GeoPandas
-    gdf = gpd.read_file("NFDB_poly_data/NFDB_poly.shp")
-
-    # Show first rows
-    print(gdf.head())
 
 
 
 def timenow():
     return datetime.now().strftime('%H:%M:%S')
+
+
+
 
 
 def repojectdata(data, targetcrs):
@@ -57,10 +47,15 @@ def repojectdata(data, targetcrs):
         return data
 
 
+
+
+
 def create_data_folder():
     data_folder_path = work_dir / 'data'
     if not data_folder_path.exists(): 
         data_folder_path.mkdir(parents=True, exist_ok=True)
+
+
 
 
 
@@ -97,6 +92,8 @@ def fx_get_url_request(dataname, url, zipname, gpkgname):                       
 
 
 
+
+
 def fx_get_can_fire_data():
     print('Getting Can Fire Data')                                               # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
 
@@ -113,7 +110,7 @@ def fx_get_can_fire_data():
 
         
         gdf = gpd.read_file(canfire_unzipped_file_path)
-
+        print(list(gdf.columns))
         gdf = gdf[['YEAR', 'SIZE_HA', 'SRC_AGENCY', 'geometry']]
         gdf = gdf.rename(columns={'YEAR': 'fire_year'})
         gdf = gdf.rename(columns={'SIZE_HA': 'fire_size'})
@@ -151,6 +148,7 @@ def fx_get_can_fire_data():
 
 
 
+
 def fx_get_qc_fire_data():   
     print('Getting QC Fire Data')                                               # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
     url_qcfires_after76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_PROV_GPKG.zip'
@@ -178,12 +176,12 @@ def fx_get_qc_fire_data():
 
 
         after_data = after_data.drop(columns=['perturb', 'an_perturb', 'part_str'])
-        merged_data = gpd.GeoDataFrame(pd.concat([before_data, after_data], ignore_index=True),geometry='geometry'  )
+        merged_data = gpd.GeoDataFrame(pd.concat([before_data, after_data], ignore_index=True),geometry='geometry')
         merged_data['an_origine'] = pd.to_numeric(merged_data['an_origine'], errors='coerce')
         merged_data['superficie'] = pd.to_numeric(merged_data['superficie'], errors='coerce')
         merged_data = merged_data.rename(columns={'an_origine': 'fire_year'})
         merged_data = merged_data.rename(columns={'superficie': 'fire_size'})
-        merged_data["province"] = "qc"
+        merged_data["province"] = "QC"
         
         print(f'.......... {timenow()} Re-Projecting Data')
         merged_data = repojectdata(merged_data, 4326)
@@ -196,6 +194,9 @@ def fx_get_qc_fire_data():
         merged_data = gpd.read_parquet(qc_processed_data_path)
 
     return merged_data
+
+
+
 
 
 def fx_get_qc_watershed_data():                                                                                        # This function gets the watershed data by using the scrap donne quebec function, it then reads it in, drops some columns, and reprojects it
@@ -224,6 +225,8 @@ def fx_get_qc_watershed_data():                                                 
             f"unnamed_{i+1}" for i in range(mask.sum())
         ]
 
+        watershed_data['NOM_COURS_DEAU'] = watershed_data.groupby('NOM_COURS_DEAU').cumcount().add(1).astype(str).radd(watershed_data['NOM_COURS_DEAU'] + "_")
+
 
         print(f'........ {timenow()} Reprojecting Watershed data') 
         watershed_data = repojectdata(watershed_data, 4326)
@@ -247,122 +250,12 @@ def fx_get_qc_watershed_data():                                                 
 
 
 
+def fx_merge_provincial_fires(data1, data2):
+    combined_gdf = pd.concat([data1, data2], ignore_index=True)
 
-
-
-
-def fx_scrape_ontariogeohub(url, dataname):
-    print(f'.. {timenow()} Scrapping Ontario Geohub')
-    savefolder = work_dir / "data" / dataname
-    data_path = savefolder / f"unprocessed_{dataname}.parquet"
-
-    if not data_path.exists(): 
-        print(f'.... {timenow()} The data does not exist, trying to download now')
-        try:
-            ids_response = requests.get(
-                url,
-                params={
-                    "where": "1=1",
-                    "returnIdsOnly": "true",
-                    "f": "json"
-                }
-            )
-            ids = ids_response.json()["objectIds"]
-        except:
-            print("Could Not acces Ontario Geohub, their API sucks :(, Unprocessed Ontario Fire Data is available on the git hub, put the .parquet file in the data/ontario_fires folder and run again))")
-            sys.exit()
-
-        
-        all_feats = []
-        chunk_size = 500
-
-        for i in range(0, len(ids), chunk_size):
-            batch = ids[i:i + chunk_size]
-            res = requests.post(
-                url,
-                data={
-                    "objectIds": ",".join(map(str, batch)),
-                    "outFields": "*",
-                    "outSR": 4326,
-                    "returnGeometry": "true",
-                    "f": "json"
-                }
-            ).json()
-
-
-
-            features = res.get("features", [])
-            for feat in features:
-                geom_data = feat.get("geometry")
-                props = feat.get("attributes", {})
-
-                
-                geom = None
-                if geom_data:
-                    try:
-                        if "rings" in geom_data:   
-                            geom = Polygon(geom_data["rings"][0])
-                        elif "paths" in geom_data:  
-                            geom = shape({"type": "LineString", "coordinates": geom_data["paths"][0]})
-                        elif "x" in geom_data and "y" in geom_data:  
-                            geom = shape({"type": "Point", "coordinates": [geom_data["x"], geom_data["y"]]})
-                    except Exception as e:
-                        print("⚠️ Geometry conversion failed for one feature:", e)
-                        continue
-
-                if geom:
-                    props["geometry"] = geom
-                    all_feats.append(props)
-        print(f'...... {timenow()} The Data is downloaded saving now for later use')
-
-        savefolder.mkdir(parents=True, exist_ok=True)
-
-        gdf = gpd.GeoDataFrame(all_feats, geometry="geometry", crs="EPSG:4326")
-
-        gdf.to_parquet(data_path) 
-    else:
-        print(f'.... {timenow()} The Data is already downlaoded ')
-
-    return data_path
-
-
-def fx_get_on_fire_data():
-    print('Getting ON Fire Data')                                               # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
-
-    ontario_fires_URL = "https://ws.lioservices.lrc.gov.on.ca/arcgis2/rest/services/LIO_OPEN_DATA/LIO_Open09/MapServer/28/query"
-    data_path = fx_scrape_ontariogeohub(ontario_fires_URL, 'ontario_fires')
-
-    on_processed_data_folder_path = work_dir / "data" / 'on_processed_data'
-    on_processed_data_path = on_processed_data_folder_path / 'on_processed_fire_data.parquet'
-
-    if not on_processed_data_path.exists():
-        print(f'...... {timenow()} Pre-Processing the Data')
-
-        on_processed_data_folder_path.mkdir(parents=True, exist_ok=True)
-        data = gpd.read_parquet(data_path)
-        data = data[["FIRE_YEAR", "FIRE_FINAL_SIZE", "geometry"]]
-        data = data.rename(columns={"FIRE_YEAR": "fire_year"})
-        data = data.rename(columns={"FIRE_FINAL_SIZE": "fire_size"})
-        data["province"] = "on"
-        data = repojectdata(data, 4326)
-        print(f'........ {timenow()} Done Pre-Processing Saving For Later')
-
-        data.to_parquet(on_processed_data_path) 
-    else:
-        print(f'...... {timenow()} The Data Is Already Pre-Processed Loading In Now')
-        data = gpd.read_parquet(on_processed_data_path)
-    return data
-
-
-
-
-
-
-
-def fx_merge_provincial_fires(qcfires, onfires):
-    combined_gdf = pd.concat([qcfires, onfires], ignore_index=True)
-
-    combined_gdf = gpd.GeoDataFrame(combined_gdf, geometry='geometry', crs=qcfires.crs)
+    combined_gdf = gpd.GeoDataFrame(combined_gdf, geometry='geometry', crs=data1.crs)
+    unique_provinces = combined_gdf['province'].unique()
+    print(unique_provinces)
     return combined_gdf
 
 
@@ -372,8 +265,7 @@ def fx_merge_provincial_fires(qcfires, onfires):
 def fx_filter_fires_data(                                                                             # This is the function that actually filters the data, it takes in fire data (and watershed but removed it cause brocken for now), as well as user inputs for filtering 
     fire_gdf,      
     watershed_data, 
-    qcprovinceflag,
-    onprovinceflag,                                                                                                                                                                    # Nore sure if i already mentioned this but i used AI to help apply all the filters at once / apply only the ones the user inputed
+    provincelist,                                                                                                                                                                   # Nore sure if i already mentioned this but i used AI to help apply all the filters at once / apply only the ones the user inputed
     min_year,
     max_year,
     min_size,
@@ -383,14 +275,8 @@ def fx_filter_fires_data(                                                       
     watershed_name
     ):
 
-    # if qcprovinceflag == "true" and onprovinceflag== "true":
-    #     filtered_gdf = fire_gdf[fire_gdf['province'].isin(["qc", "on"])]
-    # elif qcprovinceflag == "true":
-    #     filtered_gdf = fire_gdf[fire_gdf['province'].isin(["qc"])]
-    # elif onprovinceflag == "true":
-    #     filtered_gdf = fire_gdf[fire_gdf['province'].isin(["on"])]
 
-    filtered_gdf = fire_gdf   
+    filtered_gdf = fire_gdf[fire_gdf['province'].isin(provincelist)]
     
     conditions = []     # This is a list of the filtering conditions so they can all be applied at once 
     
@@ -480,15 +366,6 @@ def fx_filter_fires_data(                                                       
 
 
 
-def fx_createexploremap(data, map_name):
-    m = data.explore()
-    m.save(f'static/{map_name}.html')
-    print("saved")
-
-
-
- 
-
 
 def fx_download_json(filtered_data):    
                                                                             # This function is to dowload the filtered data as a geojson, AI showed me how to do this as it is not as simple as just regularly saving the file as it must go through flask 
@@ -518,6 +395,9 @@ def fx_download_json(filtered_data):
         )
 
 
+
+
+
 def fx_download_csv(filtered_data):     # Exact same thing as the last function but downloads as csv        
 
     csv_buffer = io.BytesIO()
@@ -532,6 +412,9 @@ def fx_download_csv(filtered_data):     # Exact same thing as the last function 
         as_attachment=True,
         download_name='firecan_filtered_data.csv'
     ) 
+
+
+
 
 
 def fx_download_gpkg(filtered_data):
@@ -561,3 +444,139 @@ def fx_download_gpkg(filtered_data):
         download_name='firecan_filtered_data.gpkg'
     )
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Function Graveyard
+
+
+# def fx_scrape_ontariogeohub(url, dataname):
+#     print(f'.. {timenow()} Scrapping Ontario Geohub')
+#     savefolder = work_dir / "data" / dataname
+#     data_path = savefolder / f"unprocessed_{dataname}.parquet"
+
+#     if not data_path.exists(): 
+#         print(f'.... {timenow()} The data does not exist, trying to download now')
+#         try:
+#             ids_response = requests.get(
+#                 url,
+#                 params={
+#                     "where": "1=1",
+#                     "returnIdsOnly": "true",
+#                     "f": "json"
+#                 }
+#             )
+#             ids = ids_response.json()["objectIds"]
+#         except:
+#             print("Could Not acces Ontario Geohub, their API sucks :(, Unprocessed Ontario Fire Data is available on the git hub, put the .parquet file in the data/ontario_fires folder and run again))")
+#             sys.exit()
+
+        
+#         all_feats = []
+#         chunk_size = 500
+
+#         for i in range(0, len(ids), chunk_size):
+#             batch = ids[i:i + chunk_size]
+#             res = requests.post(
+#                 url,
+#                 data={
+#                     "objectIds": ",".join(map(str, batch)),
+#                     "outFields": "*",
+#                     "outSR": 4326,
+#                     "returnGeometry": "true",
+#                     "f": "json"
+#                 }
+#             ).json()
+
+
+
+#             features = res.get("features", [])
+#             for feat in features:
+#                 geom_data = feat.get("geometry")
+#                 props = feat.get("attributes", {})
+
+                
+#                 geom = None
+#                 if geom_data:
+#                     try:
+#                         if "rings" in geom_data:   
+#                             geom = Polygon(geom_data["rings"][0])
+#                         elif "paths" in geom_data:  
+#                             geom = shape({"type": "LineString", "coordinates": geom_data["paths"][0]})
+#                         elif "x" in geom_data and "y" in geom_data:  
+#                             geom = shape({"type": "Point", "coordinates": [geom_data["x"], geom_data["y"]]})
+#                     except Exception as e:
+#                         print("⚠️ Geometry conversion failed for one feature:", e)
+#                         continue
+
+#                 if geom:
+#                     props["geometry"] = geom
+#                     all_feats.append(props)
+#         print(f'...... {timenow()} The Data is downloaded saving now for later use')
+
+#         savefolder.mkdir(parents=True, exist_ok=True)
+
+#         gdf = gpd.GeoDataFrame(all_feats, geometry="geometry", crs="EPSG:4326")
+
+#         gdf.to_parquet(data_path) 
+#     else:
+#         print(f'.... {timenow()} The Data is already downlaoded ')
+
+#     return data_path
+
+
+# def fx_get_on_fire_data():
+#     print('Getting ON Fire Data')                                               # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
+
+#     ontario_fires_URL = "https://ws.lioservices.lrc.gov.on.ca/arcgis2/rest/services/LIO_OPEN_DATA/LIO_Open09/MapServer/28/query"
+#     data_path = fx_scrape_ontariogeohub(ontario_fires_URL, 'ontario_fires')
+
+#     on_processed_data_folder_path = work_dir / "data" / 'on_processed_data'
+#     on_processed_data_path = on_processed_data_folder_path / 'on_processed_fire_data.parquet'
+
+#     if not on_processed_data_path.exists():
+#         print(f'...... {timenow()} Pre-Processing the Data')
+
+#         on_processed_data_folder_path.mkdir(parents=True, exist_ok=True)
+#         data = gpd.read_parquet(data_path)
+#         data = data[["FIRE_YEAR", "FIRE_FINAL_SIZE", "geometry"]]
+#         data = data.rename(columns={"FIRE_YEAR": "fire_year"})
+#         data = data.rename(columns={"FIRE_FINAL_SIZE": "fire_size"})
+#         data["province"] = "on"
+#         data = repojectdata(data, 4326)
+#         print(f'........ {timenow()} Done Pre-Processing Saving For Later')
+
+#         data.to_parquet(on_processed_data_path) 
+#     else:
+#         print(f'...... {timenow()} The Data Is Already Pre-Processed Loading In Now')
+#         data = gpd.read_parquet(on_processed_data_path)
+#     return data
+
+
+
+# def fx_createexploremap(data, map_name):
+#     m = data.explore()
+#     m.save(f'static/{map_name}.html')
+#     print("saved")

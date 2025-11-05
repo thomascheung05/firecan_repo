@@ -1,4 +1,4 @@
-from firecan_fx import fx_get_can_fire_data,convert_m_4326deg,fx_merge_provincial_fires,timenow,fx_get_on_fire_data,create_data_folder,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
+from firecan_fx import fx_get_can_fire_data,convert_m_4326deg,fx_merge_provincial_fires,timenow,create_data_folder,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
 from flask import Flask, request # type: ignore
 import json
 import sys
@@ -45,10 +45,10 @@ def fx_main():                                                                  
     distance_coords = request.args.get('distance_coords', None)
     distance_radius = request.args.get('distance_radius', None)
     watershed_name = request.args.get('watershed_name', None)
-    qcprovinceflag = request.args.get('qcprovinceflag', None)
-    onprovinceflag = request.args.get('onprovinceflag', None)    
     is_download_requested = request.args.get('download', '0') == '1'                                      # Checks if we should be displaying data or downloading it
     downloadformat = request.args.get('downloadFormat', None)
+    provinces_str = request.args.get('provinces', '[]')  # default to empty list
+    selected_provinces = json.loads(provinces_str)        # Python list of selected provinces
 
     
 
@@ -57,8 +57,7 @@ def fx_main():                                                                  
     results= fx_filter_fires_data(
                                             gdf_fires,
                                             gdf_qc_watershed_data,
-                                            qcprovinceflag,
-                                            onprovinceflag,
+                                            selected_provinces,
                                             min_year=min_year,
                                             max_year=max_year,
                                             min_size=min_size,
@@ -128,7 +127,7 @@ def serve_html():
     return app.send_static_file('firecan_web.html')
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
 
 
 

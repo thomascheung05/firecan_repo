@@ -101,11 +101,16 @@ function loadFilteredData() {                                                   
   const distanceCoords = document.getElementById('distanceCoords').value;
   const distanceRadius = document.getElementById('distanceRadius').value;
   const watershedName = document.getElementById('watershedName').value;
-  const qcprovinceflag = document.getElementById('quebeccheckbox').checked;
-  const onprovinceflag = document.getElementById('ontariocheckbox').checked;    
 
-  const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&qcprovinceflag=${qcprovinceflag}&onprovinceflag=${onprovinceflag}&polygon_tol=${savedPolygonTolerance}`;     // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
-    
+
+
+  const provinceCheckboxes = document.querySelectorAll('input[type="checkbox"].form-check-input');
+  const selectedProvinces = Array.from(provinceCheckboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+
+  const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&provinces=${encodeURIComponent(JSON.stringify(selectedProvinces))}&polygon_tol=${savedPolygonTolerance}`;
+  
   
   
   const loadingEl = document.getElementById('loadingMessage');
@@ -209,14 +214,16 @@ function downloadFilteredData() {
   const distanceCoords = document.getElementById('distanceCoords').value;
   const distanceRadius = document.getElementById('distanceRadius').value;
   const watershedName = document.getElementById('watershedName').value;
-  const qcprovinceflag = document.getElementById('quebeccheckbox').checked;
-  const onprovinceflag = document.getElementById('ontariocheckbox').checked; 
   const downloadFormat = document.getElementById('downloadFormat').value;
-                                                                                                                    // THis code largely does the same thing as the function above but instead of displaying the data I uses my python dowloand data functions to downalod the filtered data 
+
+  const provinceCheckboxes = document.querySelectorAll('input[type="checkbox"].form-check-input');
+  const selectedProvinces = Array.from(provinceCheckboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.value);
+
+  const downloadURL = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&provinces=${encodeURIComponent(JSON.stringify(selectedProvinces))}&polygon_tol=${savedPolygonTolerance}&downloadFormat=${downloadFormat}&download=1`;     // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
 
 
-
-  const downloadURL = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&qcprovinceflag=${qcprovinceflag}&onprovinceflag=${onprovinceflag}&polygon_tol=${savedPolygonTolerance}&downloadFormat=${downloadFormat}&download=1`;     // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
 
   const a = document.createElement('a');                                                                            // This code here is what actually downlaods the data, I understand what it does but not really how it works, reddit has been telling me this a good way to downlaod data through a web app 
   a.href = downloadURL;
