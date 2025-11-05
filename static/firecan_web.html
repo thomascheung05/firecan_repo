@@ -16,178 +16,171 @@
 
         <div class="row h-100">
 
+            <div id="mainSidebarContent" class="col-12 col-md-1 p-3" style="display: flex; flex-direction: column;">
+                <button id="mapButton" class="btn mb-2">Map</button>
+                <button id="aboutButton" class="btn mb-2">?</button>
+            </div>
 
+            <div id="mapSection" class="col-12 col-md-1 p-3" style="display:none;">
 
-                <div id="mainSidebarContent" class="col-12 col-md-1 p-3" style="display: flex; flex-direction: column;">
-                    <button id="mapButton" class="btn mb-2">Map</button>
-                    <button id="aboutButton" class="btn mb-2">?</button>
+                <button id="mapBackButton" class="btn btn-secondary mb-3">←</button>
+                
+                <div id = "gofiler">
+                    <div class="d-flex gap-2">
+                        <button id="saveButton" type="button" class="flex-fill"></button>
+                        <button id="filterButton" type="button" class="flex-fill" onclick="loadFilteredData()">Filter Map</button>
+                    </div>
+
+                    <div class="d-grid gap-1 mb-3">
+                        <span id="clearFiltersText" onclick="clearFilters()">Clear Filters</span>
+                    </div>
+
+                    <div id="loadingMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading data<br>This may take several minutes...</p>
+                    </div>  
+
+                    <div id="foundMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
+                        <p class="mt-2"></p>
+                    </div>         
                 </div>
+                <hr class="sidebar-separator">
 
-
-                <div id="mapSection" class="col-12 col-md-1 p-3" style="display:none;">
-
-                    <button id="mapBackButton" class="btn btn-secondary mb-3">←</button>
-                    
-                    <div id = "gofiler">
-                        <div class="d-flex gap-2">
-                            <button id="saveButton" type="button" class="flex-fill"></button>
-                            <button id="filterButton" type="button" class="flex-fill" onclick="loadFilteredData()">Filter Map</button>
+                <form>  
+                    <div id = "provincecheckboxes">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="QCcheckbox" value="QC" checked>
+                            <label class="form-check-label" for="checkbox1">QC</label>
                         </div>
 
-                        <div class="d-grid gap-1 mb-3">
-                            <span id="clearFiltersText" onclick="clearFilters()">Clear Filters</span>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="ONcheckbox" value="ON">
+                            <label class="form-check-label" for="checkbox2">ON</label>
                         </div>
 
-                        <div id="loadingMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                            <p class="mt-2">Loading data<br>This may take several minutes...</p>
-                        </div>  
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="BCcheckbox" value="BC">
+                            <label class="form-check-label" for="checkbox2">BC</label>
+                        </div>
 
-                        <div id="foundMessage" class="alert alert-info text-center fw-bold py-2" style="display:none;">          
-                            <p class="mt-2"></p>
-                        </div>         
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="ABcheckbox" value="AB">
+                            <label class="form-check-label" for="checkbox2">AB</label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="SKcheckbox" value="SK">
+                            <label class="form-check-label" for="checkbox2">SK</label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="MBcheckbox" value="MB">
+                            <label class="form-check-label" for="checkbox2">MB</label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="YTcheckbox" value="YT">
+                            <label class="form-check-label" for="checkbox2">YT</label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="NTcheckbox" value="NT">
+                            <label class="form-check-label" for="checkbox2">NT</label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="NScheckbox" value="NS">
+                            <label class="form-check-label" for="checkbox2">NS</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="NLcheckbox" value="NL">
+                            <label class="form-check-label" for="checkbox2">NL</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="NBcheckbox" value="NB">
+                            <label class="form-check-label" for="checkbox2">NB</label>
+                        </div>
+
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="ALLcheckbox" value="ALL">
+                            <label class="form-check-label" for="checkbox2">All</label>
+                        </div>
+
+
                     </div>
                     <hr class="sidebar-separator">
-
-                    <form>  
-                        <div id = "provincecheckboxes">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="QCcheckbox" value="QC" checked>
-                                <label class="form-check-label" for="checkbox1">QC</label>
-                            </div>
-
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="ONcheckbox" value="ON">
-                                <label class="form-check-label" for="checkbox2">ON</label>
-                            </div>
-
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="BCcheckbox" value="BC">
-                                <label class="form-check-label" for="checkbox2">BC</label>
-                            </div>
-
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="ABcheckbox" value="AB">
-                                <label class="form-check-label" for="checkbox2">AB</label>
-                            </div>
-
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="SKcheckbox" value="SK">
-                                <label class="form-check-label" for="checkbox2">SK</label>
-                            </div>
-
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="MBcheckbox" value="MB">
-                                <label class="form-check-label" for="checkbox2">MB</label>
-                            </div>
-
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="YTcheckbox" value="YT">
-                                <label class="form-check-label" for="checkbox2">YT</label>
-                            </div>
-
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="NTcheckbox" value="NT">
-                                <label class="form-check-label" for="checkbox2">NT</label>
-                            </div>
-
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="NScheckbox" value="NS">
-                                <label class="form-check-label" for="checkbox2">NS</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="NLcheckbox" value="NL">
-                                <label class="form-check-label" for="checkbox2">NL</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="NBcheckbox" value="NB">
-                                <label class="form-check-label" for="checkbox2">NB</label>
-                            </div>
-
-
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" id="ALLcheckbox" value="ALL">
-                                <label class="form-check-label" for="checkbox2">ALL</label>
-                            </div>
-
-
+                    <div id="yearfilterinputs">
+                        <label for="minYear" class="year-label">Year</label>
+                        <div class="year-inputs" style="display: flex; gap: 1rem;">
+                            <input type="text" id="minYear" class="form-control" placeholder="Min Year">
+                            <input type="text" id="maxYear" class="form-control" placeholder="Max Year">
                         </div>
-                        <hr class="sidebar-separator">
-                        <div id="yearfilterinputs">
-                            <label for="minYear" class="year-label">Year</label>
-                            <div class="year-inputs" style="display: flex; gap: 1rem;">
-                                <input type="text" id="minYear" class="form-control" placeholder="Min Year">
-                                <input type="text" id="maxYear" class="form-control" placeholder="Max Year">
-                            </div>
-                        </div>
-                        <hr class="sidebar-separator">
-                        <div id="sizefilterinputs">
-                            <label for="minSize" class="size-label">Size (HA)</label>
-                            <div class="size-inputs" style="display: flex; gap: 1rem;">
-                                <input type="text" id="minSize" class="form-control" placeholder="Min Size">
-                                <input type="text" id="maxSize" class="form-control" placeholder="Max Size">
-                            </div>
-                        </div>
-                        <hr class="sidebar-separator">
-                        <div id="locationfilterinputs">
-                            <label for="distanceCoords" class="location-label">Location</label>
-                            <div class="location-inputs" style="display: flex; gap: 1rem;">
-                                <input type="text" id="distanceCoords" class="form-control" placeholder="Coords">
-                                <input type="text" id="distanceRadius" class="form-control" placeholder="Radius (km)">
-                            </div>
-                        </div>
-                    <hr class="sidebar-separator">
-                        <div id="watershedfilterinput" class="mb-3">
-                            <label for="watershedName" class="filter-label">Watershed</label>
-                            <input type="text" id="watershedName" class="form-control" placeholder="eg. YAMASKA">
-                        </div>
-                    </form>
-
-                    <hr class="sidebar-separator">
-                    <div class="d-flex justify-content-between gap-1">
-                        <button id="watershedExplorerButton" class="btn mb-2">💧</button>
-                        <button id="polygonTolButton" class="btn mb-2">▲</button>
                     </div>
+                    <hr class="sidebar-separator">
+                    <div id="sizefilterinputs">
+                        <label for="minSize" class="size-label">Size (HA)</label>
+                        <div class="size-inputs" style="display: flex; gap: 1rem;">
+                            <input type="text" id="minSize" class="form-control" placeholder="Min Size">
+                            <input type="text" id="maxSize" class="form-control" placeholder="Max Size">
+                        </div>
+                    </div>
+                    <hr class="sidebar-separator">
+                    <div id="locationfilterinputs">
+                        <label for="distanceCoords" class="location-label">Location</label>
+                        <div class="location-inputs" style="display: flex; gap: 1rem;">
+                            <input type="text" id="distanceCoords" class="form-control" placeholder="Coords">
+                            <input type="text" id="distanceRadius" class="form-control" placeholder="Radius (km)">
+                        </div>
+                    </div>
+                <hr class="sidebar-separator">
+                    <div id="watershedfilterinput" class="mb-3">
+                        <label for="watershedName" class="filter-label">Watershed</label>
+                        <input type="text" id="watershedName" class="form-control" placeholder="eg. YAMASKA">
+                    </div>
+                </form>
+
+                <hr class="sidebar-separator">
+                <div class="d-flex justify-content-between gap-1">
+                    <button id="watershedExplorerButton" class="btn mb-2">💧</button>
+                    <button id="polygonTolButton" class="btn mb-2">▲</button>
                 </div>
+            </div>
+
+            <div id="aboutSection" class="col-12 col-md-1 p-3" style="display:none;">
+                <button id="aboutBackButton" class="btn btn-secondary mb-3">←</button>
+                <h4>About FIRECAN</h4>
+                <p><strong>Firecan</strong> is a collection of historical forest fires data in Canada<br>
+                Currently, Firecan supports <strong>Quebec</strong> and <strong>Ontario</strong></p>
 
 
-                <div id="aboutSection" class="col-12 col-md-1 p-3" style="display:none;">
-                    <button id="aboutBackButton" class="btn btn-secondary mb-3">←</button>
-                    <h4>About FIRECAN</h4>
-                    <p><strong>Firecan</strong> is a collection of historical forest fires data in Canada<br>
-                    Currently, Firecan supports <strong>Quebec</strong> and <strong>Ontario</strong></p>
+                <p>
+                    <strong style="font-size: 24px;">Filter Data</strong><br>
+                    Input your desired filters and click "Filter Map" to see your fires on the map.<br>
+                    BE CAREFUL!: Theses datasets hold hundreds of thousands of rows, FOCUS your filters or LOWER polygon tolerance to minimize file size (5 mb) and server costs<br>
+                    You can filter by <u>Year</u>, <u>Size</u>, <u>Radius</u> around a location and <u>Watershed</u><br>
+                    When using the <u>Year/Size</u> filter it is good practice input an upper and lower bound or else large amounts of the dataset will load<br>
+                    <strong style="font-size: 24px;">Base Map</strong><br>
+                    Change the basemap using the pop-up in the top right of the map.<br>
+                    <strong style="font-size: 24px;">Download Data</strong><br>
+                    Download filtered data by entering your desired filters, choosing a format, and then clicking "Download Data" button<br>
+                    <strong style="font-size: 24px;">Watershed Explorer</strong><br>
+                    To see all available watersheds, click on the 💧 button<br>
+                    Copy and Paste the watershed name into the watershed filter box<br>
+                    <strong style="font-size: 24px;">Polygon Tolerance</strong><br>
+                    To increases the accuracy of the polgyons, input a smaller number (m of polygon deviation allowed) in ▲ popup
+                </p>
 
+                <p><strong>Data Sources:</strong></p>
+                <ul>
+                    <li>Quebec Fires: <a href="https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec" target="_blank">https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec</a></li>
+                    <li>Quebec Watersheds: <a href="https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec" target="_blank">https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec</a></li>
+                    <li>Ontario Fires: <a href="https://data.ontario.ca/dataset/fire-disturbance-area-firedstb" target="_blank">https://data.ontario.ca/dataset/fire-disturbance-area-firedstb</a></li>
+                </ul>
 
-                    <p>
-                        <strong style="font-size: 24px;">Filter Data</strong><br>
-                        Input your desired filters and click "Filter Map" to see your fires on the map.<br>
-                        BE CAREFUL!: Theses datasets hold hundreds of thousands of rows, FOCUS your filters or LOWER polygon tolerance to minimize file size (5 mb) and server costs<br>
-                        You can filter by <u>Year</u>, <u>Size</u>, <u>Radius</u> around a location and <u>Watershed</u><br>
-                        When using the <u>Year/Size</u> filter it is good practice input an upper and lower bound or else large amounts of the dataset will load<br>
-                        <strong style="font-size: 24px;">Base Map</strong><br>
-                        Change the basemap using the pop-up in the top right of the map.<br>
-                        <strong style="font-size: 24px;">Download Data</strong><br>
-                        Download filtered data by entering your desired filters, choosing a format, and then clicking "Download Data" button<br>
-                        <strong style="font-size: 24px;">Watershed Explorer</strong><br>
-                        To see all available watersheds, click on the 💧 button<br>
-                        Copy and Paste the watershed name into the watershed filter box<br>
-                        <strong style="font-size: 24px;">Polygon Tolerance</strong><br>
-                        To increases the accuracy of the polgyons, input a smaller number (m of polygon deviation allowed) in ▲ popup
-                    </p>
-
-                    <p><strong>Data Sources:</strong></p>
-                    <ul>
-                        <li>Quebec Fires: <a href="https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec" target="_blank">https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec</a></li>
-                        <li>Quebec Watersheds: <a href="https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec" target="_blank">https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec</a></li>
-                        <li>Ontario Fires: <a href="https://data.ontario.ca/dataset/fire-disturbance-area-firedstb" target="_blank">https://data.ontario.ca/dataset/fire-disturbance-area-firedstb</a></li>
-                    </ul>
-
-                </div>
-
-
-
+            </div>
 
             <div class="col p-0" id="map" style="height: 100vh; min-height: 400px;"></div>
 

@@ -1,7 +1,7 @@
 #mainSidebarContent {
   background-color: #000000e9;
   height: 100vh;   
-  width: 80px; /* default width */       
+  width: 80px;       
   overflow-y: auto;       
   overflow-x: hidden;     
 }
@@ -17,27 +17,27 @@
 
 #mainSidebarContent #mapButton {
   background-image: url('/static/img/map-marker-64.png');
-  background-size: contain;   /* scales image to fit */
+  background-size: contain;   
   background-repeat: no-repeat;
-  background-position: center; /* centers image */
-  background-color: transparent; /* optional, removes button color */
+  background-position: center; 
+  background-color: transparent;  
   border: none;
   width: 35px;
   height: 35px;
-  padding: 0; /* prevents button text spacing */
+  padding: 0;  
   cursor: pointer;
 }
 
 #mainSidebarContent #aboutButton {
   background-image: url('/static/img/abouticon.png');
-  background-size: contain;   /* scales image to fit */
+  background-size: contain;   
   background-repeat: no-repeat;
-  background-position: center; /* centers image */
-  background-color: transparent; /* optional, removes button color */
+  background-position: center; 
+  background-color: transparent;  
   border: none;
   width: 35px;
   height: 35px;
-  padding: 0; /* prevents button text spacing */
+  padding: 0;  
   cursor: pointer;
 }
 
@@ -53,7 +53,7 @@
 #mapSection {
   background-color: #000000e9;
   height: 100vh;   
-  width: 275px; /* default width */       
+  width: 275px;       
   overflow-y: auto;       
   overflow-x: hidden;     
 }
@@ -70,14 +70,14 @@
 }
 #saveButton {
   background-image: url('/static/img/save.png');
-  background-size: contain;   /* scales image to fit */
+  background-size: contain;    
   background-repeat: no-repeat;
-  background-position: center; /* centers image */
-  background-color: transparent; /* optional, removes button color */
+  background-position: center; 
+  background-color: transparent; 
   border: none;
   width: 35px;
   height: 35px;
-  padding: 0; /* prevents button text spacing */
+  padding: 0;  
   cursor: pointer;   
 }
 
@@ -101,14 +101,14 @@
 
 #mapSection #mapBackButton {
   background-image: url('/static/img/backicon.png');
-  background-size: contain;   /* scales image to fit */
+  background-size: contain;   
   background-repeat: no-repeat;
-  background-position: center; /* centers image */
-  background-color: transparent; /* optional, removes button color */
+  background-position: center; 
+  background-color: transparent;  
   border: none;
   width: 30px;
   height: 30px;
-  padding: 0; /* prevents button text spacing */
+  padding: 0;  
   cursor: pointer;           
 }
 
@@ -166,14 +166,14 @@
 
 #aboutSection #aboutBackButton {
   background-image: url('/static/img/backicon.png');
-  background-size: contain;   /* scales image to fit */
+  background-size: contain;   
   background-repeat: no-repeat;
-  background-position: center; /* centers image */
-  background-color: transparent; /* optional, removes button color */
+  background-position: center;  
+  background-color: transparent;  
   border: none;
   width: 30px;
   height: 30px;
-  padding: 0; /* prevents button text spacing */
+  padding: 0;  
   cursor: pointer;    
 }
 
@@ -262,7 +262,7 @@
     background-color: rgba(0,0,0,0.7);
     justify-content: center;
     align-items: center;
-    display: flex; /* must be flex to center modal-content */
+    display: flex; 
 }
 
 #downloadModal .modal-content {
@@ -270,7 +270,7 @@
     padding: 20px;
     border-radius: 8px;
     width: 300px;
-    position: relative; /* for close button positioning */
+    position: relative;  
 }
 
 #downloadModal .close {
