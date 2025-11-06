@@ -47,8 +47,8 @@ def fx_main():                                                                  
     watershed_name = request.args.get('watershed_name', None)
     is_download_requested = request.args.get('download', '0') == '1'                                      # Checks if we should be displaying data or downloading it
     downloadformat = request.args.get('downloadFormat', None)
-    provinces_str = request.args.get('provinces', '[]')  # default to empty list
-    selected_provinces = json.loads(provinces_str)        # Python list of selected provinces
+    provinces_str = request.args.get('provinces', '[]')   
+    selected_provinces = json.loads(provinces_str)         
 
     
 
