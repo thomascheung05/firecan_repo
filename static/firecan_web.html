@@ -442,42 +442,26 @@
     <!-- Clear Filters -->
     <script>
         function clearFilters() {
-            // Uncheck checkboxes
-            document.getElementById("QCcheckbox").checked = false;
-            document.getElementById("ONcheckbox").checked = false;
-            document.getElementById("BCcheckbox").checked = false;
-            document.getElementById("ABcheckbox").checked = false;
-            document.getElementById("SKcheckbox").checked = false;
-            document.getElementById("MBcheckbox").checked = false;
-            document.getElementById("YTcheckbox").checked = false;
-            document.getElementById("NTcheckbox").checked = false;
-            document.getElementById("NScheckbox").checked = false;
-            document.getElementById("NLcheckbox").checked = false;
-            document.getElementById("NBcheckbox").checked = false;
+            // Uncheck all province checkboxes
+            const checkboxes = document.querySelectorAll("#provincecheckboxes input[type='checkbox']");
+            checkboxes.forEach(checkbox => checkbox.checked = false);
 
-
-
-
-
-
-
-
-
-            // Clear text inputs
-            const textInputs = ["minYear","maxYear","minSize","maxSize","distanceCoords","distanceRadius","watershedName"];
-            textInputs.forEach(id => document.getElementById(id).value = "");
+            // Clear all text inputs within the form
+            const inputs = document.querySelectorAll("#mapSection input[type='text']");
+            inputs.forEach(input => input.value = "");
 
             // Reset download format
-            document.getElementById("downloadFormat").value = "csv";
+            const downloadFormat = document.getElementById("downloadFormat");
+            if (downloadFormat) downloadFormat.value = "csv";
 
-            // Reset polygon tolerance if needed
-            if (typeof savedPolygonTolerance !== 'undefined') {
+            // Reset polygon tolerance input if available
+            if (typeof savedPolygonTolerance !== 'undefined' && polygonInput) {
                 polygonInput.value = savedPolygonTolerance;
             }
 
             console.log("Filters cleared.");
         }
-    </script>
+            </script>
 </body>
 </html>
 
