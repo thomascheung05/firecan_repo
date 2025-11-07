@@ -1,3 +1,49 @@
+#introModal {
+  display: none; /* Start hidden */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);  
+  justify-content: center;   
+  align-items: flex-start;  
+  padding-top: 2%;            
+  z-index: 2000;
+}
+
+#introModal .modal-content {
+  background: #000000e9;
+  color: rgb(255, 255, 255);
+  padding: 2rem;
+  max-width: 650px;
+
+  border-radius: 10px;
+}
+
+#introModal .modal-content #introText {
+  color: #ffffff;
+  line-height: 2; /* 1.5 times the font size */
+  font-size: 20px;
+}
+
+#introModal .modal-content #introTitle {
+  text-align: center;
+  color: #ff3300;
+  font-family:'Segoe UI';
+  font-size: 50px;
+}
+
+
+
+
+
+
+
+
+
+
+
 #mainSidebarContent {
   background-color: #000000e9;
   height: 100vh;   

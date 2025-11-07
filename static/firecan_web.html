@@ -186,6 +186,21 @@
 
         </div>
 
+
+        <div id="introModal" >
+            <div class="modal-content">
+                <div class="mb-2">
+                <h2 id = "introTitle">FIRECAN</h2>
+                <p id = "introText">- <strong>Firecan</strong> is a collection of historical forest fires data in Canada<br>
+                - Enter your desired filters and click <strong>Filter Map</strong> to display data<br>
+                - The server has a cap of 8mb so ensure your filters are specfic<br>
+                - Click on the <strong>Water Drop</strong> button to see all available watersheds<br>
+                - Click on the  <strong>Triangle</strong> button to change the Polygon Tolerance</p>
+                </div>
+            </div>
+        </div>
+
+
         <div id="downloadModal" style="display: none;">
             <div class="modal-content">
                 <span class="close" id="closeDownloadModal">&times;</span>
@@ -298,6 +313,18 @@
         aboutButton.addEventListener("click", () => openSection(aboutSection));
         mapButton.addEventListener("click", () => openSection(mapSection));
         backButton.addEventListener("click", goBack);
+    </script>
+    <!-- Intro Modal -->
+    <script>
+        const introModal = document.getElementById("introModal");
+        window.addEventListener("load", () => {
+            introModal.style.display = "flex";
+        });
+        introModal.addEventListener("click", (e) => {
+            if (e.target === introModal) {
+                introModal.style.display = "none";
+            }
+        });
     </script>
     <!-- Polygon Tolerance -->
      <script>
