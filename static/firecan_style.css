@@ -27,15 +27,15 @@
   font-size: 20px;
 }
 
-#introModal .modal-content #introTitle {
+
+
+.bungee-tint-regular-introModal {
   text-align: center;
-  color: #ff3300;
-  font-family:'Segoe UI';
-  font-size: 50px;
+  font-family: "Bungee Tint", sans-serif;
+  font-weight: 400;
+  font-size: 55px;
+  font-style: normal;
 }
-
-
-
 
 
 
@@ -74,6 +74,8 @@
   cursor: pointer;
 }
 
+
+
 #mainSidebarContent #aboutButton {
   background-image: url('/static/img/abouticon.png');
   background-size: contain;   
@@ -96,6 +98,20 @@
 
 
 
+
+
+
+
+
+button:hover, .checkbox-group label:hover {
+    opacity: 0.85;
+}
+
+
+
+
+
+
 #mapSection {
   background-color: #000000e9;
   height: 100vh;   
@@ -107,13 +123,13 @@
 
 
 
-
 #filterButton{
   font-family: Trebuchet MS, sans-serif;
   font-size: 25px;
   background-color: #157f38;
   color: rgb(255, 255, 255); 
-}
+} 
+
 #saveButton {
   background-image: url('/static/img/save.png');
   background-size: contain;    
@@ -122,10 +138,18 @@
   background-color: transparent; 
   border: none;
   width: 35px;
-  height: 35px;
+  height: 50px;
   padding: 0;  
   cursor: pointer;   
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -388,6 +412,16 @@
     text-align: right;  
     line-height: 1;     
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
