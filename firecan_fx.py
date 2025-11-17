@@ -169,7 +169,7 @@ def fx_get_can_fire_data():
         gdf['pc'] = gdf['province'].where(gdf['province'].isin(pc_codes), '')
         gdf['pc'] = gdf['pc'].replace(parks_decoded)
         gdf['province'] = gdf['province'].replace(pc_to_province)
-        print(gdf['pc'].unique())
+         
 
         print(f'............ {timenow()} Re-Projecting Data')
         gdf = repojectdata(gdf, 4326) 
