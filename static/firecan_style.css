@@ -205,6 +205,9 @@
   background-color: #000000e9;
   font-size: 18px; 
   width: 800px; 
+  height: 100vh;    
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 

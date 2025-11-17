@@ -123,14 +123,54 @@ def fx_get_can_fire_data():
         gdf['pc'] = gdf['province'].where(gdf['province'].isin(pc_codes), '')
 
         pc_to_province = {
-            'PC-PA':'BC', 'PC-WB':'AB', 'PC-JA':'AB', 'PC-NA':'NT', 'PC-RM':'MB',
-            'PC-EI':'AB', 'PC-BA':'AB', 'PC-KO':'QC', 'PC-LM':'QC', 'PC-GL':'QC',
-            'PC-PU':'QC', 'PC-VU':'QC', 'PC-YO':'YT', 'PC-SY':'SK', 'PC-GR':'AB',
-            'PC-WP':'MB', 'PC-RE':'QC', 'PC-TN':'QC', 'PC-WL':'ON', 'PC-NI':'ON'
+            'PC-PA':'BC', 
+            'PC-WB':'AB', 
+            'PC-JA':'AB', 
+            'PC-NA':'NT', ''
+            'PC-RM':'MB',
+            'PC-EI':'AB', 
+            'PC-BA':'AB', 
+            'PC-KO':'QC', 
+            'PC-LM':'QC', 
+            'PC-GL':'QC',
+            'PC-PU':'QC', 
+            'PC-VU':'QC', 
+            'PC-YO':'YT', 
+            'PC-SY':'SK', 
+            'PC-GR':'AB',
+            'PC-WP':'MB', 
+            'PC-RE':'QC', 
+            'PC-TN':'QC', 
+            'PC-WL':'ON', 
+            'PC-NI':'ON'
+        }
+
+        parks_decoded = {
+            'PC-PA': 'Prince Albert National Park',
+            'PC-WB': 'Wood Buffalo National Park',
+            'PC-JA': 'Jasper National Park',
+            'PC-NA': 'Nahanni National Park',
+            'PC-RM': 'Riding Mountain National Park',
+            'PC-EI': 'Elk Island National Park',
+            'PC-BA': 'Banff National Park',
+            'PC-KO': 'Kootenay National Park',
+            'PC-LM': 'La Mauricie National Park',
+            'PC-GL': 'Glacier National Park',
+            'PC-PU': 'Pukaskwa National Park',
+            'PC-VU': 'Vuntut National Park',
+            'PC-YO': 'Yoho National Park',
+            'PC-SY': 'Saoyú-ehdacho National Historic Site',
+            'PC-GR': 'Grasslands National Park',
+            'PC-WP': 'Wapusk National Park',
+            'PC-RE': 'Mount Revelstoke National Park',
+            'PC-TN': 'Terra Nova National Park',
+            'PC-WL': 'Waterton Lakes National Park',
+            'PC-NI': '???'
         }
 
 
         gdf['province'] = gdf['province'].replace(pc_to_province)
+        gdf['pc'] = gdf['pc'].replace(parks_decoded)
         gdf = gdf[gdf['province'] != 'QC']
 
 
