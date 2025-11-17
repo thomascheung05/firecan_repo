@@ -1,3 +1,6 @@
+MAX_SIZE_MB = 8
+
+
 from firecan_fx import fx_get_can_fire_data,convert_m_4326deg,fx_merge_provincial_fires,timenow,create_data_folder,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
 from flask import Flask, request # type: ignore
 import json
@@ -5,7 +8,7 @@ import sys
 import geopandas as gpd
 
 create_data_folder()
-MAX_SIZE_MB = 8
+
 print('------------------------Starting data pre-loading. This may take a few minutes...', timenow(),'------------------------')                                      # This section here loads in the data, it uses the scrap donne quebec function and the process qc fire data fuction
 # gdf_qc_fires = fx_get_qc_fire_data()
 # gdf_qc_watershed_data = fx_get_qc_watershed_data()
@@ -49,7 +52,7 @@ def fx_main():                                                                  
     downloadformat = request.args.get('downloadFormat', None)
     provinces_str = request.args.get('provinces', '[]')   
     selected_provinces = json.loads(provinces_str)         
-
+    pc_name = request.args.get('pc_name', None)
     
 
 
@@ -64,7 +67,8 @@ def fx_main():                                                                  
                                             max_size=max_size,
                                             distance_coords=distance_coords,
                                             distance_radius=distance_radius,
-                                            watershed_name=watershed_name
+                                            watershed_name=watershed_name,
+                                            pc_name = pc_name
                                         )
     print(timenow(),'Done Filtering Data')
 

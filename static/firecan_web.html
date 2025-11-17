@@ -8,8 +8,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="./static/firecan_style.css">
-
-
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=filter_arrow_right" />
+    
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee+Tint&family=Cinzel:wght@400..900&family=Zalando+Sans:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container-fluid vh-100">
@@ -17,8 +21,9 @@
         <div class="row h-100">
 
             <div id="mainSidebarContent" class="col-12 col-md-1 p-3" style="display: flex; flex-direction: column;">
-                <button id="mapButton" class="btn mb-2">Map</button>
-                <button id="aboutButton" class="btn mb-2">?</button>
+                <button id="mapButton" class="btn mb-2"></button>
+                <button id="aboutButton" class="btn mb-2"></button>
+
             </div>
 
             <div id="mapSection" class="col-12 col-md-1 p-3" style="display:none;">
@@ -140,51 +145,121 @@
                         <label for="watershedName" class="filter-label">Watershed</label>
                         <input type="text" id="watershedName" class="form-control" placeholder="eg. YAMASKA">
                     </div>
+                <hr class="sidebar-separator">
+                    <div id="pcfilterinput" class="mb-3">
+                        <label for="pcName" class="filter-label">National Park</label>
+                        <select id="pcName" class="form-control">
+                            <option value="">-- Select a Park --</option>
+                            <option value="Prince Albert National Park">Prince Albert National Park</option>
+                            <option value="Wood Buffalo National Park">Wood Buffalo National Park</option>
+                            <option value="Jasper National Park">Jasper National Park</option>
+                            <option value="Nahanni National Park">Nahanni National Park</option>
+                            <option value="Riding Mountain National Park">Riding Mountain National Park</option>
+                            <option value="Elk Island National Park">Elk Island National Park</option>
+                            <option value="Banff National Park">Banff National Park</option>
+                            <option value="Kootenay National Park">Kootenay National Park</option>
+                            <option value="La Mauricie National Park">La Mauricie National Park</option>
+                            <option value="Glacier National Park">Glacier National Park</option>
+                            <option value="Pukaskwa National Park">Pukaskwa National Park</option>
+                            <option value="Vuntut National Park">Vuntut National Park</option>
+                            <option value="Yoho National Park">Yoho National Park</option>
+                            <option value="Saoyú-ehdacho National Historic Site">Saoyú-ehdacho National Historic Site</option>
+                            <option value="Grasslands National Park">Grasslands National Park</option>
+                            <option value="Wapusk National Park">Wapusk National Park</option>
+                            <option value="Mount Revelstoke National Park">Mount Revelstoke National Park</option>
+                            <option value="Terra Nova National Park">Terra Nova National Park</option>
+                            <option value="Waterton Lakes National Park">Waterton Lakes National Park</option>
+                            <option value="PC-NI">PC-NI</option>
+                        </select>
+                    </div>                  
                 </form>
 
                 <hr class="sidebar-separator">
                 <div class="d-flex justify-content-between gap-1">
-                    <button id="watershedExplorerButton" class="btn mb-2">💧</button>
-                    <button id="polygonTolButton" class="btn mb-2">▲</button>
+                    <button id="watershedExplorerButton" class="btn mb-2"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M491-200q12-1 20.5-9.5T520-230q0-14-9-22.5t-23-7.5q-41 3-87-22.5T343-375q-2-11-10.5-18t-19.5-7q-14 0-23 10.5t-6 24.5q17 91 80 130t127 35ZM480-80q-137 0-228.5-94T160-408q0-100 79.5-217.5T480-880q161 137 240.5 254.5T800-408q0 140-91.5 234T480-80Zm0-80q104 0 172-70.5T720-408q0-73-60.5-165T480-774Q361-665 300.5-573T240-408q0 107 68 177.5T480-160Zm0-320Z"/></svg></button>
+                    <button id="polygonTolButton" class="btn mb-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff">
+                            <path d="M272-120 64-480l208-360h416l208 360-208 360H272Zm46-80h324l161-280-161-280H318L156-480l162 280Zm162-280Z"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
 
             <div id="aboutSection" class="col-12 col-md-1 p-3" style="display:none;">
                 <button id="aboutBackButton" class="btn btn-secondary mb-3">←</button>
-                <h4>About FIRECAN</h4>
-                <p><strong>Firecan</strong> is a collection of historical forest fires data in Canada<br>
-                Currently, Firecan supports <strong>Quebec</strong> and <strong>Ontario</strong></p>
+                <h1>About FIRECAN</h1>
 
+                <p><strong>Firecan</strong> is a collection of historical forest fires data in Canada<br>
+                    The data used by Firecan can be publicly accesed (links below)<br>
+                    I strongly suggest looking at the raw data for more information<br>
+                    Download and run FIRECAN locally: <a href="https://github.com/thomascheung05/firecan_repo" target="_blank">GITHUB</a></li>
 
                 <p>
                     <strong style="font-size: 24px;">Filter Data</strong><br>
-                    Input your desired filters and click "Filter Map" to see your fires on the map.<br>
-                    BE CAREFUL!: Theses datasets hold hundreds of thousands of rows, FOCUS your filters or LOWER polygon tolerance to minimize file size (5 mb) and server costs<br>
-                    You can filter by <u>Year</u>, <u>Size</u>, <u>Radius</u> around a location and <u>Watershed</u><br>
-                    When using the <u>Year/Size</u> filter it is good practice input an upper and lower bound or else large amounts of the dataset will load<br>
+                    To display polygons, first click the map on the side bar<br>
+                    Input your desired filters and click "Filter Map" to display polygons<br>
+                    Due to server limitations, requests are limited to 8mb<br>
+                    Either focus your filters or reduce polygon tolerance to reduce file size
+                    <br>
+                    <br>
+                    <strong style="font-size: 24px;">Polygon Tolerance</strong><br>
+                    Polygons are drawn uses lists of coordiantes<br>
+                    To reduce load we can decrease the amounts of coordiantes used for each polgyon<br>
+                    In the filtering side bar click the <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff"><path d="M272-120 64-480l208-360h416l208 360-208 360H272Zm46-80h324l161-280-161-280H318L156-480l162 280Zm162-280Z"/></svg> button <br> 
+                    Enter a lower number to draw a more detailed polygon <br>
+                    This number refers to allowed deviation when reducing the polygon
+
+                    <br>
+                    <br>
+
+                    <strong style="font-size: 24px;">Watershed Explorer</strong><br>
+                    Currently, firecan only supports watershed filtering in Quebec<br>
+                    To filter by watershed, first click on the watershed explorer <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M491-200q12-1 20.5-9.5T520-230q0-14-9-22.5t-23-7.5q-41 3-87-22.5T343-375q-2-11-10.5-18t-19.5-7q-14 0-23 10.5t-6 24.5q17 91 80 130t127 35ZM480-80q-137 0-228.5-94T160-408q0-100 79.5-217.5T480-880q161 137 240.5 254.5T800-408q0 140-91.5 234T480-80Zm0-80q104 0 172-70.5T720-408q0-73-60.5-165T480-774Q361-665 300.5-573T240-408q0 107 68 177.5T480-160Zm0-320Z"/></svg><br>
+                    Choose your desired watershed, copy the name and past it into the watershed input box<br>
+                    Filting based on location in other polgyons takes a big longer than normal filtering
+
+                    <br>
+                    <br>
+
+                    <strong style="font-size: 24px;">Download Data</strong><br>
+                    Donwload your filtered data by entering your desired filters are pressing the save button<br>
+                    Select your file format and press save
+
+                    <br>
+                    <br>
+
                     <strong style="font-size: 24px;">Base Map</strong><br>
                     Change the basemap using the pop-up in the top right of the map.<br>
-                    <strong style="font-size: 24px;">Download Data</strong><br>
-                    Download filtered data by entering your desired filters, choosing a format, and then clicking "Download Data" button<br>
-                    <strong style="font-size: 24px;">Watershed Explorer</strong><br>
-                    To see all available watersheds, click on the 💧 button<br>
-                    Copy and Paste the watershed name into the watershed filter box<br>
-                    <strong style="font-size: 24px;">Polygon Tolerance</strong><br>
-                    To increases the accuracy of the polgyons, input a smaller number (m of polygon deviation allowed) in ▲ popup
+
                 </p>
 
                 <p><strong>Data Sources:</strong></p>
                 <ul>
                     <li>Quebec Fires: <a href="https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec" target="_blank">https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec</a></li>
                     <li>Quebec Watersheds: <a href="https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec" target="_blank">https://www.donneesquebec.ca/recherche/dataset/bassins-hydrographiques-multi-echelles-du-quebec</a></li>
-                    <li>Ontario Fires: <a href="https://data.ontario.ca/dataset/fire-disturbance-area-firedstb" target="_blank">https://data.ontario.ca/dataset/fire-disturbance-area-firedstb</a></li>
+                    <li>All other Provinces: <a href="https://cwfis.cfs.nrcan.gc.ca/datamart" target="_blank">https://cwfis.cfs.nrcan.gc.ca/datamart</a></li>
                 </ul>
 
             </div>
 
             <div class="col p-0" id="map" style="height: 100vh; min-height: 400px;"></div>
 
+
         </div>
+
+
+        <div id="introModal" >
+            <div class="modal-content">
+                <div class="mb-2">
+                <h2 class = "bungee-tint-regular-introModal" id = "introTitle">FIRECAN</h2>
+                <p id = "introText">- <strong>Firecan</strong> displays historical forest fires data in Canada<br>
+                - Use the sidebar and the <strong>Filter Map</strong> button to display polygons<br>
+                - Click on the <strong><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M491-200q12-1 20.5-9.5T520-230q0-14-9-22.5t-23-7.5q-41 3-87-22.5T343-375q-2-11-10.5-18t-19.5-7q-14 0-23 10.5t-6 24.5q17 91 80 130t127 35ZM480-80q-137 0-228.5-94T160-408q0-100 79.5-217.5T480-880q161 137 240.5 254.5T800-408q0 140-91.5 234T480-80Zm0-80q104 0 172-70.5T720-408q0-73-60.5-165T480-774Q361-665 300.5-573T240-408q0 107 68 177.5T480-160Zm0-320Z"/></svg></strong> button to see all available watersheds<br>
+                - Click on the  <strong><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M272-120 64-480l208-360h416l208 360-208 360H272Zm46-80h324l161-280-161-280H318L156-480l162 280Zm162-280Z"/></svg></strong> to make polygons more detailed</p>
+                </div>
+            </div>
+        </div>
+
 
         <div id="downloadModal" style="display: none;">
             <div class="modal-content">
@@ -233,7 +308,8 @@
                     <input type="text" id="polygonTol" class="form-control" placeholder="100">
                 </div>
                 <div class="d-grid mt-3">
-                    <button id="savePolygonTol" class="btn btn-primary">Save</button>
+                    <button id="savePolygonTol" class="btn btn-primary">Save and Re-Filter
+                    </button>
                 </div>
             </div>
         </div>
@@ -299,6 +375,18 @@
         mapButton.addEventListener("click", () => openSection(mapSection));
         backButton.addEventListener("click", goBack);
     </script>
+    <!-- Intro Modal -->
+    <script>
+        const introModal = document.getElementById("introModal");
+        window.addEventListener("load", () => {
+            introModal.style.display = "flex";
+        });
+        introModal.addEventListener("click", (e) => {
+            if (e.target === introModal) {
+                introModal.style.display = "none";
+            }
+        });
+    </script>
     <!-- Polygon Tolerance -->
      <script>
         const polygonTolButton = document.getElementById("polygonTolButton");
@@ -338,6 +426,7 @@
             savedPolygonTolerance = parseFloat(tolValue);
             polygonTolModal.style.display = "none";
             console.log("Saved polygon tolerance:", savedPolygonTolerance);
+            loadFilteredData()
         });
 
         polygonTolModal.addEventListener("click", (e) => {
@@ -461,7 +550,7 @@
 
             console.log("Filters cleared.");
         }
-            </script>
+    </script>
 </body>
 </html>
 

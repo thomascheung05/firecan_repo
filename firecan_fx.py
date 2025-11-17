@@ -39,7 +39,7 @@ def repojectdata(data, targetcrs):
     is_targercrs = data.crs.to_epsg() == targetcrs
 
     if is_targercrs:
-        print(f'The data is already in {targetcrs}')
+        print(f'............The data is already in {targetcrs}')
         return data
     else:
         data = data.to_crs(targetcrs)    
@@ -110,7 +110,7 @@ def fx_get_can_fire_data():
 
         
         gdf = gpd.read_file(canfire_unzipped_file_path)
-        print(list(gdf.columns))
+
         gdf = gdf[['YEAR', 'SIZE_HA', 'SRC_AGENCY', 'geometry']]
         gdf = gdf.rename(columns={'YEAR': 'fire_year'})
         gdf = gdf.rename(columns={'SIZE_HA': 'fire_size'})
@@ -120,24 +120,62 @@ def fx_get_can_fire_data():
             'PC-GL','PC-PU','PC-VU','PC-YO','PC-SY','PC-GR','PC-WP','PC-RE','PC-TN',
             'PC-WL','PC-NI'
         ]
-        gdf['pc'] = gdf['province'].where(gdf['province'].isin(pc_codes), '')
-
         pc_to_province = {
-            'PC-PA':'BC', 'PC-WB':'AB', 'PC-JA':'AB', 'PC-NA':'NT', 'PC-RM':'MB',
-            'PC-EI':'AB', 'PC-BA':'AB', 'PC-KO':'QC', 'PC-LM':'QC', 'PC-GL':'QC',
-            'PC-PU':'QC', 'PC-VU':'QC', 'PC-YO':'YT', 'PC-SY':'SK', 'PC-GR':'AB',
-            'PC-WP':'MB', 'PC-RE':'QC', 'PC-TN':'QC', 'PC-WL':'ON', 'PC-NI':'ON'
+            'PC-PA':'SK', 
+            'PC-WB':'AB', 
+            'PC-JA':'AB', 
+            'PC-NA':'NT', 
+            'PC-RM':'MB',
+            'PC-EI':'AB', 
+            'PC-BA':'AB', 
+            'PC-KO':'QC', 
+            'PC-LM':'QC', 
+            'PC-GL':'QC',
+            'PC-PU':'QC', 
+            'PC-VU':'QC', 
+            'PC-YO':'YT', 
+            'PC-SY':'SK', 
+            'PC-GR':'AB',
+            'PC-WP':'MB', 
+            'PC-RE':'QC', 
+            'PC-TN':'QC', 
+            'PC-WL':'ON', 
+            'PC-NI':'ON'
+        }
+        parks_decoded = {
+            'PC-PA': 'Prince Albert National Park',
+            'PC-WB': 'Wood Buffalo National Park',
+            'PC-JA': 'Jasper National Park',
+            'PC-NA': 'Nahanni National Park',
+            'PC-RM': 'Riding Mountain National Park',
+            'PC-EI': 'Elk Island National Park',
+            'PC-BA': 'Banff National Park',
+            'PC-KO': 'Kootenay National Park',
+            'PC-LM': 'La Mauricie National Park',
+            'PC-GL': 'Glacier National Park',
+            'PC-PU': 'Pukaskwa National Park',
+            'PC-VU': 'Vuntut National Park',
+            'PC-YO': 'Yoho National Park',
+            'PC-SY': 'Saoyú-ehdacho National Historic Site',
+            'PC-GR': 'Grasslands National Park',
+            'PC-WP': 'Wapusk National Park',
+            'PC-RE': 'Mount Revelstoke National Park',
+            'PC-TN': 'Terra Nova National Park',
+            'PC-WL': 'Waterton Lakes National Park',
+            'PC-NI': 'PC-NI'
         }
 
-
-        gdf['province'] = gdf['province'].replace(pc_to_province)
         gdf = gdf[gdf['province'] != 'QC']
+        gdf['pc'] = gdf['province'].where(gdf['province'].isin(pc_codes), '')
+        gdf['pc'] = gdf['pc'].replace(parks_decoded)
+        gdf['province'] = gdf['province'].replace(pc_to_province)
+        print(gdf['pc'].unique())
 
-
-        print(f'.......... {timenow()} Re-Projecting Data')
+        print(f'............ {timenow()} Re-Projecting Data')
         gdf = repojectdata(gdf, 4326) 
 
-        print(f'............ {timenow()} Done Pre-Processing saving for later use')
+        print(f'............ {timenow()} Done Pre-Processing saving for later use')     
+
         gdf.to_parquet(can_processed_data_path)
     else:               
         print(f'........ {timenow()} The CAN data is already processed Loading in now')                                                                                                # If there fire data is already processed we just load it in here
@@ -272,98 +310,87 @@ def fx_filter_fires_data(                                                       
     max_size,
     distance_coords,
     distance_radius,
-    watershed_name
+    watershed_name,
+    pc_name
     ):
     
     if "ALL" in provincelist:
         filtered_gdf = fire_gdf
+    elif pc_name != '':
+        filtered_gdf = fire_gdf[fire_gdf['pc'] == pc_name]
     else:  
         filtered_gdf = fire_gdf[fire_gdf['province'].isin(provincelist)]
     
     conditions = []     # This is a list of the filtering conditions so they can all be applied at once 
     
-    if min_year == '' and max_year == '' and min_size == '' and max_size == '' and distance_coords == '' and distance_radius == '' and watershed_name == '':                                                                             
-        min_year = 1903
-        max_year = 1903
-        conditions.append((filtered_gdf['fire_year'] >= min_year) & (filtered_gdf['fire_year'] <= max_year)) 
-        combined_mask = np.logical_and.reduce(conditions)                                                         
-        filtered_gdf = filtered_gdf[combined_mask]
+    if min_year  != '' or max_year  != '':                                                                  # This IFs for all of these check if the filtering box on the site has a value inputed in it for this one and the next one we use OR becuase wse want the use to be able to input only a max or a min and not HAVE to input both 
+        if min_year  != '':
+            min_year = int(min_year)
+        else:                                                                                               # If this field was empty (and the other was not as the IF is running) then we assing the min year to 0, if we dont do this it tryus to convert NULL to an int
+            min_year = 0
+        if max_year  != '':
+            max_year= int(max_year)
+        else:
+            max_year = 100000
+        conditions.append((filtered_gdf['fire_year'] >= min_year) & (filtered_gdf['fire_year'] <= max_year))      # This appends the condition to the filtering list to be applied later 
 
-        results = {
-        "filtered_gdf": filtered_gdf,
-        "user_point": None,
-        "buffer_geom": None,
-        "watershed_polygon": None
+    if min_size  != '' or max_size  != '':
+        if min_size  != '':
+            min_size = float(min_size)
+        else:
+            min_size = 0.0
+        if max_size  != '':
+            max_size= float(max_size)
+        else:
+            max_size = 100000.0
+        print('here')
+        conditions.append((filtered_gdf['fire_size'] >= min_size) & (filtered_gdf['fire_size'] <= max_size))
+
+    if distance_coords  != '' and distance_radius  != '':                                                     # The is the distance radius filtering that only selects fires within a radius of a point 
+            lat, lon = map(float, distance_coords.split(','))       
+            distance_radius = float(distance_radius)
+            distance_radius = distance_radius*1000
+            user_point = gpd.GeoSeries([Point(lon, lat)], crs='EPSG:4326')                                    # This creates the point based ont he user inputed coords 
+            utm_crs = user_point.estimate_utm_crs()                             
+            user_point_m = user_point.to_crs(utm_crs)                                                             # This chanes the point to a projection that makes sense for its locatoin, we cannot have it in EPSG: 4326 becuase this projection cant measure distances in metres only in degrees 
+            buffer_m = user_point_m.buffer(distance_radius)                                                         # This creates a buffer around the point with a radius that the user inputed 
+            buffer_deg = buffer_m.to_crs('EPSG:4326')                                                             # Here we reproject the buffer back to EPSG:4326 so leaflet can display it, AI helped me construct this process but the logic behind it was mine, at first it wanted me to do a very roundabout way
+            conditions.append(filtered_gdf.geometry.intersects(buffer_deg.iloc[0]))
+
+    if watershed_name  != '':  
+            selected_ws = watershed_data[watershed_data['NOM_COURS_DEAU'] == watershed_name]
+            print(selected_ws)
+            if not selected_ws.empty:
+                print('Starting Watershed Filtering', timenow())
+                watershed_polygon = selected_ws.geometry.unary_union  
+                conditions.append(filtered_gdf.geometry.within(watershed_polygon))
+                print('Done Watershed Filtering', timenow())
+            else:
+                print(f'No watershed found with name "{watershed_name}". Filter will be ignored.')
+
+
+
+
+    if conditions:
+        combined_mask = np.logical_and.reduce(conditions)                                                         # The combined filtered conditions
+        filtered_gdf = filtered_gdf[combined_mask]                                                                # Filtering the dataset and returning with the right fitlers 
+
+    results = {
+            "filtered_gdf": filtered_gdf,
+            "user_point": None,
+            "buffer_geom": None,
+            "watershed_polygon": None
         }
-        return results
+
     
-    else:
-        if min_year  != '' or max_year  != '':                                                                  # This IFs for all of these check if the filtering box on the site has a value inputed in it for this one and the next one we use OR becuase wse want the use to be able to input only a max or a min and not HAVE to input both 
-            if min_year  != '':
-                min_year = int(min_year)
-            else:                                                                                               # If this field was empty (and the other was not as the IF is running) then we assing the min year to 0, if we dont do this it tryus to convert NULL to an int
-                min_year = 0
-            if max_year  != '':
-                max_year= int(max_year)
-            else:
-                max_year = 100000
-            conditions.append((filtered_gdf['fire_year'] >= min_year) & (filtered_gdf['fire_year'] <= max_year))      # This appends the condition to the filtering list to be applied later 
+    if distance_coords != '' and distance_radius != '':
+        results["user_point"] = user_point
+        results["buffer_geom"] = buffer_deg
 
-        if min_size  != '' or max_size  != '':
-            if min_size  != '':
-                min_size = float(min_size)
-            else:
-                min_size = 0.0
-            if max_size  != '':
-                max_size= float(max_size)
-            else:
-                max_size = 100000.0
-            print('here')
-            conditions.append((filtered_gdf['fire_size'] >= min_size) & (filtered_gdf['fire_size'] <= max_size))
+    if watershed_name != '' and watershed_polygon is not None:
+        results["watershed_polygon"] = watershed_polygon
 
-        if distance_coords  != '' and distance_radius  != '':                                                     # The is the distance radius filtering that only selects fires within a radius of a point 
-                lat, lon = map(float, distance_coords.split(','))       
-                distance_radius = float(distance_radius)
-                distance_radius = distance_radius*1000
-                user_point = gpd.GeoSeries([Point(lon, lat)], crs='EPSG:4326')                                    # This creates the point based ont he user inputed coords 
-                utm_crs = user_point.estimate_utm_crs()                             
-                user_point_m = user_point.to_crs(utm_crs)                                                             # This chanes the point to a projection that makes sense for its locatoin, we cannot have it in EPSG: 4326 becuase this projection cant measure distances in metres only in degrees 
-                buffer_m = user_point_m.buffer(distance_radius)                                                         # This creates a buffer around the point with a radius that the user inputed 
-                buffer_deg = buffer_m.to_crs('EPSG:4326')                                                             # Here we reproject the buffer back to EPSG:4326 so leaflet can display it, AI helped me construct this process but the logic behind it was mine, at first it wanted me to do a very roundabout way
-                conditions.append(filtered_gdf.geometry.intersects(buffer_deg.iloc[0]))
-
-        if watershed_name  != '':  
-                                                                                           # This shit dont work
-                selected_ws = watershed_data[watershed_data['NOM_COURS_DEAU'] == watershed_name]
-                print(selected_ws)
-                if not selected_ws.empty:
-                    print('Starting Watershed Filtering', timenow())
-                    watershed_polygon = selected_ws.geometry.unary_union  
-                    conditions.append(filtered_gdf.geometry.within(watershed_polygon))
-                    print('Done Watershed Filtering', timenow())
-                else:
-                    print(f'No watershed found with name "{watershed_name}". Filter will be ignored.')
-
-        if conditions:
-            combined_mask = np.logical_and.reduce(conditions)                                                         # The combined filtered conditions
-            filtered_gdf = filtered_gdf[combined_mask]                                                                # Filtering the dataset and returning with the right fitlers 
-
-        results = {
-                "filtered_gdf": filtered_gdf,
-                "user_point": None,
-                "buffer_geom": None,
-                "watershed_polygon": None
-            }
-
-        
-        if distance_coords != '' and distance_radius != '':
-            results["user_point"] = user_point
-            results["buffer_geom"] = buffer_deg
-
-        if watershed_name != '' and watershed_polygon is not None:
-            results["watershed_polygon"] = watershed_polygon
-
-        return results
+    return results
 
 
 

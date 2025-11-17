@@ -84,6 +84,12 @@ L.control.scale({
   maxWidth: 200              
 }).addTo(map);
 
+
+
+
+
+
+
 var fireLayer;
 var userPointLayer;
 var userBufferLayer;
@@ -103,13 +109,14 @@ function loadFilteredData() {                                                   
   const distanceCoords = document.getElementById('distanceCoords').value;
   const distanceRadius = document.getElementById('distanceRadius').value;
   const watershedName = document.getElementById('watershedName').value;
+  const pcName = document.getElementById('pcName').value;
 
   const provinceCheckboxes = document.querySelectorAll('input[type="checkbox"].form-check-input');
   const selectedProvinces = Array.from(provinceCheckboxes)
     .filter(cb => cb.checked)
     .map(cb => cb.value);
 
-  const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&provinces=${encodeURIComponent(JSON.stringify(selectedProvinces))}&polygon_tol=${savedPolygonTolerance}`;
+  const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&provinces=${encodeURIComponent(JSON.stringify(selectedProvinces))}&polygon_tol=${savedPolygonTolerance}&pc_name=${pcName}`;
   
   
   
@@ -215,13 +222,13 @@ function downloadFilteredData() {
   const distanceRadius = document.getElementById('distanceRadius').value;
   const watershedName = document.getElementById('watershedName').value;
   const downloadFormat = document.getElementById('downloadFormat').value;
-
+  const pcName = document.getElementById('pcName').value;
   const provinceCheckboxes = document.querySelectorAll('input[type="checkbox"].form-check-input');
   const selectedProvinces = Array.from(provinceCheckboxes)
     .filter(cb => cb.checked)
     .map(cb => cb.value);
 
-  const downloadURL = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&provinces=${encodeURIComponent(JSON.stringify(selectedProvinces))}&polygon_tol=${savedPolygonTolerance}&downloadFormat=${downloadFormat}&download=1`;     // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
+  const downloadURL = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&provinces=${encodeURIComponent(JSON.stringify(selectedProvinces))}&polygon_tol=${savedPolygonTolerance}&downloadFormat=${downloadFormat}&pc_name=${pcName}&download=1`;     // The line above takes the varibles above it and uses them to constract a URL that will be sent to my python and tells it what the filtering conditions are 
 
 
 
