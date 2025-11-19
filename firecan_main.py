@@ -10,19 +10,11 @@ import geopandas as gpd
 create_data_folder()
 
 print('------------------------Starting data pre-loading. This may take a few minutes...', timenow(),'------------------------')                                      # This section here loads in the data, it uses the scrap donne quebec function and the process qc fire data fuction
-# gdf_qc_fires = fx_get_qc_fire_data()
-# gdf_qc_watershed_data = fx_get_qc_watershed_data()
-
-# gdf_on_fires = fx_get_on_fire_data()
-
-
-# gdf_fires = fx_merge_provincial_fires(gdf_qc_fires, gdf_on_fires)
 
 gdf_can_fires = fx_get_can_fire_data()
 gdf_qc_fires = fx_get_qc_fire_data()
 gdf_qc_watershed_data = fx_get_qc_watershed_data()
 gdf_fires = fx_merge_provincial_fires(gdf_qc_fires, gdf_can_fires)
-
 
 print('---------------Data pre-loading complete. The app is now ready to serve requests.', timenow(),'------------------------')
 
