@@ -163,7 +163,8 @@ button:hover, .checkbox-group label:hover {
 #watershedfilterinput label,
 #yearfilterinputs label,
 #sizefilterinputs label,
-#locationfilterinputs label {
+#locationfilterinputs label,
+#pcfilterinput label {
   font-family: 'Trebuchet MS', sans-serif;
   font-size: 25px;
   color: rgb(255, 255, 255);
