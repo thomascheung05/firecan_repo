@@ -76,7 +76,7 @@ def fx_get_url_request(dataname, url, zipname, gpkgname):                       
     zip_path = savefolder / zipname                                                                # Name of zip file depends on the data being dowloaded, for fire data its the same but not for watershed data
     unzipped_file_path = savefolder / gpkgname                                                     # This differs between quebec fire data, and also watershed data set
 
-    if not unzipped_file_path.exists():        # Checks if the GPKG file exists, if not it will create a folder and downlaod it 
+    if not unzipped_file_path.exists():                                                              # Checks if the GPKG file exists, if not it will create a folder and downlaod it 
         print(f'.... {timenow()} The data does not exist for {dataname} Downloading now')         
         savefolder.mkdir(parents=True, exist_ok=True)
         response = requests.get(url)                                                                # AI showed me how to do this

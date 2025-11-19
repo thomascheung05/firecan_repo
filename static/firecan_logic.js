@@ -118,15 +118,12 @@ function loadFilteredData() {                                                   
 
   const url = `/fx_main?min_year=${minYear}&max_year=${maxYear}&min_size=${minSize}&max_size=${maxSize}&distance_coords=${distanceCoords}&distance_radius=${distanceRadius}&watershed_name=${watershedName}&provinces=${encodeURIComponent(JSON.stringify(selectedProvinces))}&polygon_tol=${savedPolygonTolerance}&pc_name=${pcName}`;
   
-  
-  
   const loadingEl = document.getElementById('loadingMessage');
   if (loadingEl) {
     loadingEl.style.display = 'block';
     // loadingEl.offsetHeight; 
   }                                                     // This is for the message that says the data is downlaoding, AI helped me with this
                                                                              // This lines displays the message, as by deafult it is hidden 
-
 
   setTimeout(() => {
     fetch(url)                                                                                                          // This is the part that sends the URL to python, python then filters the data and sends back a filtered dataset
