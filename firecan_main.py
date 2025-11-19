@@ -10,24 +10,11 @@ import geopandas as gpd
 create_data_folder()
 
 print('------------------------Starting data pre-loading. This may take a few minutes...', timenow(),'------------------------')                                      # This section here loads in the data, it uses the scrap donne quebec function and the process qc fire data fuction
-# gdf_qc_fires = fx_get_qc_fire_data()
-# gdf_qc_watershed_data = fx_get_qc_watershed_data()
-
-# gdf_on_fires = fx_get_on_fire_data()
-
-
-# gdf_fires = fx_merge_provincial_fires(gdf_qc_fires, gdf_on_fires)
 
 gdf_can_fires = fx_get_can_fire_data()
-
 gdf_qc_fires = fx_get_qc_fire_data()
 gdf_qc_watershed_data = fx_get_qc_watershed_data()
-
-
-
-
 gdf_fires = fx_merge_provincial_fires(gdf_qc_fires, gdf_can_fires)
-
 
 print('---------------Data pre-loading complete. The app is now ready to serve requests.', timenow(),'------------------------')
 
@@ -78,7 +65,7 @@ def fx_main():                                                                  
     bufferdeg = results["buffer_geom"]
 
         
-    if is_download_requested:                                                                                 # If downlaod request is tru we are going to run one of the downloading fucntions
+    if is_download_requested:                                                                                                                  # If downlaod request is tru we are going to run one of the downloading fucntions
         if downloadformat == 'json':
 
             return fx_download_json(filtered_data)
@@ -86,7 +73,7 @@ def fx_main():                                                                  
             return fx_download_csv(filtered_data)
         elif downloadformat == 'gpkg':
             return fx_download_gpkg(filtered_data)
-    else:                                                                                       # IF download request is not true we are going to convert ot geojson and return it (send it) to my java script
+    else:                                                                                                                                   # IF download request is not true we are going to convert ot geojson and return it (send it) to my java script
         print(timenow(),'Converting to geojson',filtered_data.shape)
 
         polygon_tol = request.args.get('polygon_tol', None)
@@ -94,7 +81,7 @@ def fx_main():                                                                  
         polygon_tol_deg = convert_m_4326deg(polygon_tol, 45)
 
         filtered_data["geometry"] = filtered_data["geometry"].simplify(tolerance=polygon_tol_deg, preserve_topology=True)         # add precision option to change how good the polygons look vs load time
-        geojson_fires = json.loads(filtered_data.to_json())                                                     # BOTTLENECK
+        geojson_fires = json.loads(filtered_data.to_json())                                                                                  # BOTTLENECK
         print(timenow(),'Done Converting to geojson')    
 
         geojson_point = json.loads(userpoint.to_json()) if userpoint is not None else None
