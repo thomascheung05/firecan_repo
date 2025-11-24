@@ -3,6 +3,6 @@ geopandas
 flask
 pandas
 shapely
-fiona
 numpy
 gunicorn
+pyiogro
