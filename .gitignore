@@ -3,4 +3,8 @@ static/qc_watershed_data.geojson
 data/*                        
 !data/ontario_fires/      
 !data/ontario_fires/unprocessed_ontario_fires.parquet
+<<<<<<< HEAD
 .venv312/
+=======
+.DS_Store
+>>>>>>> 478736223cb0f72730ccfc5a21ede41d9c5e59de
