@@ -5,4 +5,5 @@ pandas
 shapely
 numpy
 gunicorn
-pyiogro
+pyogrio
+pyarrow
