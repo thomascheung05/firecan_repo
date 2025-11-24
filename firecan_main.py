@@ -67,7 +67,6 @@ def fx_main():                                                                  
         
     if is_download_requested:                                                                                                                  # If downlaod request is tru we are going to run one of the downloading fucntions
         if downloadformat == 'json':
-
             return fx_download_json(filtered_data)
         elif downloadformat == 'csv':
             return fx_download_csv(filtered_data)

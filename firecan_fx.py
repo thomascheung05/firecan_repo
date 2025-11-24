@@ -3,12 +3,11 @@ import json
 import requests
 import geopandas as gpd
 from datetime import datetime
-from flask import request, send_file   # type: ignore
+from flask import send_file   # type: ignore
 import io
 from pathlib import Path
 import pandas as pd
 from shapely.geometry import Point
-import fiona  # type: ignore
 import numpy as np
 import requests
 import json
@@ -206,8 +205,8 @@ def fx_get_qc_watershed_data():                                                 
 
     if not qc_watershed_data_path.exists() or not qc_watershed_data_path_json.exists():
         print(f'...... {timenow()} Pre-Processing the Watershed Data') 
-        layers = fiona.listlayers(qcwatershed_unzipped_file_path)
-        watershed_data = gpd.read_file(qcwatershed_unzipped_file_path, layer=layers[1])
+        watershed_data = gpd.read_file(qcwatershed_unzipped_file_path, layer=1)
+
         watershed_data = watershed_data[watershed_data['NIVEAU_BASSIN'] == 1]
         watershed_data = watershed_data.drop(columns=['NO_COURS_DEAU','NO_SEQ_COURS_DEAU','IDENTIFICATION_COMPLETE', 'NOM_COURS_DEAU_MINUSCULE', 'NIVEAU_BASSIN', 'ECHELLE', 'SUPERF_KM2', 'NO_SEQ_BV_PRIMAIRE', 'NOM_BV_PRIMAIRE', 'NO_REG_HYDRO', 'NOM_REG_HYDRO_ABREGE', 'Shape_Length', 'Shape_Area']) # might want shape length and share area later
         

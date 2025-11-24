@@ -3,3 +3,4 @@ static/qc_watershed_data.geojson
 data/*                        
 !data/ontario_fires/      
 !data/ontario_fires/unprocessed_ontario_fires.parquet
+.venv312/
