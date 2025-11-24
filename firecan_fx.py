@@ -350,32 +350,32 @@ def fx_filter_fires_data(                                                       
 
 
 
-def fx_download_json(filtered_data):    
-                                                                            # This function is to dowload the filtered data as a geojson, AI showed me how to do this as it is not as simple as just regularly saving the file as it must go through flask 
-        geojson_data = json.loads(filtered_data.to_json())     
+def fx_download_json(filtered_data, MAX_SIZE_MB):    
+                                                                        # This function is to dowload the filtered data as a geojson, AI showed me how to do this as it is not as simple as just regularly saving the file as it must go through flask 
+    geojson_data = json.loads(filtered_data.to_json())     
+    
+
+    MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
+    geojson_bytes = len(json.dumps(geojson_data).encode('utf-8'))
+    print(f'File size:{geojson_bytes/1000000}')
+    if geojson_bytes > MAX_SIZE_BYTES:
+        print(f'{geojson_bytes} is too big')
+        return {"error": f"Data too large to load ({geojson_bytes / 1024 / 1024:.2f} MB). Please re-fresh and narrow your filter."}, 413
+
+
+    geojson_string = json.dumps(geojson_data) 
+    geojson_buffer = io.BytesIO(geojson_string.encode('utf-8'))   
+    geojson_buffer.seek(0)
+
+    return send_file(                                                                                       # Send the file back to the browser as an attachment
+
+        geojson_buffer,
         
-        MAX_SIZE_MB = 5
-        MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
-        geojson_bytes = len(json.dumps(geojson_data).encode('utf-8'))
-        print(f'File size:{geojson_bytes/1000000}')
-        if geojson_bytes > MAX_SIZE_BYTES:
-            print(f'{geojson_bytes} is too big')
-            return {"error": f"Data too large to load ({geojson_bytes / 1024 / 1024:.2f} MB). Please re-fresh and narrow your filter."}, 413
+        mimetype='application/json',                   
+        as_attachment=True,
+        download_name='firecan_filtered_data.geojson'                   
 
-
-        geojson_string = json.dumps(geojson_data) 
-        geojson_buffer = io.BytesIO(geojson_string.encode('utf-8'))   
-        geojson_buffer.seek(0)
-
-        return send_file(                                                                                       # Send the file back to the browser as an attachment
-
-            geojson_buffer,
-            
-            mimetype='application/json',                   
-            as_attachment=True,
-            download_name='firecan_filtered_data.geojson'                   
-
-        )
+    )
 
 
 
@@ -385,7 +385,6 @@ def fx_download_csv(filtered_data):     # Exact same thing as the last function 
 
     csv_buffer = io.BytesIO()
     filtered_data.drop(columns=['geometry'], errors='ignore').to_csv(csv_buffer, index=False, encoding='utf-8')         # Drops geom column here too 
-
     csv_buffer.seek(0)
     
     return send_file(                                                   
@@ -400,7 +399,7 @@ def fx_download_csv(filtered_data):     # Exact same thing as the last function 
 
 
 
-def fx_download_gpkg(filtered_data):
+def fx_download_gpkg(filtered_data, MAX_SIZE_MB):
     gpkg_buffer = io.BytesIO()  
 
     filtered_data.to_file(gpkg_buffer, driver="GPKG")
@@ -408,7 +407,7 @@ def fx_download_gpkg(filtered_data):
     gpkg_buffer.seek(0) 
 
 
-    MAX_SIZE_MB = 5
+
     MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
     gpkg_size = gpkg_buffer.getbuffer().nbytes
     print(f"GPKG size: {gpkg_size / 1024 / 1024:.2f} MB")

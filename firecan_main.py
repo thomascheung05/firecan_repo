@@ -67,11 +67,11 @@ def fx_main():                                                                  
         
     if is_download_requested:                                                                                                                  # If downlaod request is tru we are going to run one of the downloading fucntions
         if downloadformat == 'json':
-            return fx_download_json(filtered_data)
+            return fx_download_json(filtered_data, MAX_SIZE_MB)
         elif downloadformat == 'csv':
             return fx_download_csv(filtered_data)
         elif downloadformat == 'gpkg':
-            return fx_download_gpkg(filtered_data)
+            return fx_download_gpkg(filtered_data, MAX_SIZE_MB)
     else:                                                                                                                                   # IF download request is not true we are going to convert ot geojson and return it (send it) to my java script
         print(timenow(),'Converting to geojson',filtered_data.shape)
 
