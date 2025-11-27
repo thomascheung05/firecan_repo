@@ -388,7 +388,6 @@ def fx_download_csv(filtered_data):     # Exact same thing as the last function 
     csv_buffer.seek(0)
     
     return send_file(                                                   
-
         csv_buffer,
         mimetype='text/csv',
         as_attachment=True,
