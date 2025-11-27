@@ -331,14 +331,14 @@
         downloadModal.style.display = "none";
     });
 
-    // Close modal if clicking outside content
+     
     downloadModal.addEventListener("click", (e) => {
         if (e.target === downloadModal) {
             downloadModal.style.display = "none";
         }
     });
 
-    // Keep your existing download function intact
+     
     document.getElementById("downloadButton").addEventListener("click", downloadFilteredData);
     </script>
     <!-- Main Side Bar Button Clicks -->
@@ -351,15 +351,15 @@
         const aboutSection = document.getElementById("aboutSection");
 
         const mapButton = document.getElementById("mapButton");
-        const mapSection = document.getElementById("mapSection"); // Make sure this is a separate div!
+        const mapSection = document.getElementById("mapSection");  
 
-        // Function to open a section
+        
         function openSection(section) {
             mainSidebarContent.style.display = "none";
             section.style.display = "block";
         }
 
-        // Function to go back to main sidebar
+        r
         function goBack() {
             aboutSection.style.display = "none";
             mapSection.style.display = "none";

@@ -1,5 +1,5 @@
 #introModal {
-  display: none; /* Start hidden */
+  display: none;  
   position: fixed;
   top: 0;
   left: 0;
@@ -23,7 +23,7 @@
 
 #introModal .modal-content #introText {
   color: #ffffff;
-  line-height: 2; /* 1.5 times the font size */
+  line-height: 2; 
   font-size: 20px;
 }
 

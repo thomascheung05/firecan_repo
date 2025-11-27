@@ -21,9 +21,8 @@ print('---------------Data pre-loading complete. The app is now ready to serve r
 
 
 
-# =========================================================
+ 
 # FLASK
-# =========================================================
 app = Flask(__name__, static_folder='static')                                                      # This starts FLASK which allows me to talk back and forth with my web page and my java script
 
 @app.route('/fx_main', methods=['GET'])
