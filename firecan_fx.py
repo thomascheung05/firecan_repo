@@ -374,7 +374,7 @@ def fx_download_json(filtered_data, MAX_SIZE_MB):
 
 
 
-def fx_download_csv(filtered_data):     # Exact same thing as the last function but downloads as csv        
+def fx_download_csv(filtered_data):                                                                                         # Exact same thing as the last function but downloads as csv        
 
     csv_buffer = io.BytesIO()
     filtered_data.drop(columns=['geometry'], errors='ignore').to_csv(csv_buffer, index=False, encoding='utf-8')         # Drops geom column here too 
