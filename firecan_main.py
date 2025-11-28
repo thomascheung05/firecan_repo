@@ -80,7 +80,7 @@ def fx_main():                                                                  
         polygon_tol_deg = convert_m_4326deg(polygon_tol, 45)
 
         filtered_data["geometry"] = filtered_data["geometry"].simplify(tolerance=polygon_tol_deg, preserve_topology=True)         # add precision option to change how good the polygons look vs load time
-        geojson_fires = json.loads(filtered_data.to_json())                                                                                  # BOTTLENECK
+        geojson_fires = json.loads(filtered_data.to_json())                                                                               
         print(timenow(),'Done Converting to geojson')    
 
         geojson_point = json.loads(userpoint.to_json()) if userpoint is not None else None

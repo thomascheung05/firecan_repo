@@ -122,7 +122,7 @@ function loadFilteredData() {                                                   
   if (loadingEl) {
     loadingEl.style.display = 'block';
     // loadingEl.offsetHeight; 
-  }                                                     // This is for the message that says the data is downlaoding, AI helped me with this
+  }                                                     // This is for the message that says the data is downlaoding 
                                                                              // This lines displays the message, as by deafult it is hidden 
 
   setTimeout(() => {
@@ -170,7 +170,7 @@ function loadFilteredData() {                                                   
                   fillOpacity: 0.5                                                                                 // Lower opacity looks better, and helps distinguish from polygon fill and border on map (useful when many polygons are next to each other)
               };
           },
-          onEachFeature: function(feature, layer) {                                                               // This creates a pop up when clicking on polygons that say the year and its size, this was half taken from Ottowa demo and half AI.
+          onEachFeature: function(feature, layer) {                                                               // This creates a pop up when clicking on polygons that say the year and its size 
               if (feature.properties) {                   
                   let popupContent = `
                       <b>Fire Details</b><br>
@@ -239,7 +239,7 @@ function downloadFilteredData() {
 
   downloadingEl.style.display = 'none';
   const downfoundEl = document.getElementById('downloadingfoundMessage');
-  downfoundEl.textContent = `Downloading ... pls wait`; // its brocken so im just making it this for now 
+  downfoundEl.textContent = `Downloading ... pls wait`;  
   downfoundEl.style.display = 'block';                                      // This displays a message after the data has been loaded in it tell the user how many fires matched their criteria. THis is useful as it signals when data is loading / done loading (good for big datasets) and also tells the user if there were no fires that matches their criterai (so they are not confused by empty map)
   setTimeout(() => {                                                                                         // THis removes the message after 5 seconds 
       downfoundEl.style.display = 'none';

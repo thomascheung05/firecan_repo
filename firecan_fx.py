@@ -18,14 +18,7 @@ from datetime import datetime
 import sys
 import math
 work_dir  = Path.cwd()
-
-                                                                                        # A lot of the code here is pretty simple data manipulaiton mostly filtering
-                                                                                        # AI was used for the general 'how do i do this' stuff but the code has been changed so much not a lot of still left over form the AI with the eception of the downloading functions, which are mostly AI as they are pretty straightforward and there wasnt much to change
-                                                                                        # Almost all of the structure of this code is mine, like the download only if it doesnt exist and the process if it the processesed data doenst already exist
-                                                                                        # AI showed me how to apply multiple filters at once which is a pretty integral part of the script
-
-
-
+ 
 
 def timenow():
     return datetime.now().strftime('%H:%M:%S')
@@ -69,7 +62,7 @@ def convert_m_4326deg(meters, lat):
 
 
 
-def fx_get_url_request(dataname, url, zipname, gpkgname):                                           # Scraps donne quebec to get quebef fire data, outputs the path to the data file
+def fx_get_url_request(dataname, url, zipname, gpkgname):                                          
     print(f'.. {timenow()} Requestinog URL')    
     savefolder = work_dir / "data" / dataname
     zip_path = savefolder / zipname                                                                # Name of zip file depends on the data being dowloaded, for fire data its the same but not for watershed data
@@ -78,7 +71,7 @@ def fx_get_url_request(dataname, url, zipname, gpkgname):                       
     if not unzipped_file_path.exists():                                                              # Checks if the GPKG file exists, if not it will create a folder and downlaod it 
         print(f'.... {timenow()} The data does not exist for {dataname} Downloading now')         
         savefolder.mkdir(parents=True, exist_ok=True)
-        response = requests.get(url)                                                                # AI showed me how to do this
+        response = requests.get(url)                                                               
         with open(zip_path, 'wb') as f:
             f.write(response.content)
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:                                            # The data come in a zipfile so must unzip it
@@ -162,8 +155,8 @@ def fx_get_qc_fire_data():
         before_data = gpd.read_file(qcfires_before76_unzipped_file_path, layer= 'feux_anciens_prov')
         after_data = gpd.read_file(qcfires_after76_unzipped_file_path, layer= 'feux_prov')
 
-        after_data = after_data.drop(columns=['geoc_fmj','exercice', 'origine', 'met_at_str', 'shape_length', 'shape_area'])        # might want shape length and share area later
-        before_data = before_data.drop(columns=['geoc_fan','exercice', 'origine', 'met_at_str', 'shape_length', 'shape_area'])        # might want shape length and share area later
+        after_data = after_data.drop(columns=['geoc_fmj','exercice', 'origine', 'met_at_str', 'shape_length', 'shape_area'])       
+        before_data = before_data.drop(columns=['geoc_fan','exercice', 'origine', 'met_at_str', 'shape_length', 'shape_area'])       
 
 
 
@@ -182,7 +175,7 @@ def fx_get_qc_fire_data():
         merged_data.to_parquet(qc_processed_data_path)
 
     else:               
-        print(f'........ {timenow()} The QC data is already processed Loading in now')                                                                                                # If there fire data is already processed we just load it in here
+        print(f'........ {timenow()} The QC data is already processed Loading in now')                           # If there fire data is already processed we just load it in here
         merged_data = gpd.read_parquet(qc_processed_data_path)
 
     return merged_data
@@ -191,7 +184,7 @@ def fx_get_qc_fire_data():
 
 
 
-def fx_get_qc_watershed_data():                                                                                        # This function gets the watershed data by using the scrap donne quebec function, it then reads it in, drops some columns, and reprojects it
+def fx_get_qc_watershed_data():                                                                  # This function gets the watershed data by using the scrap donne quebec function, it then reads it in, drops some columns, and reprojects it
     print('Getting Watershed Data')
     url_watersheddata = 'https://stqc380donopppdtce01.blob.core.windows.net/donnees-ouvertes/Bassins_hydrographiques_multi_echelles/CE_bassin_multi.gdb.zip'
     watersheddata_zipname = 'CE_bassin_multi.gdb.zip'
@@ -308,7 +301,7 @@ def fx_filter_fires_data(                                                       
             utm_crs = user_point.estimate_utm_crs()                             
             user_point_m = user_point.to_crs(utm_crs)                                                             # This chanes the point to a projection that makes sense for its locatoin, we cannot have it in EPSG: 4326 becuase this projection cant measure distances in metres only in degrees 
             buffer_m = user_point_m.buffer(distance_radius)                                                         # This creates a buffer around the point with a radius that the user inputed 
-            buffer_deg = buffer_m.to_crs('EPSG:4326')                                                             # Here we reproject the buffer back to EPSG:4326 so leaflet can display it, AI helped me construct this process but the logic behind it was mine, at first it wanted me to do a very roundabout way
+            buffer_deg = buffer_m.to_crs('EPSG:4326')                                                             # Here we reproject the buffer back to EPSG:4326 so leaflet can display it
             conditions.append(filtered_gdf.geometry.intersects(buffer_deg.iloc[0]))
 
     if watershed_name  != '':  
@@ -351,7 +344,7 @@ def fx_filter_fires_data(                                                       
 
 
 def fx_download_json(filtered_data, MAX_SIZE_MB):    
-                                                                        # This function is to dowload the filtered data as a geojson, AI showed me how to do this as it is not as simple as just regularly saving the file as it must go through flask 
+                                                                        # This function is to dowload the filtered data as a geojson 
     geojson_data = json.loads(filtered_data.to_json())     
     
 
