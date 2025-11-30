@@ -1,46 +1,46 @@
  var Esrimap = L.tileLayer(
   'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-  { maxZoom: 18, attribution: 'Tiles © Esri' }
+  { maxZoom: 18, attribution: 'Tiles © Esri', name: "Esrimap"  }
 ); 
 var OpenStreetMap_Mapnik = L.tileLayer(
   'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors', name: "OpenStreetMap_Mapnik" }
 ); 
 var OpenCycleMap = L.tileLayer(
   'https://tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
-  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors', name: "OpenCycleMap" }
 ); 
 var Transport = L.tileLayer(
   'https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
-  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors', name: "Transport" }
 ); 
 var Landscape = L.tileLayer(
   'https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
-  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors', name: "Landscape" }
 ); 
 var Outdoors = L.tileLayer(
   'https://tile.thunderforest.com/outdoors/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
-  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors', name: "Outdoors" }
 ); 
 var SpinalMap = L.tileLayer(
   'https://tile.thunderforest.com/spinal-map/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
-  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors', name: "SpinalMap" }
 ); 
 var TransportDark = L.tileLayer(
   'https://tile.thunderforest.com/transport-dark/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
-  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors', name: "TransportDark" }
 ); 
 var Pioneer = L.tileLayer(
   'https://tile.thunderforest.com/pioneer/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
-  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors', name: "Pioneer" }
 ); 
 var MobileAtlas = L.tileLayer(
   'https://tile.thunderforest.com/mobile-atlas/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
-  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors', name: "MobileAtlas" }
 ); 
 var Neighbourhood = L.tileLayer(
   'https://tile.thunderforest.com/neighbourhood/{z}/{x}/{y}.png?apikey=17dc0c0df61f47d4b13d3520ec5b1557',
-  { maxZoom: 19, attribution: '© OpenStreetMap contributors' }
+  { maxZoom: 19, attribution: '© OpenStreetMap contributors', name: "Neighbourhood" }
 ); 
 
 
@@ -69,6 +69,17 @@ var baseLayers = {
   'Neighbourhood': Neighbourhood
 };
 
+function getCurrentBasemapName() {
+    let activeName = null;
+
+    map.eachLayer(layer => {
+        if (layer instanceof L.TileLayer && layer.options.name) {
+            activeName = layer.options.name;
+        }
+    });
+
+    return activeName;
+}
 
 L.control.layers(baseLayers, null, {
   position: 'topright',
@@ -138,26 +149,78 @@ function loadFilteredData() {                                                   
 
     .then(data => {                                                                                                 // Using the data we just go we dispaly it on the leaflet map 
       if (data.user_point) {
-          userPointLayer = L.geoJSON(data.user_point, {
-              pointToLayer: (feature, latlng) => {
-                  const starIcon = L.divIcon({
-                      html: "★",
-                      className: "star-marker",
-                      iconSize: [60, 60],
-                      iconAnchor: [10, 10]
-                  });
-                  return L.marker(latlng, { icon: starIcon });
-              }
-          }).addTo(map);
+
+        const basemapName = getCurrentBasemapName();
+        let starIcon;
+
+
+        if (basemapName === "Esrimap" || basemapName === "SpinalMap" || basemapName === "TransportDark") {
+              starIcon = L.divIcon({
+              html: "★",
+              className: "star-marker-1",
+              iconSize: [60, 60],
+              iconAnchor: [10, 10]
+          });
+        } 
+        else if (basemapName === "Landscape" || basemapName === "OpenStreetMap_Mapnik" || basemapName === "Neighbourhood" || basemapName === "Outdoors" || basemapName === "Transport") {
+              starIcon = L.divIcon({
+              html: "★",
+              className: "star-marker-2",
+              iconSize: [60, 60],
+              iconAnchor: [10, 10]
+          });
+        }
+        else if (basemapName === "MobileAtlas" || basemapName === "Pioneer" || basemapName === "OpenCycleMap" ) {
+            starIcon = L.divIcon({
+              html: "★",
+              className: "star-marker-3",
+              iconSize: [60, 60],
+              iconAnchor: [10, 10]
+          });      
+        }
+
+        userPointLayer = L.geoJSON(data.user_point, {
+
+            pointToLayer: (feature, latlng) => {
+                return L.marker(latlng, { icon: starIcon });
+            }
+        }).addTo(map);
       }
       if (data.user_buffer) {
+        const basemapName = getCurrentBasemapName();
+        let bufferpolygonStyle;
+
+
+        if (basemapName === "Esrimap" || basemapName === "SpinalMap" || basemapName === "TransportDark") {
+            bufferpolygonStyle = {color: '#ffffffff', weight: 5, fillOpacity: 0.1 };
+        } 
+        else if (basemapName === "Landscape" || basemapName === "OpenStreetMap_Mapnik" || basemapName === "Neighbourhood" || basemapName === "Outdoors" || basemapName === "Transport") {
+            bufferpolygonStyle = {color: '#2e2c2cff', weight: 5, fillOpacity: 0.1 };
+        }
+        else if (basemapName === "MobileAtlas" || basemapName === "Pioneer" || basemapName === "OpenCycleMap" ) {
+          bufferpolygonStyle = {color: '#9e11f6ff', weight: 5, fillOpacity: 0.1 };       
+        }
+
           userBufferLayer = L.geoJSON(data.user_buffer, {
-              style: { color: '#ffffffff', weight: 3, fillOpacity: 0.1 }
+              style: bufferpolygonStyle
           }).addTo(map);
       }
       if (data.watershed_polygon){
+        const basemapName = getCurrentBasemapName();
+        let waterpolygonStyle;
+
+        if (basemapName === "Esrimap" || basemapName === "SpinalMap" || basemapName === "TransportDark") {
+            waterpolygonStyle = { color: "#00e5ff", weight: 2, fillOpacity: 0.25 };
+        } 
+        else if (basemapName === "Landscape" || basemapName === "OpenStreetMap_Mapnik" || basemapName === "Neighbourhood" || basemapName === "Outdoors" || basemapName === "Transport") {
+            waterpolygonStyle = {color: '#303030ff', weight: 1, fillOpacity: 0.1};
+        }
+        else if (basemapName === "MobileAtlas" || basemapName === "Pioneer" || basemapName === "OpenCycleMap" ) {
+            waterpolygonStyle = {color: '#1219a5ff', weight: 1, fillOpacity: 0.1};
+        }
+
         userWatershedPolygonLayer = L.geoJson(data.watershed_polygon, {
-          style: {color: '#aedffd', weight: 1, fillOpacity: 0.1}
+            style: waterpolygonStyle
         }).addTo(map);
       }   
       fireLayer = L.geoJSON(data.fires, {

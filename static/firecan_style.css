@@ -203,11 +203,21 @@ button:hover, .checkbox-group label:hover {
 }
 
 
-.star-marker {
-    color: rgb(255, 255, 255);
+.star-marker-1 {
+    color: #ffffffff;
     font-size: 24px;
     text-shadow: 0 0 3px rgb(255, 255, 255);
 }
+.star-marker-2 {
+    color: #2e2c2cff;
+    font-size: 24px;
+    text-shadow: 0 0 3px rgb(255, 255, 255);
+}.star-marker-3 {
+    color: #9e11f6ff;
+    font-size: 24px;
+    text-shadow: 0 0 3px rgb(255, 255, 255);
+}
+
 #clearFiltersText:hover {
     color: #dcdcdc; 
 }
