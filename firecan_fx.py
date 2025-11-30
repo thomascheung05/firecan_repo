@@ -158,8 +158,6 @@ def fx_get_qc_fire_data():
         after_data = after_data.drop(columns=['geoc_fmj','exercice', 'origine', 'met_at_str', 'shape_length', 'shape_area'])       
         before_data = before_data.drop(columns=['geoc_fan','exercice', 'origine', 'met_at_str', 'shape_length', 'shape_area'])       
 
-
-
         after_data = after_data.drop(columns=['perturb', 'an_perturb', 'part_str'])
         merged_data = gpd.GeoDataFrame(pd.concat([before_data, after_data], ignore_index=True),geometry='geometry')
         merged_data['an_origine'] = pd.to_numeric(merged_data['an_origine'], errors='coerce')
