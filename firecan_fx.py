@@ -28,6 +28,10 @@ def timenow():
 
 
 def repojectdata(data, targetcrs):
+    #################### ######################################## ######################################## ######################################## ####################
+    # Reprojects data to target crs 
+    #################### ######################################## ######################################## ######################################## ####################
+
     is_targercrs = data.crs.to_epsg() == targetcrs
 
     if is_targercrs:
@@ -43,6 +47,9 @@ def repojectdata(data, targetcrs):
 
 
 def create_data_folder():
+    #################### ######################################## ######################################## ######################################## ####################
+    # Creates the data folder in directory if not there 
+    #################### ######################################## ######################################## ######################################## ####################    
     data_folder_path = work_dir / 'data'
     if not data_folder_path.exists(): 
         data_folder_path.mkdir(parents=True, exist_ok=True)
@@ -52,6 +59,9 @@ def create_data_folder():
 
 
 def convert_m_4326deg(meters, lat):
+    #################### ######################################## ######################################## ######################################## ####################
+    # Used to convert meters to lat and lon deg for polygon tolerance (it inputs a distance value in lat long deg)
+    #################### ######################################## ######################################## ######################################## ####################
     deg_lat = meters / 111320.0
     deg_lon = meters / (111320.0 * math.cos(math.radians(lat)))
 
@@ -62,7 +72,11 @@ def convert_m_4326deg(meters, lat):
 
 
 
-def fx_get_url_request(dataname, url, zipname, gpkgname):                                          
+def fx_get_url_request(dataname, url, zipname, gpkgname):        
+    #################### ######################################## ######################################## ######################################## ####################
+    # Checks if a dataset exists, if not it downloads it using a URL and unpacks the zip 
+    #################### ######################################## ######################################## ######################################## ####################    
+    
     print(f'.. {timenow()} Requestinog URL')    
     savefolder = work_dir / "data" / dataname
     zip_path = savefolder / zipname                                                                # Name of zip file depends on the data being dowloaded, for fire data its the same but not for watershed data
@@ -87,7 +101,10 @@ def fx_get_url_request(dataname, url, zipname, gpkgname):
 
 
 def fx_get_can_fire_data():
-    print('Getting Can Fire Data')                                               # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
+    #################### ######################################## ######################################## ######################################## ####################
+    # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
+    #################### ######################################## ######################################## ######################################## ####################
+    print('Getting Can Fire Data')                                             
 
     canfire_unzipped_file_path = fx_get_url_request('canfire', 'https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/fire_poly/current_version/NFDB_poly.zip', 'NFDB_poly.zip', "NFDB_poly_20210707.shp")
    
@@ -135,7 +152,11 @@ def fx_get_can_fire_data():
 
 
 def fx_get_qc_fire_data():   
-    print('Getting QC Fire Data')                                               # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
+    #################### ######################################## ######################################## ######################################## ####################
+    # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
+    #################### ######################################## ######################################## ######################################## ####################
+
+    print('Getting QC Fire Data')                                               
     url_qcfires_after76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_PROV_GPKG.zip'
     qcfires_after76_zipname = 'FEUX_PROV_GPKG.zip'                                                          # In this case both zip names are the same but must still specify it in the fuctino so we can use the fuction for other datasets like the watershed data
     qcfires_after76_gpkgname = 'FEUX_PROV.gpkg'
@@ -182,7 +203,11 @@ def fx_get_qc_fire_data():
 
 
 
-def fx_get_qc_watershed_data():                                                                  # This function gets the watershed data by using the scrap donne quebec function, it then reads it in, drops some columns, and reprojects it
+def fx_get_qc_watershed_data():
+    #################### ######################################## ######################################## ######################################## ####################
+    # This function gets the watershed data, it then reads it in, drops some columns, and reprojects it, it also gives each watershed a unique name
+    #################### ######################################## ######################################## ######################################## ####################       
+                                                                 
     print('Getting Watershed Data')
     url_watersheddata = 'https://stqc380donopppdtce01.blob.core.windows.net/donnees-ouvertes/Bassins_hydrographiques_multi_echelles/CE_bassin_multi.gdb.zip'
     watersheddata_zipname = 'CE_bassin_multi.gdb.zip'
@@ -234,11 +259,14 @@ def fx_get_qc_watershed_data():                                                 
 
 
 def fx_merge_provincial_fires(data1, data2):
+    #################### ######################################## ######################################## ######################################## ####################
+    # Merges two datasets
+    #################### ######################################## ######################################## ######################################## ####################
     combined_gdf = pd.concat([data1, data2], ignore_index=True)
 
     combined_gdf = gpd.GeoDataFrame(combined_gdf, geometry='geometry', crs=data1.crs)
     unique_provinces = combined_gdf['province'].unique()
-    print(unique_provinces)
+
     return combined_gdf
 
 
@@ -258,7 +286,9 @@ def fx_filter_fires_data(                                                       
     watershed_name,
     pc_name
     ):
-    
+    #################### ######################################## ######################################## ######################################## ####################
+    # Filters data set by storing conditions in list and then applyign them all at once, returning all the polygons necessary depending on the fitlers used
+    #################### ######################################## ######################################## ######################################## ####################
     if "ALL" in provincelist:
         filtered_gdf = fire_gdf
     elif pc_name != '':
@@ -342,7 +372,10 @@ def fx_filter_fires_data(                                                       
 
 
 def fx_download_json(filtered_data, MAX_SIZE_MB):    
-                                                                        # This function is to dowload the filtered data as a geojson 
+    #################### ######################################## ######################################## ######################################## ####################
+    # This function is to dowload the filtered data as a geojson 
+    #################### ######################################## ######################################## ######################################## #################### 
+                              
     geojson_data = json.loads(filtered_data.to_json())     
     
 
@@ -372,8 +405,10 @@ def fx_download_json(filtered_data, MAX_SIZE_MB):
 
 
 
-def fx_download_csv(filtered_data):     # Exact same thing as the last function but downloads as csv        
-
+def fx_download_csv(filtered_data):             
+    #################### ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ####################
+    # Exact same thing as the last function but downloads as csv
+    #################### ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ####################
     csv_buffer = io.BytesIO()
     filtered_data.drop(columns=['geometry'], errors='ignore').to_csv(csv_buffer, index=False, encoding='utf-8')         # Drops geom column here too 
     csv_buffer.seek(0)
@@ -390,6 +425,11 @@ def fx_download_csv(filtered_data):     # Exact same thing as the last function 
 
 
 def fx_download_gpkg(filtered_data, MAX_SIZE_MB):
+    #################### ######################################## ######################################## ######################################## ####################
+    # gpkg download
+    #################### ######################################## ######################################## ######################################## #################### 
+     
+    
     gpkg_buffer = io.BytesIO()  
 
     filtered_data.to_file(gpkg_buffer, driver="GPKG")
@@ -439,9 +479,9 @@ def fx_download_gpkg(filtered_data, MAX_SIZE_MB):
 
 
 
-
-
+#################### ######################################## ######################################## ######################################## ####################
 # Function Graveyard
+#################### ######################################## ######################################## ######################################## ####################
 
 
 # def fx_scrape_ontariogeohub(url, dataname):

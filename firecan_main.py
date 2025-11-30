@@ -1,4 +1,4 @@
-MAX_SIZE_MB = 8
+MAX_SIZE_MB = 100
 
 
 from firecan_fx import fx_get_can_fire_data,convert_m_4326deg,fx_merge_provincial_fires,timenow,create_data_folder,fx_get_qc_fire_data,fx_filter_fires_data,fx_download_json,fx_download_csv,timenow, fx_download_gpkg, fx_get_qc_watershed_data
@@ -20,14 +20,12 @@ print('---------------Data pre-loading complete. The app is now ready to serve r
 
 
 
-
-# =========================================================
-# FLASK
-# =========================================================
 app = Flask(__name__, static_folder='static')                                                      # This starts FLASK which allows me to talk back and forth with my web page and my java script
-
 @app.route('/fx_main', methods=['GET'])
 def fx_main():                                                                                    # This is the main fuctino that is run when my python is called by Flask 
+    #################### ######################################## ######################################## ######################################## ####################
+    # FLASK main function 
+    #################### ######################################## ######################################## ######################################## ####################
     min_year = request.args.get('min_year', None)                                                    # This section here assings varibales for all the user inputed filtering conditions
     max_year = request.args.get('max_year', None)                                     
     min_size = request.args.get('min_size', None)
@@ -41,21 +39,19 @@ def fx_main():                                                                  
     selected_provinces = json.loads(provinces_str)         
     pc_name = request.args.get('pc_name', None)
     
-
-
     print(timenow(),'Filtering Data')                                                                                 # Uses the filtering fire function to return a dataset with only the fires the user wants 
     results= fx_filter_fires_data(
-                                            gdf_fires,
-                                            gdf_qc_watershed_data,
-                                            selected_provinces,
-                                            min_year=min_year,
-                                            max_year=max_year,
-                                            min_size=min_size,
-                                            max_size=max_size,
-                                            distance_coords=distance_coords,
-                                            distance_radius=distance_radius,
-                                            watershed_name=watershed_name,
-                                            pc_name = pc_name
+                                    gdf_fires,
+                                    gdf_qc_watershed_data,
+                                    selected_provinces,
+                                    min_year=min_year,
+                                    max_year=max_year,
+                                    min_size=min_size,
+                                    max_size=max_size,
+                                    distance_coords=distance_coords,
+                                    distance_radius=distance_radius,
+                                    watershed_name=watershed_name,
+                                    pc_name = pc_name
                                         )
     print(timenow(),'Done Filtering Data')
 
@@ -65,14 +61,20 @@ def fx_main():                                                                  
     bufferdeg = results["buffer_geom"]
 
         
-    if is_download_requested:                                                                                                                  # If downlaod request is tru we are going to run one of the downloading fucntions
+    if is_download_requested:  
+        #################### ######################################## ######################################## ######################################## ####################
+        # Return a file to download
+        #################### ######################################## ######################################## ######################################## ####################                                                                                               
         if downloadformat == 'json':
             return fx_download_json(filtered_data, MAX_SIZE_MB)
         elif downloadformat == 'csv':
             return fx_download_csv(filtered_data)
         elif downloadformat == 'gpkg':
             return fx_download_gpkg(filtered_data, MAX_SIZE_MB)
-    else:                                                                                                                                   # IF download request is not true we are going to convert ot geojson and return it (send it) to my java script
+    else:   
+        #################### ######################################## ######################################## ######################################## ####################                                                                                               
+        # Return a dataset to be displayed
+        #################### ######################################## ######################################## ######################################## ####################                                                                                                                                                                                                    
         print(timenow(),'Converting to geojson',filtered_data.shape)
 
         polygon_tol = request.args.get('polygon_tol', None)
@@ -100,11 +102,13 @@ def fx_main():                                                                  
             "watershed_polygon" : geojson_watershedpolygon
         }
 
-
+        #################### ######################################## ######################################## ######################################## ####################                                                                                               
+        # File size cap to reduce server cost
+        #################### ######################################## ######################################## ######################################## ####################                                                                                                                                                                                                    
         MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
         geojson_bytes = len(json.dumps(combined_geojson).encode('utf-8'))
         print(f'File Size {geojson_bytes/1000000}')
-        if geojson_bytes > MAX_SIZE_BYTES:
+        if geojson_bytes > MAX_SIZE_BYTES:                                                  # Error message
             print(f'{geojson_bytes/1000000} is too big')
             return {"error": f"Data too large to load ({geojson_bytes / 1024 / 1024:.2f} MB). Please re-fresh and narrow your filter."}, 413
 
