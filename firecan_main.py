@@ -20,6 +20,12 @@ print('---------------Data pre-loading complete. The app is now ready to serve r
 
 
 
+<<<<<<< HEAD
+=======
+
+ 
+# FLASK
+>>>>>>> 98aa5325468855cd86d250fadbb07b1a52e3c36c
 app = Flask(__name__, static_folder='static')                                                      # This starts FLASK which allows me to talk back and forth with my web page and my java script
 @app.route('/fx_main', methods=['GET'])
 def fx_main():                                                                                    # This is the main fuctino that is run when my python is called by Flask 

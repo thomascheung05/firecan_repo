@@ -18,20 +18,31 @@ from datetime import datetime
 import sys
 import math
 work_dir  = Path.cwd()
+<<<<<<< HEAD
  
 
 def timenow():
+=======
+
+
+
+def timenow():                                                          # Function to print time for time tracking
+>>>>>>> 98aa5325468855cd86d250fadbb07b1a52e3c36c
     return datetime.now().strftime('%H:%M:%S')
 
 
 
 
 
+<<<<<<< HEAD
 def repojectdata(data, targetcrs):
     #################### ######################################## ######################################## ######################################## ####################
     # Reprojects data to target crs 
     #################### ######################################## ######################################## ######################################## ####################
 
+=======
+def repojectdata(data, targetcrs):                                                          # Function to reproject data in projection leaflet likes 
+>>>>>>> 98aa5325468855cd86d250fadbb07b1a52e3c36c
     is_targercrs = data.crs.to_epsg() == targetcrs
 
     if is_targercrs:
@@ -46,10 +57,14 @@ def repojectdata(data, targetcrs):
 
 
 
+<<<<<<< HEAD
 def create_data_folder():
     #################### ######################################## ######################################## ######################################## ####################
     # Creates the data folder in directory if not there 
     #################### ######################################## ######################################## ######################################## ####################    
+=======
+def create_data_folder():                                                                 # Function to create a data folder in working direcotyr
+>>>>>>> 98aa5325468855cd86d250fadbb07b1a52e3c36c
     data_folder_path = work_dir / 'data'
     if not data_folder_path.exists(): 
         data_folder_path.mkdir(parents=True, exist_ok=True)
@@ -58,10 +73,14 @@ def create_data_folder():
 
 
 
+<<<<<<< HEAD
 def convert_m_4326deg(meters, lat):
     #################### ######################################## ######################################## ######################################## ####################
     # Used to convert meters to lat and lon deg for polygon tolerance (it inputs a distance value in lat long deg)
     #################### ######################################## ######################################## ######################################## ####################
+=======
+def convert_m_4326deg(meters, lat):                                                                       # Function to convert m to distance in 4326deg unites
+>>>>>>> 98aa5325468855cd86d250fadbb07b1a52e3c36c
     deg_lat = meters / 111320.0
     deg_lon = meters / (111320.0 * math.cos(math.radians(lat)))
 
@@ -72,11 +91,15 @@ def convert_m_4326deg(meters, lat):
 
 
 
+<<<<<<< HEAD
 def fx_get_url_request(dataname, url, zipname, gpkgname):        
     #################### ######################################## ######################################## ######################################## ####################
     # Checks if a dataset exists, if not it downloads it using a URL and unpacks the zip 
     #################### ######################################## ######################################## ######################################## ####################    
     
+=======
+def fx_get_url_request(dataname, url, zipname, gpkgname):                                           # Checks if data exists, if not it does a requets.url() to downoad the data 
+>>>>>>> 98aa5325468855cd86d250fadbb07b1a52e3c36c
     print(f'.. {timenow()} Requestinog URL')    
     savefolder = work_dir / "data" / dataname
     zip_path = savefolder / zipname                                                                # Name of zip file depends on the data being dowloaded, for fire data its the same but not for watershed data
@@ -85,13 +108,17 @@ def fx_get_url_request(dataname, url, zipname, gpkgname):
     if not unzipped_file_path.exists():                                                              # Checks if the GPKG file exists, if not it will create a folder and downlaod it 
         print(f'.... {timenow()} The data does not exist for {dataname} Downloading now')         
         savefolder.mkdir(parents=True, exist_ok=True)
+<<<<<<< HEAD
         response = requests.get(url)                                                               
+=======
+        response = requests.get(url)                                                                
+>>>>>>> 98aa5325468855cd86d250fadbb07b1a52e3c36c
         with open(zip_path, 'wb') as f:
             f.write(response.content)
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:                                            # The data come in a zipfile so must unzip it
             zip_ref.extractall(savefolder)
         print(f'...... {timenow()} The data for {dataname} has been dowloaded')
-    else:                                                                                          # If it already exists we do nothing as we already created the path that needs to be returned outside of the IF 
+    else:                                                                                          # always chekcs if data is downloaded before downlaoding
         print(f'...... {timenow()} The data for {dataname} is already downloaded')                
 
     return unzipped_file_path
@@ -101,20 +128,24 @@ def fx_get_url_request(dataname, url, zipname, gpkgname):
 
 
 def fx_get_can_fire_data():
+<<<<<<< HEAD
     #################### ######################################## ######################################## ######################################## ####################
     # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
     #################### ######################################## ######################################## ######################################## ####################
     print('Getting Can Fire Data')                                             
+=======
+    print('Getting Can Fire Data')                         
+>>>>>>> 98aa5325468855cd86d250fadbb07b1a52e3c36c
 
-    canfire_unzipped_file_path = fx_get_url_request('canfire', 'https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/fire_poly/current_version/NFDB_poly.zip', 'NFDB_poly.zip', "NFDB_poly_20210707.shp")
+    canfire_unzipped_file_path = fx_get_url_request('canfire', 'https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/fire_poly/current_version/NFDB_poly.zip', 'NFDB_poly.zip', "NFDB_poly_20210707.shp")           # Downloading data
    
-    can_processed_data_folder_path = work_dir / "data" / 'can_processed_data'
-    can_processed_data_path = can_processed_data_folder_path / 'can_processed_fire_data.parquet'
+    can_processed_data_folder_path = work_dir / "data" / 'can_processed_data'                                                   
+    can_processed_data_path = can_processed_data_folder_path / 'can_processed_fire_data.parquet'                # creating path for processed daata
 
-    if not can_processed_data_path.exists():
+    if not can_processed_data_path.exists():# Check if data exists
         print(f'........ {timenow()} Pre-Processing data now')
         if not can_processed_data_folder_path.exists():
-            can_processed_data_folder_path.mkdir(parents=True, exist_ok=True)
+            can_processed_data_folder_path.mkdir(parents=True, exist_ok=True) # makes file for processed data
         print(f'.......... {timenow()} Loading in Canada Data')
 
         
@@ -129,10 +160,10 @@ def fx_get_can_fire_data():
         pc_to_province = {'PC-PA':'SK', 'PC-WB':'AB', 'PC-JA':'AB', 'PC-NA':'NT', 'PC-RM':'MB','PC-EI':'AB', 'PC-BA':'AB', 'PC-KO':'QC', 'PC-LM':'QC', 'PC-GL':'QC','PC-PU':'QC', 'PC-VU':'QC', 'PC-YO':'YT', 'PC-SY':'NT', 'PC-GR':'AB','PC-WP':'MB', 'PC-RE':'QC', 'PC-TN':'QC', 'PC-WL':'ON', 'PC-NI':'ON'}
         parks_decoded = {'PC-PA': 'Prince Albert National Park','PC-WB': 'Wood Buffalo National Park','PC-JA': 'Jasper National Park','PC-NA': 'Nahanni National Park','PC-RM': 'Riding Mountain National Park','PC-EI': 'Elk Island National Park','PC-BA': 'Banff National Park','PC-KO': 'Kootenay National Park','PC-LM': 'La Mauricie National Park','PC-GL': 'Glacier National Park', 'PC-PU': 'Pukaskwa National Park','PC-VU': 'Vuntut National Park','PC-YO': 'Yoho National Park','PC-SY': 'Saoyú-ehdacho National Historic Site','PC-GR': 'Grasslands National Park','PC-WP': 'Wapusk National Park','PC-RE': 'Mount Revelstoke National Park','PC-TN': 'Terra Nova National Park','PC-WL': 'Waterton Lakes National Park','PC-NI': 'PC-NI'}
 
-        gdf = gdf[gdf['province'] != 'QC']
-        gdf['pc'] = gdf['province'].where(gdf['province'].isin(pc_codes), '')
-        gdf['pc'] = gdf['pc'].replace(parks_decoded)
-        gdf['province'] = gdf['province'].replace(pc_to_province)
+        gdf = gdf[gdf['province'] != 'QC']              # gets ride of all QC fires, but not the ones that are in natinal parks as these ones have province = the national park they are in
+        gdf['pc'] = gdf['province'].where(gdf['province'].isin(pc_codes), '')     # creating parks column that contains only the provinces that had a parks code as the province   
+        gdf['pc'] = gdf['pc'].replace(parks_decoded)                            # in the parks column we change their parks code to an easier parks code 
+        gdf['province'] = gdf['province'].replace(pc_to_province)    # Now we change all the province park codes to province codes in the province column
          
 
         print(f'............ {timenow()} Re-Projecting Data')
@@ -152,19 +183,23 @@ def fx_get_can_fire_data():
 
 
 def fx_get_qc_fire_data():   
+<<<<<<< HEAD
     #################### ######################################## ######################################## ######################################## ####################
     # Loads in QC fire data (beofre and after), merges the two datasets, reprojects it, then saves it as a parquet so we only have to do this once 
     #################### ######################################## ######################################## ######################################## ####################
 
     print('Getting QC Fire Data')                                               
+=======
+    print('Getting QC Fire Data')                                                
+>>>>>>> 98aa5325468855cd86d250fadbb07b1a52e3c36c
     url_qcfires_after76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_PROV_GPKG.zip'
-    qcfires_after76_zipname = 'FEUX_PROV_GPKG.zip'                                                          # In this case both zip names are the same but must still specify it in the fuctino so we can use the fuction for other datasets like the watershed data
+    qcfires_after76_zipname = 'FEUX_PROV_GPKG.zip'                                                         
     qcfires_after76_gpkgname = 'FEUX_PROV.gpkg'
     url_qcfires_before76 = 'https://diffusion.mffp.gouv.qc.ca/Diffusion/DonneeGratuite/Foret/PERTURBATIONS_NATURELLES/Feux_foret/02-Donnees/PROV/FEUX_ANCIENS_PROV_GPKG.zip'
     qcfires_before76_zipname = 'FEUX_PROV_GPKG.zip'
     qcfires_before76_gpkgname = 'FEUX_ANCIENS_PROV.gpkg'
     qcfires_before76_unzipped_file_path = fx_get_url_request('qcfires_before76', url_qcfires_before76, qcfires_before76_zipname, qcfires_before76_gpkgname)
-    qcfires_after76_unzipped_file_path = fx_get_url_request('qcfires_after76', url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)
+    qcfires_after76_unzipped_file_path = fx_get_url_request('qcfires_after76', url_qcfires_after76, qcfires_after76_zipname, qcfires_after76_gpkgname)          # DOwnloading data
 
     qc_processed_data_folder_path = work_dir / "data" / 'qc_processed_data'
     qc_processed_data_path = qc_processed_data_folder_path / 'qc_processed_fire_data.parquet'
@@ -203,17 +238,21 @@ def fx_get_qc_fire_data():
 
 
 
+<<<<<<< HEAD
 def fx_get_qc_watershed_data():
     #################### ######################################## ######################################## ######################################## ####################
     # This function gets the watershed data, it then reads it in, drops some columns, and reprojects it, it also gives each watershed a unique name
     #################### ######################################## ######################################## ######################################## ####################       
                                                                  
+=======
+def fx_get_qc_watershed_data():                                                                                    
+>>>>>>> 98aa5325468855cd86d250fadbb07b1a52e3c36c
     print('Getting Watershed Data')
     url_watersheddata = 'https://stqc380donopppdtce01.blob.core.windows.net/donnees-ouvertes/Bassins_hydrographiques_multi_echelles/CE_bassin_multi.gdb.zip'
     watersheddata_zipname = 'CE_bassin_multi.gdb.zip'
     watersheddata_fgdbname = 'CE_bassin_multi.gdb'
 
-    qcwatershed_unzipped_file_path = fx_get_url_request('qcwatershed_data', url_watersheddata, watersheddata_zipname, watersheddata_fgdbname)                   
+    qcwatershed_unzipped_file_path = fx_get_url_request('qcwatershed_data', url_watersheddata, watersheddata_zipname, watersheddata_fgdbname)  # Downloadings                 
         
     qc_processed_data_folder_path = work_dir / "data" / 'qc_processed_data'
     qc_watershed_data_path = qc_processed_data_folder_path / 'qc_watershed_data.parquet'
@@ -231,8 +270,7 @@ def fx_get_qc_watershed_data():
         mask = watershed_data['NOM_COURS_DEAU'].isna() | (watershed_data['NOM_COURS_DEAU'].str.strip() == "")
         watershed_data.loc[mask, 'NOM_COURS_DEAU'] = [
             f"unnamed_{i+1}" for i in range(mask.sum())
-        ]
-
+        ]   # making it so each watershed has a unique name (there are multiple watersheds with same name)
         watershed_data['NOM_COURS_DEAU'] = watershed_data.groupby('NOM_COURS_DEAU').cumcount().add(1).astype(str).radd(watershed_data['NOM_COURS_DEAU'] + "-")
 
 
@@ -245,8 +283,8 @@ def fx_get_qc_watershed_data():
         watershed_data.to_parquet(qc_watershed_data_path)  
 
         watershed_data_togeojson=watershed_data
-        watershed_data_togeojson["geometry"] = watershed_data_togeojson["geometry"].simplify(tolerance=0.01)
-        watershed_data_togeojson.to_file(qc_watershed_data_path_json, driver="GeoJSON")
+        watershed_data_togeojson["geometry"] = watershed_data_togeojson["geometry"].simplify(tolerance=0.01)            # Simplyfying the tolerance for the geojson watershed polygons to reduce server load 
+        watershed_data_togeojson.to_file(qc_watershed_data_path_json, driver="GeoJSON")                                 # saving as static geojson to be sent for watershed explorer
         
     else:
         print(f'...... {timenow()} The Watershed data is alredy processed, Loading in now')
@@ -286,19 +324,24 @@ def fx_filter_fires_data(                                                       
     watershed_name,
     pc_name
     ):
+<<<<<<< HEAD
     #################### ######################################## ######################################## ######################################## ####################
     # Filters data set by storing conditions in list and then applyign them all at once, returning all the polygons necessary depending on the fitlers used
     #################### ######################################## ######################################## ######################################## ####################
     if "ALL" in provincelist:
+=======
+    
+    if "ALL" in provincelist:           # Deciding on the higest level what fires are included 
+>>>>>>> 98aa5325468855cd86d250fadbb07b1a52e3c36c
         filtered_gdf = fire_gdf
-    elif pc_name != '':
+    elif pc_name != '':                 # if provincial park filtering is selected just include all the provinces
         filtered_gdf = fire_gdf[fire_gdf['pc'] == pc_name]
     else:  
         filtered_gdf = fire_gdf[fire_gdf['province'].isin(provincelist)]
     
-    conditions = []     # This is a list of the filtering conditions so they can all be applied at once 
+    conditions = []     # List of filtering conditions 
     
-    if min_year  != '' or max_year  != '':                                                                  # This IFs for all of these check if the filtering box on the site has a value inputed in it for this one and the next one we use OR becuase wse want the use to be able to input only a max or a min and not HAVE to input both 
+    if min_year  != '' or max_year  != '':                                                           # This IFs for all of these check if the filtering box on the site has a value inputed in it for this one and the next one we use OR becuase wse want the use to be able to input only a max or a min and not HAVE to input both 
         if min_year  != '':
             min_year = int(min_year)
         else:                                                                                               # If this field was empty (and the other was not as the IF is running) then we assing the min year to 0, if we dont do this it tryus to convert NULL to an int
@@ -350,7 +393,7 @@ def fx_filter_fires_data(                                                       
         combined_mask = np.logical_and.reduce(conditions)                                                         # The combined filtered conditions
         filtered_gdf = filtered_gdf[combined_mask]                                                                # Filtering the dataset and returning with the right fitlers 
 
-    results = {
+    results = {                                     # we have multiple things being returned depending on the filtering options used 
             "filtered_gdf": filtered_gdf,
             "user_point": None,
             "buffer_geom": None,
@@ -405,10 +448,15 @@ def fx_download_json(filtered_data, MAX_SIZE_MB):
 
 
 
+<<<<<<< HEAD
 def fx_download_csv(filtered_data):             
     #################### ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ####################
     # Exact same thing as the last function but downloads as csv
     #################### ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## ######################################## #################### #################### ######################################## ######################################## ######################################## ####################
+=======
+def fx_download_csv(filtered_data):                                                                                         # Exact same thing as the last function but downloads as csv        
+
+>>>>>>> 98aa5325468855cd86d250fadbb07b1a52e3c36c
     csv_buffer = io.BytesIO()
     filtered_data.drop(columns=['geometry'], errors='ignore').to_csv(csv_buffer, index=False, encoding='utf-8')         # Drops geom column here too 
     csv_buffer.seek(0)
