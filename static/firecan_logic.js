@@ -192,13 +192,13 @@ function loadFilteredData() {                                                   
 
 
         if (basemapName === "Esrimap" || basemapName === "SpinalMap" || basemapName === "TransportDark") {
-            bufferpolygonStyle = {color: '#ffffffff', weight: 5, fillOpacity: 0.1 };
+            bufferpolygonStyle = {color: '#ffffffff', weight: 3, fillOpacity: 0.1 };
         } 
         else if (basemapName === "Landscape" || basemapName === "OpenStreetMap_Mapnik" || basemapName === "Neighbourhood" || basemapName === "Outdoors" || basemapName === "Transport") {
-            bufferpolygonStyle = {color: '#2e2c2cff', weight: 5, fillOpacity: 0.1 };
+            bufferpolygonStyle = {color: '#2e2c2cff', weight: 3, fillOpacity: 0.1 };
         }
         else if (basemapName === "MobileAtlas" || basemapName === "Pioneer" || basemapName === "OpenCycleMap" ) {
-          bufferpolygonStyle = {color: '#9e11f6ff', weight: 5, fillOpacity: 0.1 };       
+          bufferpolygonStyle = {color: '#9e11f6ff', weight: 3, fillOpacity: 0.1 };       
         }
 
           userBufferLayer = L.geoJSON(data.user_buffer, {
@@ -213,10 +213,10 @@ function loadFilteredData() {                                                   
             waterpolygonStyle = { color: "#00e5ff", weight: 2, fillOpacity: 0.25 };
         } 
         else if (basemapName === "Landscape" || basemapName === "OpenStreetMap_Mapnik" || basemapName === "Neighbourhood" || basemapName === "Outdoors" || basemapName === "Transport") {
-            waterpolygonStyle = {color: '#303030ff', weight: 1, fillOpacity: 0.1};
+            waterpolygonStyle = {color: '#303030ff', weight: 2, fillOpacity: 0.25};
         }
         else if (basemapName === "MobileAtlas" || basemapName === "Pioneer" || basemapName === "OpenCycleMap" ) {
-            waterpolygonStyle = {color: '#1219a5ff', weight: 1, fillOpacity: 0.1};
+            waterpolygonStyle = {color: '#1219a5ff', weight: 2, fillOpacity: 0.25};
         }
 
         userWatershedPolygonLayer = L.geoJson(data.watershed_polygon, {
