@@ -106,7 +106,12 @@ def fx_get_can_fire_data():
     #################### ######################################## ######################################## ######################################## ####################
     print('Getting Can Fire Data')                                             
 
-    canfire_unzipped_file_path = fx_get_url_request('canfire', 'https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/fire_poly/current_version/NFDB_poly.zip', 'NFDB_poly.zip', "NFDB_poly_20210707.shp")           # Downloading data
+    canfire_unzipped_file_path = fx_get_url_request(
+    'canfire',
+    'https://cwfis.cfs.nrcan.gc.ca/downloads/nfdb/fire_poly/current_version/NFDB_poly.zip',
+    'NFDB_poly.zip',
+    "NFDB_poly_1972to2020_20250630.shp"
+    )          # Downloading data
    
     can_processed_data_folder_path = work_dir / "data" / 'can_processed_data'                                                   
     can_processed_data_path = can_processed_data_folder_path / 'can_processed_fire_data.parquet'                # creating path for processed daata
